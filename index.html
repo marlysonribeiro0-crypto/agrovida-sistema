@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroVida+ Sistema Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Cores da Identidade Visual */
+        .bg-agro-green { background-color: #009036; }
+        .text-agro-green { color: #009036; }
+        .bg-agro-yellow { background-color: #FFB800; }
+        .text-agro-yellow { color: #FFB800; }
+        
+        /* Layout */
+        .sidebar { min-height: 100vh; }
+        .active-tab { background-color: #007a2d; border-right: 4px solid #FFB800; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row">
+
+    <aside class="bg-agro-green text-white w-full md:w-64 flex-shrink-0 sidebar shadow-2xl flex flex-col">
+        <div class="p-6 text-center border-b border-green-700 bg-white">
+            <img src="logo.png" alt="AgroVida Mais" class="w-full max-w-[180px] mx-auto" onerror="this.style.display='none'; document.getElementById('altLogo').style.display='block'">
+            <h1 id="altLogo" class="hidden text-green-800 font-bold text-xl mt-2">AGROVIDA+</h1>
+        </div>
+        
+        <div class="p-4 text-center bg-green-800 text-xs text-green-200 flex justify-center items-center gap-2">
+            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Sistema Conectado
+        </div>
+
+        <nav class="mt-4 flex-1">
+            <button onclick="window.showTab('dashboard')" id="btn-dashboard" class="w-full text-left p-4 hover:bg-green-700 transition active-tab flex items-center gap-3">
+                <i class="fas fa-cash-register text-xl w-6"></i> 
+                <div>
+                    <span class="block font-bold">Balcão</span>
+                    <span class="text-xs text-green-200 font-normal">Vender Agora</span>
+                </div>
+            </button>
+            <button onclick="window.showTab('history')" id="btn-history" class="w-full text-left p-4 hover:bg-green-700 transition flex items-center gap-3">
+                <i class="fas fa-chart-line text-xl w-6"></i>
+                <div>
+                    <span class="block font-bold">Histórico</span>
+                    <span class="text-xs text-green-200 font-normal">Relatórios</span>
+                </div>
+            </button>
+        </nav>
+        
+        <div class="p-4 text-center text-xs text-green-300 opacity-60">
+            ID: agrovida-95ebb
+        </div>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
+        
+        <div id="loadingIndicator" class="hidden fixed top-4 right-4 bg-agro-yellow text-black px-4 py-2 rounded shadow-lg z-50 font-bold flex items-center gap-2">
+            <i class="fas fa-circle-notch fa-spin"></i> Salvando...
+        </div>
+
+        <div id="tab-dashboard" class="fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-8 border-green-600">
+                    <p class="text-xs font-bold text-gray-400 uppercase">Vendas Hoje</p>
+                    <h3 class="text-3xl font-bold text-gray-800 mt-1" id="dashTotalToday">R$ 0,00</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-8 border-yellow-500">
+                    <p class="text-xs font-bold text-gray-400 uppercase">Vendas Ontem</p>
+                    <h3 class="text-3xl font-bold text-gray-800 mt-1" id="dashTotalYesterday">R$ 0,00</h3>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-8 border-blue-600">
+                    <p class="text-xs font-bold text-gray-400 uppercase">Acumulado Mês</p>
+                    <h3 class="text-3xl font-bold text-gray-800 mt-1" id="dashTotalMonth">R$ 0,00</h3>
+                    <button onclick="window.goToHistoryCurrentMonth()" class="text-xs text-blue-600 font-bold mt-2 hover:underline">VER DETALHES <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg mb-8 border border-gray-100">
+                <div class="bg-gray-50 p-4 border-b rounded-t-xl flex justify-between items-center">
+                    <h2 class="font-bold text-gray-700"><i class="fas fa-plus-circle text-agro-green mr-2"></i> Nova Venda</h2>
+                    <span id="dateDisplay" class="text-sm text-gray-500 font-mono"></span>
+                </div>
+                <div class="p-6">
+                    <form id="salesForm" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Produto / Serviço</label>
+                            <input type="text" id="desc" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="Ex: Ração..." required>
+                        </div>
+
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
+                            <select id="category" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-green-500 outline-none">
+                                <option value="Ração">Ração</option>
+                                <option value="Medicamento">Medicamento</option>
+                                <option value="Sementes">Sementes</option>
+                                <option value="Ferramentas">Ferramentas</option>
+                                <option value="Acessórios">Acessórios</option>
+                                <option value="Serviço/Vet">Serviço/Vet</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
+                            <input type="number" step="0.01" id="value" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="0,00" required>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pagamento</label>
+                            <select id="payment" class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-green-500 outline-none">
+                                <option>Dinheiro</option>
+                                <option>Pix</option>
+                                <option>Débito</option>
+                                <option>Crédito</option>
+                                <option>Fiado/Prazo</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-1">
+                            <button type="submit" class="w-full bg-agro-green hover:bg-green-700 text-white p-3 rounded-lg shadow-md transition transform active:scale-95 font-bold h-[50px]">
+                                <i class="fas fa-check text-xl"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100">
+                <div class="p-4 border-b bg-gray-50">
+                    <h2 class="font-bold text-gray-700">Movimentação do Dia</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
+                            <tr>
+                                <th class="p-4">Hora</th>
+                                <th class="p-4">Produto</th>
+                                <th class="p-4">Categoria</th>
+                                <th class="p-4">Pagamento</th>
+                                <th class="p-4 text-right">Valor</th>
+                                <th class="p-4 text-center">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todayTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-history" class="hidden fade-in">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Histórico Completo</h2>
+            
+            <div class="bg-white p-6 rounded-xl shadow mb-6 border border-gray-100">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar Mês</label>
+                        <input type="month" id="filterMonth" class="w-full p-2 border rounded" onchange="window.filterHistory()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Dia Específico</label>
+                        <input type="date" id="filterDate" class="w-full p-2 border rounded" onchange="window.filterHistory()">
+                    </div>
+                    <div>
+                         <div class="text-xs text-gray-500 mb-1">Total do Filtro:</div>
+                         <div class="text-2xl font-bold text-agro-green" id="historyTotal">R$ 0,00</div>
+                    </div>
+                    <div>
+                        <button onclick="window.clearFilters()" class="text-blue-600 text-sm hover:underline">Limpar Filtros</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
+                        <tr>
+                            <th class="p-4">Data</th>
+                            <th class="p-4">Produto</th>
+                            <th class="p-4">Categoria</th>
+                            <th class="p-4">Pagamento</th>
+                            <th class="p-4 text-right">Valor</th>
+                            <th class="p-4 text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        // 1. SISTEMA DE SENHA
+        const SENHA_LOJA = "1234"; // <--- SUA SENHA AQUI
+        
+        const tentativa = prompt("🔐 AgroVida Mais - Sistema\nDigite a senha de acesso:");
+        if (tentativa !== SENHA_LOJA) {
+            document.body.innerHTML = `<div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#111; color:white;">
+                <h1 style="font-size:2rem; color:#ef4444; margin-bottom:10px;">🚫 Acesso Negado</h1>
+                <p>A senha informada está incorreta.</p>
+                <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; cursor:pointer; background:#333; border:none; color:white; border-radius:5px;">Tentar Novamente</button>
+            </div>`;
+            throw new Error("Senha Incorreta - Acesso bloqueado.");
+        }
+
+        // 2. IMPORTAÇÃO DO FIREBASE (Versão Web/CDN)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 3. SUAS CHAVES DO AGROVIDA (Já configuradas)
+        const firebaseConfig = {
+          apiKey: "AIzaSyBZvxMB2qmz5IMugV6fOqq4pLUbhD7mJRU",
+          authDomain: "agrovida-95ebb.firebaseapp.com",
+          projectId: "agrovida-95ebb",
+          storageBucket: "agrovida-95ebb.firebasestorage.app",
+          messagingSenderId: "1058005459532",
+          appId: "1:1058005459532:web:f84be213da78c145648ae9"
+        };
+
+        // 4. INICIALIZAÇÃO
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const salesCollection = collection(db, "vendas_agrovida"); // Nome da sua coleção no banco
+
+        let localSales = [];
+
+        // --- FUNÇÕES GLOBAIS ---
+        window.formatMoney = (value) => value.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+        
+        // Controle de Abas
+        window.showTab = (tabName) => {
+            document.getElementById('tab-dashboard').classList.add('hidden');
+            document.getElementById('tab-history').classList.add('hidden');
+            document.getElementById('btn-dashboard').classList.remove('active-tab');
+            document.getElementById('btn-history').classList.remove('active-tab');
+            
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabName}`).classList.add('active-tab');
+            
+            // Re-trigger animação
+            const el = document.getElementById(`tab-${tabName}`);
+            el.classList.remove('fade-in');
+            void el.offsetWidth;
+            el.classList.add('fade-in');
+
+            if(tabName === 'history') window.filterHistory();
+        }
+
+        // Deletar Venda
+        window.deleteSale = async (id) => {
+            if(confirm("Deseja realmente excluir este registro do sistema?")) {
+                try { await deleteDoc(doc(db, "vendas_agrovida", id)); } 
+                catch(e) { alert("Erro ao deletar: " + e.message); }
+            }
+        }
+
+        // --- ESCUTAR O BANCO DE DADOS (REAL-TIME) ---
+        const q = query(salesCollection, orderBy("timestamp", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            localSales = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateScreen();
+        });
+
+        // --- ATUALIZAR TELA ---
+        function updateScreen() {
+            const now = new Date();
+            // Ajuste de data local
+            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayISO = new Date(yesterday.getTime() - (yesterday.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const currentMonthISO = todayISO.substring(0, 7);
+
+            // Filtros de Totais
+            const todaySales = localSales.filter(s => s.date === todayISO);
+            const yesterSales = localSales.filter(s => s.date === yesterdayISO);
+            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
+
+            const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
+
+            // Preenche os Cards
+            document.getElementById('dashTotalToday').innerText = window.formatMoney(sum(todaySales));
+            document.getElementById('dashTotalYesterday').innerText = window.formatMoney(sum(yesterSales));
+            document.getElementById('dashTotalMonth').innerText = window.formatMoney(sum(monthSales));
+            
+            // Data no topo
+            document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+
+            // Preenche Tabela de Hoje
+            const tbody = document.getElementById('todayTableBody');
+            tbody.innerHTML = '';
+            
+            todaySales.forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-4 text-xs font-mono text-gray-500">${s.time}</td>
+                        <td class="p-4 font-bold text-gray-700">${s.desc}</td>
+                        <td class="p-4 text-xs"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 border">${s.category || '-'}</span></td>
+                        <td class="p-4 text-xs uppercase text-gray-500">${s.payment}</td>
+                        <td class="p-4 text-right font-bold text-green-700">${window.formatMoney(s.value)}</td>
+                        <td class="p-4 text-center"><button onclick="window.deleteSale('${s.id}')" class="text-gray-300 hover:text-red-500 transition"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+            });
+
+            // Atualiza histórico se a aba estiver aberta
+            if(!document.getElementById('tab-history').classList.contains('hidden')) window.filterHistory();
+        }
+
+        // --- ADICIONAR NOVA VENDA ---
+        const form = document.getElementById('salesForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button');
+            const loading = document.getElementById('loadingIndicator');
+            
+            btn.disabled = true;
+            loading.classList.remove('hidden');
+
+            const now = new Date();
+            const localDateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
+            try {
+                await addDoc(salesCollection, {
+                    date: localDateISO,
+                    timestamp: now.toISOString(),
+                    time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+                    desc: document.getElementById('desc').value,
+                    category: document.getElementById('category').value,
+                    value: parseFloat(document.getElementById('value').value),
+                    payment: document.getElementById('payment').value
+                });
+                form.reset();
+                document.getElementById('desc').focus();
+            } catch (error) { 
+                alert("Erro ao salvar: " + error.message); 
+            } finally { 
+                btn.disabled = false; 
+                loading.classList.add('hidden'); 
+            }
+        });
+
+        // --- SISTEMA DE FILTROS DO HISTÓRICO ---
+        window.filterHistory = () => {
+            const m = document.getElementById('filterMonth').value;
+            const d = document.getElementById('filterDate').value;
+            let list = localSales;
+
+            if (d) list = list.filter(s => s.date === d);
+            else if (m) list = list.filter(s => s.date.startsWith(m));
+
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            list.forEach(s => {
+                total += s.value;
+                const dateBR = s.date.split('-').reverse().join('/');
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="p-4 text-xs font-mono text-gray-500">${dateBR} ${s.time}</td>
+                        <td class="p-4 font-bold text-gray-700">${s.desc}</td>
+                        <td class="p-4 text-xs text-gray-500">${s.category || '-'}</td>
+                        <td class="p-4 text-xs uppercase text-gray-500">${s.payment}</td>
+                        <td class="p-4 text-right font-bold text-gray-700">${window.formatMoney(s.value)}</td>
+                        <td class="p-4 text-center"><button onclick="window.deleteSale('${s.id}')" class="text-red-300 hover:text-red-500 transition"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+            });
+            document.getElementById('historyTotal').innerText = window.formatMoney(total);
+        }
+
+        window.goToHistoryCurrentMonth = () => {
+            const t = new Date();
+            const ym = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0');
+            document.getElementById('filterMonth').value = ym;
+            document.getElementById('filterDate').value = '';
+            window.showTab('history');
+        }
+
+        window.clearFilters = () => {
+            document.getElementById('filterMonth').value = '';
+            document.getElementById('filterDate').value = '';
+            window.filterHistory();
+        }
+
+        // Inicializa input de data com mês atual
+        const t = new Date();
+        document.getElementById('filterMonth').value = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0');
+
+    </script>
+</body>
+</html>
