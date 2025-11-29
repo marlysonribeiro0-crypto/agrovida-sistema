@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroVida+ Sistema Online</title>
+    <title>AgroVida+ Sistema</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         body { background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif; }
+        
         .bg-agro-green { background-color: #009036; }
         .text-agro-green { color: #009036; }
         .bg-agro-yellow { background-color: #FFB800; }
+        
         .sidebar { min-height: 100vh; }
         .active-tab { background-color: #007a2d; border-right: 4px solid #FFB800; }
         .fade-in { animation: fadeIn 0.3s ease-in; }
@@ -47,9 +49,7 @@
                 </div>
             </button>
         </nav>
-        <div class="p-4 text-center text-xs text-green-300 opacity-60">
-            Conectado a: vendas_agrovida
-        </div>
+        <div class="p-4 text-center text-xs text-green-300 opacity-60">v4.3 Caixa Detalhado</div>
     </aside>
 
     <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
@@ -141,9 +141,25 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-lg border border-gray-100">
-                <div class="p-4 border-b bg-gray-50">
+                <div class="p-4 border-b bg-gray-50 flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <h2 class="font-bold text-gray-700">Movimentação do Dia</h2>
+                    
+                    <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                        <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200">
+                            💵 Dinheiro: <span id="sumMoney">R$ 0,00</span>
+                        </div>
+                        <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-200">
+                            💠 Pix: <span id="sumPix">R$ 0,00</span>
+                        </div>
+                        <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full border border-purple-200">
+                            💳 Cartão: <span id="sumCard">R$ 0,00</span>
+                        </div>
+                        <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full border border-orange-200">
+                            📝 Fiado: <span id="sumFiado">R$ 0,00</span>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
@@ -213,7 +229,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIGURAÇÃO CONFIRMADA PELO SEU PRINT
         const firebaseConfig = {
             apiKey: "AIzaSyBZvxMB2qmz5IMugV6fOqq4pLUbhD7mJRU",
             authDomain: "agrovida-95ebb.firebaseapp.com",
@@ -225,8 +240,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // --- AQUI ESTÁ A CORREÇÃO: Conectando na pasta exata do print ---
+        // CONECTADO CORRETAMENTE NA SUA PASTA
         const salesCollection = collection(db, "vendas_agrovida");
 
         let localSales = [];
@@ -252,7 +266,7 @@
         }
 
         window.deleteSale = async (id) => {
-            if(confirm("Excluir este registro?")) {
+            if(confirm("Excluir registro?")) {
                 await deleteDoc(doc(db, "vendas_agrovida", id));
             }
         }
@@ -270,18 +284,33 @@
             const yesterdayISO = new Date(yesterday.getTime() - (yesterday.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
             const currentMonthISO = todayISO.substring(0, 7);
 
+            // Filtros Principais
             const todaySales = localSales.filter(s => s.date === todayISO);
             const yesterSales = localSales.filter(s => s.date === yesterdayISO);
             const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
 
             const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
-            const totalMonth = sum(monthSales);
+            
+            // --- CÁLCULO DETALHADO DO CAIXA (NOVO) ---
+            const sumDinheiro = sum(todaySales.filter(s => s.payment === 'Dinheiro'));
+            const sumPix = sum(todaySales.filter(s => s.payment === 'Pix'));
+            const sumCard = sum(todaySales.filter(s => s.payment === 'Débito' || s.payment === 'Crédito'));
+            const sumFiado = sum(todaySales.filter(s => s.payment === 'Fiado/Prazo'));
 
+            // Atualiza Resumo do Caixa
+            document.getElementById('sumMoney').innerText = window.formatMoney(sumDinheiro);
+            document.getElementById('sumPix').innerText = window.formatMoney(sumPix);
+            document.getElementById('sumCard').innerText = window.formatMoney(sumCard);
+            document.getElementById('sumFiado').innerText = window.formatMoney(sumFiado);
+
+            // Atualiza Cards Principais
+            const totalMonth = sum(monthSales);
             document.getElementById('dashTotalToday').innerText = window.formatMoney(sum(todaySales));
             document.getElementById('dashTotalYesterday').innerText = window.formatMoney(sum(yesterSales));
             document.getElementById('dashTotalMonth').innerText = window.formatMoney(totalMonth);
             document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
 
+            // Atualiza Barra de Meta
             const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
             document.getElementById('progressBar').style.width = percent + '%';
             document.getElementById('metaValueDisplay').innerText = `Meta: ${window.formatMoney(metaMensal)}`;
@@ -295,6 +324,7 @@
                  document.getElementById('progressBar').classList.replace('to-yellow-600', 'to-green-600');
             }
 
+            // Renderiza Tabela
             const tbody = document.getElementById('todayTableBody');
             tbody.innerHTML = '';
             todaySales.forEach(s => {
@@ -302,7 +332,7 @@
                     <tr class="border-b hover:bg-gray-50 transition">
                         <td class="p-4 text-xs font-mono text-gray-500">${s.time}</td>
                         <td class="p-4 font-bold text-gray-700">${s.desc}</td>
-                        <td class="p-4 text-xs text-gray-500">${s.category || '-'}</td>
+                        <td class="p-4 text-xs"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 border">${s.category || '-'}</span></td>
                         <td class="p-4 text-xs uppercase text-gray-500">${s.payment}</td>
                         <td class="p-4 text-right font-bold text-green-700">${window.formatMoney(s.value)}</td>
                         <td class="p-4 text-center">
