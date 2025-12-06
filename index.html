@@ -2,102 +2,65 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgroVida+ | Sistema de Gestão</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     
     <style>
         :root {
             --primary: #009036;
             --primary-dark: #007a2d;
             --secondary: #FFB800;
-            --accent: #4F46E5;
-            --light: #f8fafc;
-            --dark: #1e293b;
         }
         
-        * {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            min-height: 100vh;
+        body { 
+            background-color: #f3f4f6; 
+            font-family: 'Segoe UI', sans-serif;
             overflow-x: hidden;
         }
         
-        .sidebar {
+        .bg-agro-green { background-color: var(--primary); }
+        .text-agro-green { color: var(--primary); }
+        .bg-agro-yellow { background-color: var(--secondary); }
+        
+        .sidebar { 
+            min-height: 100vh;
             background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
-            box-shadow: 4px 0 20px rgba(0, 144, 54, 0.1);
-            transition: transform 0.3s ease;
         }
         
-        /* Área da logo com fundo branco para contraste */
         .logo-container {
-            background: white !important;
+            background: white;
+            padding: 1.5rem;
             border-bottom: 1px solid rgba(0, 144, 54, 0.2);
-            padding: 1rem;
         }
         
         .logo-img {
-            max-width: 160px;
+            max-width: 180px;
             height: auto;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
         
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                z-index: 1000;
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 999;
-            }
-            
-            .sidebar-overlay.active {
-                display: block;
-            }
-            
-            .logo-container {
-                padding: 0.75rem;
-            }
-            
-            .logo-img {
-                max-width: 140px;
-            }
+        .active-tab { 
+            background-color: rgba(255, 255, 255, 0.15);
+            border-right: 4px solid var(--secondary); 
         }
         
-        .active-tab {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-left: 4px solid var(--secondary);
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
+        
+        .progress-bar { transition: width 1s ease-in-out; }
         
         .card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
         }
         
         .btn-primary {
@@ -106,25 +69,39 @@
             padding: 12px 20px;
             border-radius: 10px;
             font-weight: 600;
-            transition: all 0.3s;
             border: none;
             cursor: pointer;
-            font-size: 14px;
+            transition: all 0.2s;
         }
         
-        .btn-primary:hover, .btn-primary:active {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 144, 54, 0.3);
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 144, 54, 0.2);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .input-field {
-            border: 2px solid #e2e8f0;
+            border: 2px solid #e5e7eb;
             border-radius: 10px;
             padding: 12px;
             font-size: 14px;
-            transition: all 0.3s;
-            background: white;
-            -webkit-appearance: none;
+            transition: all 0.2s;
+            width: 100%;
         }
         
         .input-field:focus {
@@ -133,22 +110,62 @@
             box-shadow: 0 0 0 3px rgba(0, 144, 54, 0.1);
         }
         
-        .mobile-bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-            padding: 8px 0;
-            display: none;
-            z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .table-responsive table {
+            min-width: 600px;
+        }
+        
+        .quick-sale-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 16px;
         }
         
         @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                width: 280px;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: fixed;
+                top: 16px;
+                left: 16px;
+                z-index: 1001;
+                background: var(--primary);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 44px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+            
             .mobile-bottom-nav {
                 display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                border-top: 1px solid #e5e7eb;
+                padding: 8px 0;
+                z-index: 100;
             }
             
             .mobile-bottom-nav button {
@@ -156,7 +173,6 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center;
                 padding: 8px 4px;
                 background: none;
                 border: none;
@@ -169,146 +185,22 @@
                 color: var(--primary);
             }
             
-            .mobile-bottom-nav i {
-                font-size: 18px;
-            }
-            
             main {
                 padding-bottom: 70px !important;
-            }
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            top: 16px;
-            left: 16px;
-            z-index: 1001;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: flex;
-            }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .progress-bar {
-            height: 6px;
-            border-radius: 3px;
-            background: linear-gradient(90deg, #10b981 0%, var(--primary) 100%);
-            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease-out;
-            padding: 16px;
-            overflow-y: auto;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .table-responsive table {
-            min-width: 600px;
-        }
-        
-        .mobile-friendly-input {
-            font-size: 16px !important;
-        }
-        
-        select.input-field {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 16px;
-            padding-right: 40px;
-        }
-        
-        .touch-friendly {
-            min-height: 44px;
-            min-width: 44px;
-        }
-        
-        .compact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 8px;
-        }
-        
-        .quick-sale-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 8px;
-        }
-        
-        @media (max-width: 640px) {
-            .compact-grid {
-                grid-template-columns: repeat(2, 1fr);
             }
             
             .quick-sale-buttons {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
-            .modal-content {
-                padding: 16px;
-                margin: 8px;
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-menu-btn,
+            .mobile-bottom-nav {
+                display: none;
             }
         }
         
-        /* Notification styles */
         .notification {
             position: fixed;
             top: 20px;
@@ -323,7 +215,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            max-width: 90%;
         }
         
         .notification.success {
@@ -339,90 +230,85 @@
         }
         
         @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
         @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
         
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar {
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .modal-overlay {
             display: none;
-        }
-        
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .no-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        
-        /* Logo fallback styles */
-        .logo-fallback {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 24px;
-            box-shadow: 0 4px 12px rgba(0, 144, 54, 0.2);
         }
         
-        .logo-text {
-            font-weight: 700;
-            font-size: 18px;
-            color: var(--primary);
-            text-align: center;
+        .modal-overlay.active {
+            display: flex;
         }
         
-        .logo-subtext {
-            font-size: 11px;
-            color: #666;
-            margin-top: -2px;
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .sortable {
+            cursor: pointer;
+            position: relative;
+            padding-right: 20px !important;
+        }
+        
+        .sortable:after {
+            content: "⇅";
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.3;
+            font-size: 12px;
+        }
+        
+        .sortable.asc:after {
+            content: "↑";
+            opacity: 1;
+        }
+        
+        .sortable.desc:after {
+            content: "↓";
+            opacity: 1;
         }
     </style>
 </head>
@@ -433,211 +319,115 @@
         <i class="fas fa-bars text-lg"></i>
     </button>
 
-    <!-- Sidebar Overlay (Mobile) -->
-    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar text-white w-full md:w-64 flex-shrink-0 md:h-screen md:sticky md:top-0 flex flex-col z-50">
-        <!-- Logo com fundo branco para contraste -->
+    <aside class="sidebar text-white w-full md:w-64 flex-shrink-0 md:h-screen flex flex-col">
         <div class="logo-container">
-            <div class="text-center">
-                <img src="logo.png" alt="AgroVida+" class="logo-img mx-auto" 
-                     onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
-                <div id="logoFallback" class="logo-fallback hidden">
-                    <div class="logo-icon">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <div>
-                        <div class="logo-text">AGROVIDA+</div>
-                        <div class="logo-subtext">Sistema de Gestão</div>
-                    </div>
-                </div>
-            </div>
+            <img src="logo.png" alt="AgroVida+" class="logo-img mx-auto" 
+                 onerror="this.style.display='none'; document.getElementById('altLogo').style.display='block'">
+            <h1 id="altLogo" class="hidden text-agro-green font-bold text-xl mt-2 text-center">AGROVIDA+</h1>
         </div>
         
-        <div class="p-3 text-center bg-white/10 text-xs flex justify-center items-center gap-2 backdrop-blur-sm">
-            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-            <span class="text-white/90">Sistema Online</span>
-            <span class="text-white/60 ml-auto text-xs">v4.8</span>
+        <div class="p-3 text-center bg-white/10 text-xs flex justify-center items-center gap-2">
+            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Sistema Online
         </div>
 
-        <nav class="mt-4 flex-1 px-2">
-            <button onclick="showTab('dashboard')" id="btn-dashboard" 
-                    class="w-full text-left p-3 hover:bg-white/10 transition-all rounded-lg active-tab flex items-center gap-3 mb-1 touch-friendly">
-                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    <i class="fas fa-cash-register text-sm"></i>
-                </div>
-                <div class="text-left">
-                    <span class="block font-semibold text-sm">Balcão</span>
-                    <span class="text-xs text-white/70">Venda Rápida</span>
+        <nav class="mt-4 flex-1">
+            <button onclick="showTab('dashboard')" id="btn-dashboard" class="w-full text-left p-4 hover:bg-white/10 transition active-tab flex items-center gap-3">
+                <i class="fas fa-cash-register text-xl w-6"></i> 
+                <div>
+                    <span class="block font-bold">Balcão</span>
+                    <span class="text-xs text-white/70 font-normal">Venda Rápida</span>
                 </div>
             </button>
-            
-            <button onclick="showTab('history')" id="btn-history" 
-                    class="w-full text-left p-3 hover:bg-white/10 transition-all rounded-lg flex items-center gap-3 mb-1 touch-friendly">
-                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    <i class="fas fa-chart-line text-sm"></i>
-                </div>
-                <div class="text-left">
-                    <span class="block font-semibold text-sm">Histórico</span>
-                    <span class="text-xs text-white/70">Relatórios</span>
+            <button onclick="showTab('history')" id="btn-history" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
+                <i class="fas fa-chart-line text-xl w-6"></i>
+                <div>
+                    <span class="block font-bold">Histórico</span>
+                    <span class="text-xs text-white/70 font-normal">Relatórios</span>
                 </div>
             </button>
-            
-            <button onclick="showTab('products')" id="btn-products" 
-                    class="w-full text-left p-3 hover:bg-white/10 transition-all rounded-lg flex items-center gap-3 mb-1 touch-friendly">
-                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    <i class="fas fa-boxes text-sm"></i>
-                </div>
-                <div class="text-left">
-                    <span class="block font-semibold text-sm">Catálogo</span>
-                    <span class="text-xs text-white/70">Produtos</span>
+            <button onclick="showTab('products')" id="btn-products" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
+                <i class="fas fa-boxes text-xl w-6"></i>
+                <div>
+                    <span class="block font-bold">Catálogo</span>
+                    <span class="text-xs text-white/70 font-normal">Produtos</span>
                 </div>
             </button>
-            
-            <button onclick="showTab('settings')" id="btn-settings" 
-                    class="w-full text-left p-3 hover:bg-white/10 transition-all rounded-lg flex items-center gap-3 touch-friendly">
-                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    <i class="fas fa-cog text-sm"></i>
-                </div>
-                <div class="text-left">
-                    <span class="block font-semibold text-sm">Configurações</span>
-                    <span class="text-xs text-white/70">Personalizar</span>
+            <button onclick="showTab('settings')" id="btn-settings" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
+                <i class="fas fa-cog text-xl w-6"></i>
+                <div>
+                    <span class="block font-bold">Configurações</span>
+                    <span class="text-xs text-white/70 font-normal">Sistema</span>
                 </div>
             </button>
         </nav>
-        
-        <div class="mt-auto p-3 border-t border-white/10">
-            <div class="text-xs text-white/60 text-center">
-                <div class="flex items-center justify-center gap-2 mb-1">
-                    <i class="fas fa-cube text-xs"></i>
-                    <span id="totalProductsCount">0</span> produtos
-                </div>
-                <div>© 2024 AgroVida+</div>
-            </div>
-        </div>
+        <div class="p-4 text-center text-xs text-white/60">v5.0.0</div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-3 md:p-4 lg:p-6 overflow-y-auto h-screen relative no-scrollbar">
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
         
         <!-- Loading Indicator -->
-        <div id="loadingIndicator" class="hidden fixed top-4 right-4 bg-white card shadow-lg z-50 p-3 items-center gap-2">
-            <div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div id="loadingIndicator" class="hidden fixed top-4 right-4 card z-50 p-3 items-center gap-2">
+            <div class="loading-spinner"></div>
             <span class="text-sm font-medium">Salvando...</span>
         </div>
 
         <!-- Dashboard Tab -->
-        <div id="tab-dashboard" class="fade-in space-y-3">
-            <!-- Compact Stats Cards -->
-            <div class="compact-grid gap-3">
-                <div class="card p-3">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-xs text-gray-500 font-medium">Vendas Hoje</p>
-                            <h3 class="text-lg font-bold text-gray-800 mt-1" id="dashTotalToday">R$ 0,00</h3>
-                        </div>
-                        <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
-                            <i class="fas fa-shopping-cart text-sm text-green-600"></i>
-                        </div>
-                    </div>
+        <div id="tab-dashboard" class="fade-in">
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Vendas Hoje</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalToday">R$ 0,00</h3>
                 </div>
-                
-                <div class="card p-3">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-xs text-gray-500 font-medium">Vendas Ontem</p>
-                            <h3 class="text-lg font-bold text-gray-800 mt-1" id="dashTotalYesterday">R$ 0,00</h3>
-                        </div>
-                        <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                            <i class="fas fa-calendar-day text-sm text-blue-600"></i>
-                        </div>
-                    </div>
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Vendas Ontem</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalYesterday">R$ 0,00</h3>
                 </div>
-                
-                <div class="card p-3">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-xs text-gray-500 font-medium">Mês Atual</p>
-                            <h3 class="text-lg font-bold text-gray-800 mt-1" id="dashTotalMonth">R$ 0,00</h3>
-                        </div>
-                        <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                            <i class="fas fa-chart-bar text-sm text-purple-600"></i>
-                        </div>
-                    </div>
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Acumulado Mês</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalMonth">R$ 0,00</h3>
+                    <button onclick="goToHistoryCurrentMonth()" class="text-xs text-blue-600 font-bold mt-2 hover:underline">VER DETALHES →</button>
                 </div>
-                
-                <div class="card p-3">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-xs text-gray-500 font-medium">Ticket Médio</p>
-                            <h3 class="text-lg font-bold text-gray-800 mt-1" id="averageTicket">R$ 0,00</h3>
-                        </div>
-                        <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                            <i class="fas fa-receipt text-sm text-orange-600"></i>
-                        </div>
-                    </div>
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Ticket Médio</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="averageTicket">R$ 0,00</h3>
                 </div>
             </div>
 
-            <!-- Compact Goal Progress -->
-            <div class="card p-3">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-bullseye text-secondary text-sm"></i>
-                        <span class="font-semibold text-gray-700 text-sm">Meta Mensal</span>
-                        <span class="text-xs text-gray-500" id="metaStatusText">0%</span>
+            <div class="card p-4 mb-6">
+                <div class="flex justify-between items-end mb-2">
+                    <div>
+                        <h4 class="font-bold text-gray-700 flex items-center gap-2">
+                            <i class="fas fa-trophy text-yellow-500"></i> Meta Mensal
+                            <button onclick="editMeta()" class="text-gray-400 hover:text-blue-500 text-xs ml-2 flex items-center gap-1"><i class="fas fa-edit"></i> Editar</button>
+                        </h4>
+                        <p class="text-xs text-gray-500" id="metaStatusText">0% atingido</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm font-bold text-gray-800" id="metaValueDisplay">R$ 5.000,00</span>
-                        <button onclick="editMeta()" class="text-gray-400 hover:text-primary">
-                            <i class="fas fa-edit text-xs"></i>
-                        </button>
+                    <div class="text-right">
+                        <span class="text-sm font-bold text-gray-800" id="metaValueDisplay">Meta: R$ 5.000,00</span>
                     </div>
                 </div>
-                
-                <div class="relative">
-                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div id="progressBar" class="progress-bar h-2 rounded-full" style="width: 0%"></div>
-                    </div>
-                    <div class="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>R$ 0,00</span>
-                        <span id="progressText">0%</span>
-                        <span id="metaTarget">R$ 5.000,00</span>
-                    </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progressBar" class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full progress-bar" style="width: 0%"></div>
                 </div>
             </div>
 
-            <!-- New Sale Form - Always Visible -->
-            <div class="card">
-                <div class="p-3 border-b">
-                    <h2 class="font-bold text-gray-700 flex items-center gap-2 text-base">
-                        <i class="fas fa-plus-circle text-primary"></i>
-                        Nova Venda
-                        <span class="text-xs text-gray-500 font-normal ml-auto" id="dateDisplay"></span>
-                    </h2>
+            <div class="card mb-6">
+                <div class="p-4 border-b">
+                    <h2 class="font-bold text-gray-700"><i class="fas fa-plus-circle text-agro-green mr-2"></i> Nova Venda</h2>
+                    <span id="dateDisplay" class="text-sm text-gray-500"></span>
                 </div>
-                
-                <div class="p-3">
-                    <form id="salesForm" class="grid grid-cols-1 md:grid-cols-12 gap-2 items-end">
+                <div class="p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                         <div class="md:col-span-4">
-                            <label class="block text-xs font-medium text-gray-700 mb-1">
-                                Produto *
-                            </label>
-                            <div class="relative">
-                                <input type="text" id="desc" 
-                                       class="input-field mobile-friendly-input w-full pr-8"
-                                       placeholder="Nome do produto..."
-                                       required
-                                       list="productsList">
-                                <i class="fas fa-search absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                            </div>
-                            <datalist id="productsList"></datalist>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Produto</label>
+                            <input type="text" id="desc" class="input-field" placeholder="Ex: Ração..." required>
                         </div>
-                        
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Categoria</label>
-                            <select id="category" class="input-field mobile-friendly-input w-full text-sm">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
+                            <select id="category" class="input-field">
                                 <option value="Ração">Ração</option>
                                 <option value="Medicamento">Medicamento</option>
                                 <option value="Ferramentas">Ferramentas</option>
@@ -647,249 +437,297 @@
                                 <option value="Outros">Outros</option>
                             </select>
                         </div>
-                        
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700 mb-1">
-                                Valor (R$) *
-                            </label>
-                            <div class="relative">
-                                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">R$</span>
-                                <input type="number" step="0.01" min="0" id="value" 
-                                       class="input-field mobile-friendly-input w-full pl-6"
-                                       placeholder="0,00"
-                                       required
-                                       oninput="formatCurrency(this)">
-                            </div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
+                            <input type="number" step="0.01" min="0" id="value" class="input-field" placeholder="0,00" required>
                         </div>
-                        
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Pagamento</label>
-                            <select id="payment" class="input-field mobile-friendly-input w-full text-sm">
-                                <option value="Dinheiro">💵 Dinheiro</option>
-                                <option value="Pix">💠 Pix</option>
-                                <option value="Débito">💳 Débito</option>
-                                <option value="Crédito">💳 Crédito</option>
-                                <option value="Fiado/Prazo">📝 Fiado/Prazo</option>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pagamento</label>
+                            <select id="payment" class="input-field">
+                                <option>Dinheiro</option>
+                                <option>Pix</option>
+                                <option>Débito</option>
+                                <option>Crédito</option>
+                                <option>Fiado/Prazo</option>
                             </select>
                         </div>
-                        
                         <div class="md:col-span-2">
-                            <button type="submit" 
-                                    class="btn-primary w-full h-[44px] flex items-center justify-center gap-2 touch-friendly text-sm">
-                                <i class="fas fa-check"></i>
-                                Adicionar
+                            <button onclick="addSale()" class="btn-primary w-full h-[46px] flex items-center justify-center">
+                                <i class="fas fa-check mr-2"></i> Adicionar
                             </button>
                         </div>
-                    </form>
+                    </div>
                     
-                    <!-- Dynamic Quick Sale Buttons -->
+                    <!-- Quick Sale Buttons -->
                     <div class="mt-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-medium text-gray-700">Venda Rápida</span>
-                            <button onclick="refreshQuickSaleButtons()" class="text-xs text-primary hover:text-primary-dark">
-                                <i class="fas fa-sync-alt text-xs"></i> Atualizar
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium text-gray-700">Venda Rápida</span>
+                            <button onclick="refreshQuickSaleButtons()" class="text-xs text-agro-green hover:text-green-700">
+                                <i class="fas fa-sync-alt mr-1"></i> Atualizar
                             </button>
                         </div>
                         <div class="quick-sale-buttons" id="quickSaleButtons">
-                            <!-- Dynamic buttons will be loaded here -->
+                            <!-- Botões serão carregados aqui -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Today's Sales Table -->
+            <!-- Today's Sales -->
             <div class="card">
-                <div class="p-3 border-b">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                        <div class="flex items-center gap-2">
-                            <h2 class="font-bold text-gray-700 text-base flex items-center gap-2">
-                                <i class="fas fa-shopping-cart text-primary text-sm"></i>
-                                Vendas de Hoje
-                            </h2>
-                            <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full" id="todaySalesCount">0</span>
+                <div class="p-4 border-b flex flex-col md:flex-row justify-between md:items-center gap-4">
+                    <h2 class="font-bold text-gray-700">Movimentação do Dia</h2>
+                    
+                    <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                        <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200">
+                            💵 Dinheiro: <span id="sumMoney">R$ 0,00</span>
                         </div>
-                        
-                        <div class="flex gap-1">
-                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                💵 <span id="sumMoney">R$ 0,00</span>
-                            </span>
-                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                💠 <span id="sumPix">R$ 0,00</span>
-                            </span>
+                        <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-200">
+                            💠 Pix: <span id="sumPix">R$ 0,00</span>
+                        </div>
+                        <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full border border-purple-200">
+                            💳 Cartão: <span id="sumCard">R$ 0,00</span>
+                        </div>
+                        <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full border border-orange-200">
+                            📝 Fiado: <span id="sumFiado">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="table-responsive">
-                    <table class="w-full min-w-full">
-                        <thead class="bg-gray-50">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
                             <tr>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase">Hora</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase">Produto</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Categoria</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase">Pagto</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase text-right">Valor</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase text-center">Ações</th>
+                                <th class="p-3">Hora</th>
+                                <th class="p-3">Produto</th>
+                                <th class="p-3">Categoria</th>
+                                <th class="p-3">Pagamento</th>
+                                <th class="p-3 text-right">Valor</th>
+                                <th class="p-3 text-center">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="todayTableBody" class="divide-y divide-gray-100">
-                            <tr>
-                                <td colspan="6" class="p-4 text-center text-gray-500">
-                                    <i class="fas fa-shopping-cart text-2xl text-gray-300 mb-2"></i>
-                                    <p class="text-sm">Nenhuma venda registrada hoje</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot class="bg-gray-50">
-                            <tr>
-                                <td colspan="4" class="p-2 text-right text-xs font-medium text-gray-700">
-                                    Total:
-                                </td>
-                                <td class="p-2 text-right">
-                                    <span class="font-bold text-green-700 text-sm" id="todayTotal">R$ 0,00</span>
-                                </td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
+                        <tbody id="todayTableBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <!-- History Tab -->
-        <div id="tab-history" class="hidden fade-in space-y-3">
-            <h2 class="text-xl font-bold text-gray-800">Histórico de Vendas</h2>
-            
-            <div class="card p-3">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Filtrar Mês</label>
-                        <input type="month" id="filterMonth" class="input-field mobile-friendly-input w-full" onchange="filterHistory()">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Dia Específico</label>
-                        <input type="date" id="filterDate" class="input-field mobile-friendly-input w-full" onchange="filterHistory()">
-                    </div>
-                    <div class="flex flex-col justify-end">
-                        <button onclick="clearFilters()" class="text-xs text-gray-600 hover:text-gray-800 mb-1">
-                            <i class="fas fa-times mr-1"></i> Limpar Filtros
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mt-3 flex items-center justify-between">
-                    <div>
-                        <div class="text-xs text-gray-500">Total Filtrado</div>
-                        <div class="text-xl font-bold text-primary" id="historyTotal">R$ 0,00</div>
-                    </div>
-                    <button onclick="exportTodaySales()" class="text-xs text-primary hover:text-primary-dark flex items-center gap-1">
-                        <i class="fas fa-download"></i>
-                        Exportar
+        <div id="tab-history" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Histórico Completo</h2>
+                <div class="flex gap-2">
+                    <button onclick="exportHistoryExcel()" class="btn-secondary flex items-center gap-2">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
                     </button>
                 </div>
             </div>
-
-            <div class="card overflow-hidden">
+            
+            <div class="card p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar Mês</label>
+                        <input type="month" id="filterMonth" class="input-field" onchange="filterHistory()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Dia Específico</label>
+                        <input type="date" id="filterDate" class="input-field" onchange="filterHistory()">
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 mb-1">Total do Filtro:</div>
+                        <div class="text-xl font-bold text-agro-green" id="historyTotal">R$ 0,00</div>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="clearFilters()" class="text-blue-600 text-sm hover:underline">Limpar Filtros</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
                 <div class="table-responsive">
-                    <table class="w-full min-w-full">
-                        <thead class="bg-gray-50">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
                             <tr>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase">Data</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase">Produto</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Categoria</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase">Pagto</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase text-right">Valor</th>
-                                <th class="p-2 text-left text-xs font-semibold text-gray-500 uppercase text-center">Ações</th>
+                                <th class="p-3">Data</th>
+                                <th class="p-3">Produto</th>
+                                <th class="p-3">Categoria</th>
+                                <th class="p-3">Pagamento</th>
+                                <th class="p-3 text-right">Valor</th>
+                                <th class="p-3 text-center">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="historyTableBody" class="divide-y divide-gray-100">
-                            <!-- History will be inserted here -->
-                        </tbody>
+                        <tbody id="historyTableBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
         <!-- Products Tab -->
-        <div id="tab-products" class="hidden fade-in space-y-3">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
-                    <p class="text-gray-500 text-xs mt-1">Gerencie seu catálogo</p>
-                </div>
+        <div id="tab-products" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
                 <div class="flex gap-2">
-                    <button onclick="exportProducts()" class="btn-secondary text-sm flex items-center gap-1 px-3">
-                        <i class="fas fa-download text-xs"></i>
-                        Exportar
+                    <button onclick="exportCatalogPDF()" class="btn-secondary flex items-center gap-2">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
                     </button>
-                    <button onclick="showAddProductModal()" class="btn-primary text-sm flex items-center gap-1 px-3">
-                        <i class="fas fa-plus"></i>
-                        Novo
+                    <button onclick="showAddProductModal()" class="btn-primary">
+                        <i class="fas fa-plus mr-2"></i> Novo Produto
                     </button>
                 </div>
             </div>
 
             <!-- Search Bar -->
-            <div class="card p-3">
-                <div class="relative">
-                    <input type="text" id="productSearch" 
-                           class="input-field mobile-friendly-input w-full pr-10"
-                           placeholder="Buscar produto por nome ou categoria..."
-                           onkeyup="searchProducts()">
-                    <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <div class="mt-2 flex items-center justify-between">
-                    <span class="text-xs text-gray-500" id="searchResultsCount">0 produtos encontrados</span>
-                    <select id="productSort" class="text-xs border rounded px-2 py-1" onchange="searchProducts()">
-                        <option value="name_asc">Nome (A-Z)</option>
-                        <option value="name_desc">Nome (Z-A)</option>
-                        <option value="price_asc">Preço (Menor)</option>
-                        <option value="price_desc">Preço (Maior)</option>
-                    </select>
+            <div class="card p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <div class="md:col-span-8">
+                        <div class="relative">
+                            <input type="text" id="productSearch" 
+                                   class="input-field pr-10"
+                                   placeholder="Buscar produto por nome ou categoria..."
+                                   onkeyup="searchProducts()">
+                            <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="md:col-span-4">
+                        <select id="productSort" class="input-field" onchange="sortProducts()">
+                            <option value="name_asc">Nome (A-Z)</option>
+                            <option value="name_desc">Nome (Z-A)</option>
+                            <option value="price_asc">Preço (Menor)</option>
+                            <option value="price_desc">Preço (Maior)</option>
+                            <option value="category_asc">Categoria (A-Z)</option>
+                            <option value="category_desc">Categoria (Z-A)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <!-- Products Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="productsGrid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="productsGrid">
                 <!-- Products will be loaded here -->
             </div>
         </div>
 
         <!-- Settings Tab -->
-        <div id="tab-settings" class="hidden fade-in space-y-3">
-            <h2 class="text-xl font-bold text-gray-800">Configurações</h2>
+        <div id="tab-settings" class="hidden fade-in">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Configurações do Sistema</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div class="card p-3">
-                    <h3 class="font-bold text-gray-700 mb-3 flex items-center gap-2 text-sm">
-                        <i class="fas fa-bullseye text-primary"></i>
-                        Metas
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Configurações Gerais -->
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
+                        <i class="fas fa-cogs text-agro-green"></i> Configurações Gerais
                     </h3>
-                    <div class="space-y-3">
+                    
+                    <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Meta Mensal (R$)</label>
-                            <input type="number" step="100" id="settingsMeta" class="input-field mobile-friendly-input w-full" value="5000">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Loja</label>
+                            <input type="text" id="storeName" class="input-field" value="AgroVida+">
                         </div>
-                        <button onclick="saveMetaFromSettings()" class="btn-primary w-full text-sm">
-                            Salvar Meta
-                        </button>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Mensal Padrão (R$)</label>
+                            <input type="number" step="0.01" id="defaultMonthlyGoal" class="input-field" value="5000">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso</label>
+                            <div class="flex gap-2">
+                                <input type="password" id="currentPassword" class="input-field flex-1" placeholder="Senha atual" value="1234">
+                                <button onclick="changePassword()" class="btn-primary whitespace-nowrap">Alterar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card p-3">
-                    <h3 class="font-bold text-gray-700 mb-3 flex items-center gap-2 text-sm">
-                        <i class="fas fa-database text-primary"></i>
-                        Dados
+                <!-- Exportação de Dados -->
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
+                        <i class="fas fa-database text-agro-green"></i> Exportação de Dados
                     </h3>
-                    <div class="space-y-2">
-                        <button onclick="exportDatabase()" class="w-full text-left p-2 bg-blue-50 rounded-lg hover:bg-blue-100 transition flex items-center justify-between active:scale-95">
-                            <span class="font-medium text-gray-800 text-sm">Exportar Dados</span>
-                            <i class="fas fa-download text-blue-600 text-sm"></i>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Exportar Histórico</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="exportHistoryExcel()" class="btn-secondary flex-1 min-w-[150px]">
+                                    <i class="fas fa-file-excel mr-2"></i> Excel Completo
+                                </button>
+                                <button onclick="exportCurrentMonthExcel()" class="btn-secondary flex-1 min-w-[150px]">
+                                    <i class="fas fa-calendar-alt mr-2"></i> Mês Atual
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Exportar Catálogo</label>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="exportCatalogPDF()" class="btn-secondary flex-1 min-w-[150px]">
+                                    <i class="fas fa-file-pdf mr-2"></i> Catálogo PDF
+                                </button>
+                                <button onclick="exportCatalogExcel()" class="btn-secondary flex-1 min-w-[150px]">
+                                    <i class="fas fa-file-excel mr-2"></i> Catálogo Excel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Backup Completo</label>
+                            <button onclick="createFullBackup()" class="btn-primary w-full">
+                                <i class="fas fa-save mr-2"></i> Criar Backup Completo
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2">Salva todos os dados em um arquivo JSON</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categorias -->
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
+                        <i class="fas fa-tags text-agro-green"></i> Gerenciar Categorias
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div id="categoriesList">
+                            <!-- Categorias serão carregadas aqui -->
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <input type="text" id="newCategory" class="input-field" placeholder="Nova categoria">
+                            <button onclick="addCategory()" class="btn-primary">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações do Sistema -->
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-agro-green"></i> Informações do Sistema
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Versão</span>
+                            <span class="font-medium">5.0.0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total de Vendas</span>
+                            <span class="font-medium" id="totalSalesCount">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total de Produtos</span>
+                            <span class="font-medium" id="totalProductsCount">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Última Atualização</span>
+                            <span class="font-medium" id="lastUpdate">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t">
+                        <button onclick="clearAllData()" class="btn-secondary w-full bg-red-100 text-red-700 border-red-200 hover:bg-red-200">
+                            <i class="fas fa-trash-alt mr-2"></i> Limpar Todos os Dados
                         </button>
-                        <button onclick="showResetModal()" class="w-full text-left p-2 bg-red-50 rounded-lg hover:bg-red-100 transition flex items-center justify-between active:scale-95">
-                            <span class="font-medium text-gray-800 text-sm">Limpar Cache</span>
-                            <i class="fas fa-trash text-red-600 text-sm"></i>
-                        </button>
+                        <p class="text-xs text-gray-500 mt-2 text-center">Atenção: Esta ação não pode ser desfeita</p>
                     </div>
                 </div>
             </div>
@@ -912,118 +750,70 @@
         </button>
         <button onclick="showTab('settings')" id="mobile-btn-settings">
             <i class="fas fa-cog"></i>
-            <span>Config</span>
+            <span>Configurações</span>
         </button>
     </nav>
 
     <!-- Product Modal -->
-    <div id="productModal" class="modal">
+    <div id="productModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Adicionar Produto</h3>
-            <form id="productForm" class="space-y-3">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Adicionar Produto</h3>
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">
-                        Nome do Produto *
-                    </label>
-                    <input type="text" id="productName" class="input-field mobile-friendly-input w-full" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto *</label>
+                    <input type="text" id="productName" class="input-field" required>
                 </div>
-                
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">
-                            Preço (R$) *
-                        </label>
-                        <input type="number" step="0.01" min="0" id="productPrice" 
-                               class="input-field mobile-friendly-input w-full" required
-                               oninput="formatCurrency(this)">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preço (R$) *</label>
+                        <input type="number" step="0.01" min="0" id="productPrice" class="input-field" required>
                     </div>
-                    
                     <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Categoria</label>
-                        <select id="productCategory" class="input-field mobile-friendly-input w-full text-sm">
-                            <option value="Ração">Ração</option>
-                            <option value="Medicamento">Medicamento</option>
-                            <option value="Ferramentas">Ferramentas</option>
-                            <option value="Sementes">Sementes</option>
-                            <option value="Acessórios">Acessórios</option>
-                            <option value="Serviço/Vet">Serviço/Vet</option>
-                            <option value="Outros">Outros</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                        <select id="productCategory" class="input-field">
+                            <!-- Categorias serão carregadas dinamicamente -->
                         </select>
                     </div>
                 </div>
-            </form>
-            
-            <div class="mt-4 flex justify-end gap-2">
-                <button onclick="closeModal('productModal')" class="btn-secondary text-sm px-3">Cancelar</button>
-                <button onclick="saveProduct()" class="btn-primary text-sm px-3">Salvar</button>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="closeModal('productModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
+                <button onclick="saveProduct()" class="btn-primary px-4 py-2">Salvar Produto</button>
             </div>
         </div>
     </div>
 
-    <!-- Reset Modal -->
-    <div id="resetModal" class="modal">
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
-            <div class="text-center">
-                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
-                    <i class="fas fa-exclamation-triangle text-xl text-red-600"></i>
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Alterar Senha</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nova Senha *</label>
+                    <input type="password" id="newPassword" class="input-field" required>
                 </div>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">Limpar Cache</h3>
-                <p class="text-gray-600 text-sm mb-4">
-                    Isso apagará apenas configurações locais (meta, preferências). 
-                    <strong class="text-green-600 block mt-1">Suas vendas continuam seguras!</strong>
-                </p>
-                
-                <div class="flex gap-2">
-                    <button onclick="closeModal('resetModal')" class="btn-secondary flex-1 text-sm">Cancelar</button>
-                    <button onclick="confirmReset()" class="btn-primary flex-1 bg-red-600 hover:bg-red-700 text-sm">Limpar</button>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar Nova Senha *</label>
+                    <input type="password" id="confirmPassword" class="input-field" required>
                 </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="closeModal('passwordModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
+                <button onclick="confirmPasswordChange()" class="btn-primary px-4 py-2">Alterar Senha</button>
             </div>
         </div>
     </div>
 
     <script type="module">
-        // Security password
-        const SENHA_LOJA = "1234";
-        let tentativa = prompt("🔐 AgroVida Mais\nDigite a senha de acesso:");
-        
-        // If cancelled, ask again
-        while (tentativa === null) {
-            tentativa = prompt("🔐 AgroVida Mais\nDigite a senha de acesso:");
-        }
-        
+        let SENHA_LOJA = "1234";
+        const tentativa = prompt("🔐 AgroVida Mais\nDigite a senha de acesso:");
         if (tentativa !== SENHA_LOJA) {
-            document.body.innerHTML = `
-                <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-white p-4">
-                    <div class="text-center p-6 card max-w-md w-full">
-                        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
-                            <i class="fas fa-lock text-xl text-red-600"></i>
-                        </div>
-                        <h1 class="text-xl font-bold text-gray-800 mb-2">Acesso Negado</h1>
-                        <p class="text-gray-600 text-sm mb-4">Senha incorreta.</p>
-                        <button onclick="location.reload()" class="btn-primary mx-auto text-sm">
-                            <i class="fas fa-redo mr-1"></i>
-                            Tentar Novamente
-                        </button>
-                    </div>
-                </div>
-            `;
+            document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px'>Acesso Negado</h1>";
             throw new Error("Senha Incorreta");
         }
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            deleteDoc, 
-            doc, 
-            onSnapshot, 
-            query, 
-            orderBy, 
-            updateDoc,
-            getDocs,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBZvxMB2qmz5IMugV6fOqq4pLUbhD7mJRU",
@@ -1036,16 +826,19 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // Collections
         const salesCollection = collection(db, "vendas_agrovida");
         const productsCollection = collection(db, "produtos_agrovida");
+        const settingsCollection = collection(db, "configuracoes_agrovida");
 
-        // Global variables
         let localSales = [];
         let products = [];
-        let metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
+        let metaMensal = localStorage.getItem('metaAgro') || 5000;
         let quickSaleData = JSON.parse(localStorage.getItem('quickSaleData')) || {};
+        let categories = JSON.parse(localStorage.getItem('agroCategories')) || [
+            'Ração', 'Medicamento', 'Ferramentas', 'Sementes', 
+            'Acessórios', 'Serviço/Vet', 'Outros'
+        ];
+        let currentProductSort = 'name_asc';
 
         // Utility functions
         window.formatMoney = (val) => {
@@ -1053,750 +846,35 @@
             return val.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
         };
 
-        // Format currency input
-        window.formatCurrency = (input) => {
-            let value = input.value.replace(/[^\d,]/g, '');
-            value = value.replace(',', '.');
-            input.value = value;
-        };
-
         // Mobile functions
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            document.querySelector('.sidebar').classList.toggle('active');
         }
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
-                const sidebar = document.getElementById('sidebar');
-                const menuBtn = document.getElementById('mobileMenuBtn');
-                if (sidebar.classList.contains('active') && 
-                    !sidebar.contains(e.target) && 
-                    !menuBtn.contains(e.target)) {
-                    toggleSidebar();
-                }
-            }
-        });
 
         // Tab navigation
         window.showTab = (tab) => {
-            // Hide all tabs
-            document.querySelectorAll('[id^="tab-"]').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('fade-in');
-                setTimeout(() => {
-                    el.classList.add('fade-in');
-                }, 10);
-            });
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[id^="btn-"]').forEach(el => el.classList.remove('active-tab'));
+            document.querySelectorAll('.mobile-bottom-nav button').forEach(el => el.classList.remove('active'));
             
-            // Show selected tab
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            
-            // Update desktop sidebar buttons
-            document.querySelectorAll('[id^="btn-"]').forEach(el => {
-                el.classList.remove('active-tab');
-            });
             document.getElementById(`btn-${tab}`)?.classList.add('active-tab');
-            
-            // Update mobile bottom nav
-            document.querySelectorAll('.mobile-bottom-nav button').forEach(el => {
-                el.classList.remove('active');
-            });
             document.getElementById(`mobile-btn-${tab}`)?.classList.add('active');
             
-            // Close sidebar on mobile
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
             
-            // Load specific data for tab
-            if (tab === 'history') {
-                filterHistory();
-            } else if (tab === 'products') {
+            if (tab === 'history') window.filterHistory();
+            if (tab === 'products') {
                 loadProducts();
                 searchProducts();
             }
-            
-            // Update URL for refresh persistence
-            history.pushState(null, null, `#${tab}`);
-        };
-
-        // Handle browser back/forward
-        window.addEventListener('popstate', () => {
-            const tab = window.location.hash.replace('#', '') || 'dashboard';
-            showTab(tab);
-        });
-
-        // Load tab from URL on startup
-        window.addEventListener('load', () => {
-            const tab = window.location.hash.replace('#', '') || 'dashboard';
-            setTimeout(() => showTab(tab), 100);
-        });
-
-        // Firebase Functions
-        async function loadProducts() {
-            try {
-                const q = query(productsCollection, orderBy("createdAt", "desc"));
-                const snapshot = await getDocs(q);
-                products = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    price: parseFloat(doc.data().price) || 0,
-                    salesCount: parseInt(doc.data().salesCount) || 0
-                }));
-                updateProductsDisplay();
-                updateProductsDatalist();
-                updateQuickSaleButtons();
-            } catch (error) {
-                console.error("Erro ao carregar produtos:", error);
-                showNotification('Erro ao carregar produtos', 'error');
-            }
-        }
-
-        async function saveProductToFirebase(productData) {
-            try {
-                await addDoc(productsCollection, {
-                    ...productData,
-                    createdAt: serverTimestamp(),
-                    updatedAt: serverTimestamp(),
-                    salesCount: 0
-                });
-                return true;
-            } catch (error) {
-                console.error("Erro ao salvar produto:", error);
-                return false;
-            }
-        }
-
-        async function deleteProductFromFirebase(productId) {
-            try {
-                await deleteDoc(doc(productsCollection, productId));
-                return true;
-            } catch (error) {
-                console.error("Erro ao excluir produto:", error);
-                return false;
-            }
-        }
-
-        // Update quick sale buttons based on sales frequency
-        function updateQuickSaleButtons() {
-            // Count sales frequency
-            const salesFrequency = {};
-            localSales.forEach(sale => {
-                if (sale.desc) {
-                    salesFrequency[sale.desc] = (salesFrequency[sale.desc] || 0) + 1;
-                }
-            });
-            
-            // Sort by frequency
-            const sortedSales = Object.entries(salesFrequency)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 6); // Top 6 most sold items
-            
-            const container = document.getElementById('quickSaleButtons');
-            
-            if (sortedSales.length === 0) {
-                // Show default buttons if no sales data
-                container.innerHTML = `
-                    <button onclick="quickAdd('Ração Premium', 'Ração', 89.90)" 
-                            class="text-left p-2 bg-green-50 rounded-lg hover:bg-green-100 transition border border-green-100 active:scale-95">
-                        <div class="font-medium text-xs text-gray-800">Ração Premium</div>
-                        <div class="text-xs text-gray-500">R$ 89,90</div>
-                    </button>
-                    <button onclick="quickAdd('Vermífugo', 'Medicamento', 35.50)" 
-                            class="text-left p-2 bg-blue-50 rounded-lg hover:bg-blue-100 transition border border-blue-100 active:scale-95">
-                        <div class="font-medium text-xs text-gray-800">Vermífugo</div>
-                        <div class="text-xs text-gray-500">R$ 35,50</div>
-                    </button>
-                    <button onclick="quickAdd('Consulta Veterinária', 'Serviço/Vet', 120.00)" 
-                            class="text-left p-2 bg-purple-50 rounded-lg hover:bg-purple-100 transition border border-purple-100 active:scale-95">
-                        <div class="font-medium text-xs text-gray-800">Consulta Vet</div>
-                        <div class="text-xs text-gray-500">R$ 120,00</div>
-                    </button>
-                    <button onclick="quickAdd('Ferramenta Agrícola', 'Ferramentas', 45.00)" 
-                            class="text-left p-2 bg-orange-50 rounded-lg hover:bg-orange-100 transition border border-orange-100 active:scale-95">
-                        <div class="font-medium text-xs text-gray-800">Ferramenta</div>
-                        <div class="text-xs text-gray-500">R$ 45,00</div>
-                    </button>
-                `;
-                return;
-            }
-            
-            // Create buttons from most sold items
-            let buttonsHTML = '';
-            sortedSales.forEach(([productName, count]) => {
-                // Find product details
-                const product = products.find(p => p.name === productName) || 
-                               localSales.find(s => s.desc === productName);
-                
-                if (product) {
-                    const price = product.price || 0;
-                    const category = product.category || 'Outros';
-                    const colorClass = getCategoryColorClass(category);
-                    
-                    buttonsHTML += `
-                        <button onclick="quickAdd('${productName}', '${category}', ${price})" 
-                                class="text-left p-2 ${colorClass} rounded-lg hover:opacity-90 transition border active:scale-95">
-                            <div class="font-medium text-xs text-gray-800 truncate">${productName}</div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-500">${window.formatMoney(price)}</span>
-                                <span class="text-xs text-gray-400">${count}x</span>
-                            </div>
-                        </button>
-                    `;
-                }
-            });
-            
-            container.innerHTML = buttonsHTML;
-        }
-
-        function getCategoryColorClass(category) {
-            const colors = {
-                'Ração': 'bg-green-50 border-green-100',
-                'Medicamento': 'bg-blue-50 border-blue-100',
-                'Ferramentas': 'bg-orange-50 border-orange-100',
-                'Sementes': 'bg-yellow-50 border-yellow-100',
-                'Acessórios': 'bg-purple-50 border-purple-100',
-                'Serviço/Vet': 'bg-pink-50 border-pink-100',
-                'Outros': 'bg-gray-50 border-gray-100'
-            };
-            return colors[category] || 'bg-gray-50 border-gray-100';
-        }
-
-        window.refreshQuickSaleButtons = () => {
-            updateQuickSaleButtons();
-            showNotification('Botões de venda rápida atualizados!', 'success');
-        };
-
-        // Update products display with search
-        function updateProductsDisplay(filteredProducts = null) {
-            const grid = document.getElementById('productsGrid');
-            const displayProducts = filteredProducts || products;
-            
-            if (displayProducts.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center p-6 text-gray-500">
-                        <i class="fas fa-box-open text-3xl text-gray-300 mb-2"></i>
-                        <p class="font-medium text-sm">Nenhum produto encontrado</p>
-                        <p class="text-xs mt-1">Adicione seu primeiro produto</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            grid.innerHTML = displayProducts.map(product => `
-                <div class="product-card">
-                    <div class="flex flex-col h-full">
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-sm mb-1 truncate">${product.name}</h3>
-                            <div class="mb-2">
-                                <span class="inline-block px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
-                                    ${product.category || 'Sem categoria'}
-                                </span>
-                            </div>
-                            <div class="text-lg font-bold text-primary mb-3">
-                                ${window.formatMoney(product.price)}
-                            </div>
-                            ${product.salesCount ? `
-                                <div class="text-xs text-gray-500">
-                                    <i class="fas fa-shopping-cart text-xs mr-1"></i>
-                                    ${product.salesCount} vendas
-                                </div>
-                            ` : ''}
-                        </div>
-                        <div class="pt-3 border-t border-gray-100 flex gap-1">
-                            <button onclick="quickAdd('${product.name}', '${product.category || 'Outros'}', ${product.price})" 
-                                    class="flex-1 bg-primary hover:bg-primary-dark text-white py-1.5 rounded text-xs font-medium transition active:scale-95">
-                                <i class="fas fa-cart-plus mr-1"></i> Usar
-                            </button>
-                            <button onclick="deleteProduct('${product.id}')" 
-                                    class="px-2 py-1.5 text-red-600 hover:text-red-800 active:scale-95">
-                                <i class="fas fa-trash text-xs"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            document.getElementById('totalProductsCount').textContent = products.length;
-        }
-
-        // Search products
-        window.searchProducts = () => {
-            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
-            const sortBy = document.getElementById('productSort').value;
-            
-            let filteredProducts = products;
-            
-            if (searchTerm) {
-                filteredProducts = products.filter(product => 
-                    product.name.toLowerCase().includes(searchTerm) ||
-                    (product.category && product.category.toLowerCase().includes(searchTerm))
-                );
-            }
-            
-            // Sort products
-            filteredProducts.sort((a, b) => {
-                switch(sortBy) {
-                    case 'name_asc':
-                        return a.name.localeCompare(b.name);
-                    case 'name_desc':
-                        return b.name.localeCompare(a.name);
-                    case 'price_asc':
-                        return a.price - b.price;
-                    case 'price_desc':
-                        return b.price - a.price;
-                    default:
-                        return 0;
-                }
-            });
-            
-            updateProductsDisplay(filteredProducts);
-            document.getElementById('searchResultsCount').textContent = 
-                `${filteredProducts.length} produto${filteredProducts.length !== 1 ? 's' : ''} encontrado${filteredProducts.length !== 1 ? 's' : ''}`;
-        };
-
-        function updateProductsDatalist() {
-            const datalist = document.getElementById('productsList');
-            if (datalist) {
-                datalist.innerHTML = products.map(product => 
-                    `<option value="${product.name}">${product.category} - ${window.formatMoney(product.price)}</option>`
-                ).join('');
-            }
-        }
-
-        // Product Management
-        window.showAddProductModal = () => {
-            window.showModal('productModal');
-            document.getElementById('productName').value = '';
-            document.getElementById('productPrice').value = '';
-            document.getElementById('productCategory').value = 'Ração';
-            document.getElementById('productName').focus();
-        };
-
-        window.saveProduct = async () => {
-            const name = document.getElementById('productName').value.trim();
-            const price = parseFloat(document.getElementById('productPrice').value);
-            const category = document.getElementById('productCategory').value;
-            
-            if (!name) {
-                showNotification('Digite o nome do produto', 'error');
-                return;
-            }
-            
-            if (isNaN(price) || price <= 0) {
-                showNotification('Digite um preço válido', 'error');
-                return;
-            }
-            
-            const loading = document.getElementById('loadingIndicator');
-            loading.classList.remove('hidden');
-            
-            try {
-                const success = await saveProductToFirebase({
-                    name,
-                    price,
-                    category
-                });
-                
-                if (success) {
-                    showNotification('Produto cadastrado!', 'success');
-                    closeModal('productModal');
-                    await loadProducts();
-                } else {
-                    showNotification('Erro ao salvar produto', 'error');
-                }
-            } finally {
-                loading.classList.add('hidden');
+            if (tab === 'settings') {
+                updateSettingsInfo();
+                loadCategories();
             }
         };
-
-        window.deleteProduct = async (productId) => {
-            if (confirm("Excluir este produto?")) {
-                const loading = document.getElementById('loadingIndicator');
-                loading.classList.remove('hidden');
-                
-                try {
-                    const success = await deleteProductFromFirebase(productId);
-                    if (success) {
-                        showNotification('Produto excluído!', 'success');
-                        await loadProducts();
-                    }
-                } finally {
-                    loading.classList.add('hidden');
-                }
-            }
-        };
-
-        window.quickAdd = (name, category, price) => {
-            document.getElementById('desc').value = name;
-            document.getElementById('category').value = category;
-            document.getElementById('value').value = price.toFixed(2);
-            document.getElementById('desc').focus();
-            
-            // Save to quick sale data
-            if (!quickSaleData[name]) {
-                quickSaleData[name] = { category, price, count: 0 };
-            }
-            quickSaleData[name].count++;
-            localStorage.setItem('quickSaleData', JSON.stringify(quickSaleData));
-            
-            showNotification(`${name} adicionado ao formulário`, 'success');
-        };
-
-        // Export products
-        window.exportProducts = () => {
-            if (products.length === 0) {
-                showNotification('Nenhum produto para exportar', 'warning');
-                return;
-            }
-            
-            const headers = ['Nome', 'Categoria', 'Preço', 'Vendas'];
-            const rows = products.map(product => [
-                product.name,
-                product.category || '',
-                product.price.toFixed(2).replace('.', ','),
-                product.salesCount || 0
-            ]);
-            
-            const csvContent = [
-                headers.join(';'),
-                ...rows.map(row => row.join(';'))
-            ].join('\n');
-            
-            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `catalogo_agrovida_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showNotification('Catálogo exportado com sucesso!', 'success');
-        };
-
-        // Sales Management
-        async function loadSales() {
-            const q = query(salesCollection, orderBy("timestamp", "desc"));
-            onSnapshot(q, (snapshot) => {
-                localSales = snapshot.docs.map(doc => ({ 
-                    id: doc.id, 
-                    ...doc.data(),
-                    value: parseFloat(doc.data().value) || 0,
-                    date: doc.data().date || new Date(doc.data().timestamp).toISOString().split('T')[0],
-                    time: doc.data().time || new Date(doc.data().timestamp).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})
-                }));
-                updateScreen();
-                filterHistory();
-                updateQuickSaleButtons();
-            });
-        }
-
-        window.deleteSale = async (id) => {
-            if(confirm("Excluir esta venda?")) {
-                try {
-                    await deleteDoc(doc(db, "vendas_agrovida", id));
-                    showNotification('Venda excluída!', 'success');
-                } catch (error) {
-                    showNotification('Erro ao excluir venda', 'error');
-                }
-            }
-        };
-
-        // Update screen with sales data
-        function updateScreen() {
-            const now = new Date();
-            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            const yesterday = new Date(now);
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayISO = new Date(yesterday.getTime() - (yesterday.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            const currentMonthISO = todayISO.substring(0, 7);
-
-            // Filter sales
-            const todaySales = localSales.filter(s => s.date === todayISO);
-            const yesterSales = localSales.filter(s => s.date === yesterdayISO);
-            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
-
-            const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
-            
-            // Calculate totals
-            const totalToday = sum(todaySales);
-            const totalYesterday = sum(yesterSales);
-            const totalMonth = sum(monthSales);
-            
-            // Payment method totals
-            const sumDinheiro = sum(todaySales.filter(s => s.payment === 'Dinheiro'));
-            const sumPix = sum(todaySales.filter(s => s.payment === 'Pix'));
-            const sumCard = sum(todaySales.filter(s => s.payment === 'Débito' || s.payment === 'Crédito'));
-            
-            // Update dashboard
-            document.getElementById('dashTotalToday').textContent = window.formatMoney(totalToday);
-            document.getElementById('dashTotalYesterday').textContent = window.formatMoney(totalYesterday);
-            document.getElementById('dashTotalMonth').textContent = window.formatMoney(totalMonth);
-            
-            // Update payment summaries
-            document.getElementById('sumMoney').textContent = window.formatMoney(sumDinheiro);
-            document.getElementById('sumPix').textContent = window.formatMoney(sumPix);
-            
-            // Update average ticket
-            const avgTicket = todaySales.length > 0 ? totalToday / todaySales.length : 0;
-            document.getElementById('averageTicket').textContent = window.formatMoney(avgTicket);
-            
-            // Update date display
-            const dateStr = new Date().toLocaleDateString('pt-BR', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long'
-            });
-            document.getElementById('dateDisplay').textContent = dateStr;
-            
-            // Update sales counts
-            document.getElementById('todaySalesCount').textContent = todaySales.length;
-            document.getElementById('todayTotal').textContent = window.formatMoney(totalToday);
-            
-            // Update meta progress
-            const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
-            document.getElementById('progressBar').style.width = `${percent}%`;
-            document.getElementById('progressText').textContent = `${percent.toFixed(1)}%`;
-            document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
-            document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
-            document.getElementById('metaTarget').textContent = window.formatMoney(metaMensal);
-            document.getElementById('settingsMeta').value = metaMensal;
-            
-            // Update progress bar color
-            const progressBar = document.getElementById('progressBar');
-            if (percent >= 100) {
-                progressBar.style.background = 'linear-gradient(90deg, #f59e0b 0%, #d97706 100%)';
-            } else {
-                progressBar.style.background = 'linear-gradient(90deg, #10b981 0%, var(--primary) 100%)';
-            }
-            
-            // Render today's sales table
-            renderTodayTable(todaySales);
-        }
-
-        function renderTodayTable(sales) {
-            const tbody = document.getElementById('todayTableBody');
-            if (sales.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-4 text-center text-gray-500">
-                            <i class="fas fa-shopping-cart text-2xl text-gray-300 mb-2"></i>
-                            <p class="text-sm">Nenhuma venda registrada hoje</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            tbody.innerHTML = sales.map(sale => `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-2">
-                        <div class="font-mono text-xs text-gray-600">${sale.time}</div>
-                    </td>
-                    <td class="p-2">
-                        <div class="font-medium text-gray-800 text-sm truncate max-w-[120px]">${sale.desc}</div>
-                    </td>
-                    <td class="p-2 hidden sm:table-cell">
-                        <span class="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
-                            ${sale.category || '-'}
-                        </span>
-                    </td>
-                    <td class="p-2">
-                        <span class="text-xs font-medium">
-                            ${sale.payment === 'Dinheiro' ? '💵' : 
-                              sale.payment === 'Pix' ? '💠' : 
-                              sale.payment === 'Débito' ? '💳' : 
-                              sale.payment === 'Crédito' ? '💳' : '📝'}
-                        </span>
-                    </td>
-                    <td class="p-2 text-right">
-                        <div class="font-bold text-green-700 text-sm">${window.formatMoney(sale.value)}</div>
-                    </td>
-                    <td class="p-2 text-center">
-                        <button onclick="window.deleteSale('${sale.id}')" 
-                                class="text-red-500 hover:text-red-700 p-1.5 rounded hover:bg-red-50 transition active:scale-95">
-                            <i class="fas fa-trash text-xs"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // History filtering
-        window.filterHistory = () => {
-            const m = document.getElementById('filterMonth').value;
-            const d = document.getElementById('filterDate').value;
-            let list = localSales;
-            
-            if (d) {
-                list = list.filter(s => s.date === d);
-                document.getElementById('filterMonth').value = '';
-            } else if (m) {
-                list = list.filter(s => s.date.startsWith(m));
-                document.getElementById('filterDate').value = '';
-            }
-            
-            const total = list.reduce((sum, sale) => sum + sale.value, 0);
-            document.getElementById('historyTotal').textContent = window.formatMoney(total);
-            
-            renderHistoryTable(list);
-        };
-
-        function renderHistoryTable(sales) {
-            const tbody = document.getElementById('historyTableBody');
-            
-            if (sales.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-4 text-center text-gray-500">
-                            <i class="fas fa-search text-2xl text-gray-300 mb-2"></i>
-                            <p class="text-sm">Nenhuma venda encontrada</p>
-                            <p class="text-xs mt-1">Tente ajustar os filtros</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            tbody.innerHTML = sales.map(sale => {
-                const dateBR = sale.date.split('-').reverse().join('/');
-                return `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-2">
-                            <div class="text-sm text-gray-600">${dateBR}</div>
-                            <div class="text-xs text-gray-400 md:hidden">${sale.time}</div>
-                        </td>
-                        <td class="p-2">
-                            <div class="font-medium text-gray-800 text-sm truncate max-w-[120px]">${sale.desc}</div>
-                        </td>
-                        <td class="p-2 hidden md:table-cell">
-                            <span class="inline-block px-1.5 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
-                                ${sale.category || '-'}
-                            </span>
-                        </td>
-                        <td class="p-2">
-                            <span class="text-xs font-medium">
-                                ${sale.payment === 'Dinheiro' ? '💵' : 
-                                  sale.payment === 'Pix' ? '💠' : 
-                                  sale.payment === 'Débito' ? '💳' : 
-                                  sale.payment === 'Crédito' ? '💳' : '📝'}
-                            </span>
-                        </td>
-                        <td class="p-2 text-right">
-                            <div class="font-bold text-gray-800 text-sm">${window.formatMoney(sale.value)}</div>
-                        </td>
-                        <td class="p-2 text-center">
-                            <button onclick="window.deleteSale('${sale.id}')" 
-                                    class="text-red-500 hover:text-red-700 p-1.5 rounded hover:bg-red-50 transition active:scale-95">
-                                <i class="fas fa-trash text-xs"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        window.clearFilters = () => {
-            document.getElementById('filterMonth').value = '';
-            document.getElementById('filterDate').value = '';
-            filterHistory();
-        };
-
-        window.goToHistoryCurrentMonth = () => {
-            const t = new Date();
-            document.getElementById('filterMonth').value = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0');
-            showTab('history');
-        };
-
-        // Settings
-        window.editMeta = () => {
-            const nova = prompt("Nova Meta (R$):", metaMensal);
-            if(nova && !isNaN(nova)) {
-                metaMensal = parseFloat(nova);
-                localStorage.setItem('metaAgro', metaMensal);
-                updateScreen();
-                showNotification('Meta atualizada!', 'success');
-            }
-        };
-
-        window.saveMetaFromSettings = () => {
-            const novaMeta = parseFloat(document.getElementById('settingsMeta').value);
-            if(!isNaN(novaMeta) && novaMeta > 0) {
-                metaMensal = novaMeta;
-                localStorage.setItem('metaAgro', metaMensal);
-                updateScreen();
-                showNotification('Meta salva!', 'success');
-            }
-        };
-
-        window.showResetModal = () => {
-            window.showModal('resetModal');
-        };
-
-        window.confirmReset = () => {
-            // Clear only local settings, not Firebase data
-            localStorage.removeItem('metaAgro');
-            localStorage.removeItem('quickSaleData');
-            metaMensal = 5000;
-            quickSaleData = {};
-            closeModal('resetModal');
-            updateScreen();
-            updateQuickSaleButtons();
-            showNotification('Cache limpo! Configurações resetadas', 'success');
-        };
-
-        window.exportTodaySales = () => {
-            const now = new Date();
-            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            const todaySales = localSales.filter(s => s.date === todayISO);
-            
-            if (todaySales.length === 0) {
-                showNotification('Nenhuma venda hoje para exportar', 'warning');
-                return;
-            }
-            
-            exportToCSV(todaySales, `vendas_hoje_${todayISO}.csv`);
-        };
-
-        window.exportDatabase = () => {
-            if (localSales.length === 0) {
-                showNotification('Nenhum dado para exportar', 'warning');
-                return;
-            }
-            
-            exportToCSV(localSales, `vendas_agrovida_${new Date().toISOString().split('T')[0]}.csv`);
-        };
-
-        function exportToCSV(data, filename) {
-            const headers = ['Data', 'Hora', 'Produto', 'Categoria', 'Pagamento', 'Valor'];
-            const rows = data.map(sale => [
-                sale.date.split('-').reverse().join('/'),
-                sale.time,
-                sale.desc,
-                sale.category || '',
-                sale.payment,
-                sale.value.toFixed(2).replace('.', ',')
-            ]);
-            
-            const csvContent = [
-                headers.join(';'),
-                ...rows.map(row => row.join(';'))
-            ].join('\n');
-            
-            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showNotification('Exportado com sucesso!', 'success');
-        }
 
         // Modal functions
         window.showModal = (modalId) => {
@@ -1807,60 +885,75 @@
             document.getElementById(modalId).classList.remove('active');
         };
 
-        // Close modal when clicking outside
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-            }
-        });
+        window.showAddProductModal = () => {
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            updateCategorySelect();
+            document.getElementById('productCategory').value = categories[0] || 'Outros';
+            window.showModal('productModal');
+        };
 
-        // Notification system
-        function showNotification(message, type = 'success') {
-            // Remove existing notifications
-            document.querySelectorAll('.notification').forEach(el => {
-                el.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => el.remove(), 300);
-            });
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
-                <span class="text-sm">${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
+        function updateCategorySelect() {
+            const select = document.getElementById('productCategory');
+            select.innerHTML = categories.map(cat => 
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
         }
 
-        // Form submission with better validation
-        const form = document.getElementById('salesForm');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
+        // Categorias
+        function loadCategories() {
+            const categoriesList = document.getElementById('categoriesList');
+            categoriesList.innerHTML = categories.map((cat, index) => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                    <span>${cat}</span>
+                    <button onclick="removeCategory(${index})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.addCategory = () => {
+            const newCat = document.getElementById('newCategory').value.trim();
+            if (newCat && !categories.includes(newCat)) {
+                categories.push(newCat);
+                localStorage.setItem('agroCategories', JSON.stringify(categories));
+                loadCategories();
+                updateCategorySelect();
+                document.getElementById('newCategory').value = '';
+                showNotification('Categoria adicionada!', 'success');
+            }
+        };
+
+        window.removeCategory = (index) => {
+            if (confirm(`Remover categoria "${categories[index]}"?`)) {
+                categories.splice(index, 1);
+                localStorage.setItem('agroCategories', JSON.stringify(categories));
+                loadCategories();
+                updateCategorySelect();
+                showNotification('Categoria removida!', 'success');
+            }
+        };
+
+        // Sales functions
+        window.addSale = async () => {
             const desc = document.getElementById('desc').value.trim();
             const value = document.getElementById('value').value;
             const price = parseFloat(value);
             
             if (!desc) {
                 showNotification('Digite o nome do produto', 'error');
-                document.getElementById('desc').focus();
                 return;
             }
             
             if (!value || isNaN(price) || price <= 0) {
                 showNotification('Digite um valor válido', 'error');
-                document.getElementById('value').focus();
                 return;
             }
             
-            const btn = form.querySelector('button');
             const loading = document.getElementById('loadingIndicator');
-            btn.disabled = true; 
+            const addButton = document.querySelector('button[onclick="addSale()"]');
+            addButton.disabled = true; 
             loading.classList.remove('hidden');
             
             const now = new Date();
@@ -1890,52 +983,741 @@
                 quickSaleData[desc].count++;
                 localStorage.setItem('quickSaleData', JSON.stringify(quickSaleData));
                 
-                form.reset(); 
+                document.getElementById('desc').value = '';
+                document.getElementById('value').value = '';
                 document.getElementById('desc').focus();
                 showNotification('Venda registrada!', 'success');
                 
-                // Update quick sale buttons
                 updateQuickSaleButtons();
             } catch(e) { 
                 console.error("Erro:", e);
                 showNotification("Erro ao salvar venda", 'error'); 
             }
             finally { 
-                btn.disabled = false; 
+                addButton.disabled = false; 
                 loading.classList.add('hidden'); 
+            }
+        };
+
+        window.deleteSale = async (id) => {
+            if(confirm("Excluir esta venda?")) {
+                try {
+                    await deleteDoc(doc(db, "vendas_agrovida", id));
+                    showNotification('Venda excluída!', 'success');
+                } catch (error) {
+                    showNotification('Erro ao excluir venda', 'error');
+                }
+            }
+        };
+
+        window.editMeta = () => {
+            const nova = prompt("Nova Meta (R$):", metaMensal);
+            if(nova && !isNaN(nova)) {
+                metaMensal = parseFloat(nova);
+                localStorage.setItem('metaAgro', metaMensal);
+                updateScreen();
+                showNotification('Meta atualizada!', 'success');
+            }
+        };
+
+        window.goToHistoryCurrentMonth = () => {
+            const t = new Date();
+            document.getElementById('filterMonth').value = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0');
+            window.showTab('history');
+        };
+
+        // Update quick sale buttons
+        function updateQuickSaleButtons() {
+            // Count sales frequency
+            const salesFrequency = {};
+            localSales.forEach(sale => {
+                if (sale.desc) {
+                    salesFrequency[sale.desc] = (salesFrequency[sale.desc] || 0) + 1;
+                }
+            });
+            
+            // Sort by frequency
+            const sortedSales = Object.entries(salesFrequency)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8); // Top 8 most sold items
+            
+            const container = document.getElementById('quickSaleButtons');
+            
+            if (sortedSales.length === 0) {
+                // Show default buttons
+                container.innerHTML = `
+                    <button onclick="quickAdd('Ração Premium', 'Ração', 89.90)" 
+                            class="p-3 bg-green-50 rounded-lg hover:bg-green-100 transition border border-green-100 text-left">
+                        <div class="font-medium text-sm text-gray-800">Ração Premium</div>
+                        <div class="text-xs text-gray-500">R$ 89,90</div>
+                    </button>
+                    <button onclick="quickAdd('Vermífugo', 'Medicamento', 35.50)" 
+                            class="p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition border border-blue-100 text-left">
+                        <div class="font-medium text-sm text-gray-800">Vermífugo</div>
+                        <div class="text-xs text-gray-500">R$ 35,50</div>
+                    </button>
+                    <button onclick="quickAdd('Consulta Veterinária', 'Serviço/Vet', 120.00)" 
+                            class="p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition border border-purple-100 text-left">
+                        <div class="font-medium text-sm text-gray-800">Consulta Vet</div>
+                        <div class="text-xs text-gray-500">R$ 120,00</div>
+                    </button>
+                    <button onclick="quickAdd('Ferramenta Agrícola', 'Ferramentas', 45.00)" 
+                            class="p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition border border-orange-100 text-left">
+                        <div class="font-medium text-sm text-gray-800">Ferramenta</div>
+                        <div class="text-xs text-gray-500">R$ 45,00</div>
+                    </button>
+                `;
+                return;
+            }
+            
+            // Create buttons from most sold items
+            let buttonsHTML = '';
+            sortedSales.forEach(([productName, count]) => {
+                const product = products.find(p => p.name === productName) || 
+                               localSales.find(s => s.desc === productName);
+                
+                if (product) {
+                    const price = product.price || 0;
+                    const category = product.category || 'Outros';
+                    const colorClass = getCategoryColorClass(category);
+                    
+                    buttonsHTML += `
+                        <button onclick="quickAdd('${productName}', '${category}', ${price})" 
+                                class="p-3 ${colorClass} rounded-lg hover:opacity-90 transition border text-left">
+                            <div class="font-medium text-sm text-gray-800 truncate">${productName}</div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">${window.formatMoney(price)}</span>
+                                <span class="text-xs text-gray-400">${count}x</span>
+                            </div>
+                        </button>
+                    `;
+                }
+            });
+            
+            container.innerHTML = buttonsHTML;
+        }
+
+        function getCategoryColorClass(category) {
+            const colors = {
+                'Ração': 'bg-green-50 border-green-100',
+                'Medicamento': 'bg-blue-50 border-blue-100',
+                'Ferramentas': 'bg-orange-50 border-orange-100',
+                'Sementes': 'bg-yellow-50 border-yellow-100',
+                'Acessórios': 'bg-purple-50 border-purple-100',
+                'Serviço/Vet': 'bg-pink-50 border-pink-100',
+                'Outros': 'bg-gray-50 border-gray-100'
+            };
+            return colors[category] || 'bg-gray-50 border-gray-100';
+        }
+
+        window.refreshQuickSaleButtons = () => {
+            updateQuickSaleButtons();
+            showNotification('Botões atualizados!', 'success');
+        };
+
+        window.quickAdd = (name, category, price) => {
+            document.getElementById('desc').value = name;
+            document.getElementById('category').value = category;
+            document.getElementById('value').value = price;
+            document.getElementById('desc').focus();
+            showNotification(`${name} adicionado ao formulário`, 'success');
+        };
+
+        // Load and manage products
+        async function loadProducts() {
+            try {
+                const q = query(productsCollection, orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                products = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    price: parseFloat(doc.data().price) || 0,
+                    salesCount: parseInt(doc.data().salesCount) || 0
+                }));
+                sortProducts();
+            } catch (error) {
+                console.error("Erro ao carregar produtos:", error);
+            }
+        }
+
+        window.sortProducts = () => {
+            const sortValue = document.getElementById('productSort').value;
+            currentProductSort = sortValue;
+            
+            const [field, order] = sortValue.split('_');
+            
+            products.sort((a, b) => {
+                let aVal = a[field];
+                let bVal = b[field];
+                
+                // Para ordenação por nome
+                if (field === 'name') {
+                    aVal = aVal || '';
+                    bVal = bVal || '';
+                    return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                }
+                
+                // Para ordenação por preço
+                if (field === 'price') {
+                    aVal = parseFloat(aVal) || 0;
+                    bVal = parseFloat(bVal) || 0;
+                    return order === 'asc' ? aVal - bVal : bVal - aVal;
+                }
+                
+                // Para ordenação por categoria
+                if (field === 'category') {
+                    aVal = aVal || '';
+                    bVal = bVal || '';
+                    return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                }
+                
+                return 0;
+            });
+            
+            updateProductsDisplay();
+        };
+
+        window.saveProduct = async () => {
+            const name = document.getElementById('productName').value.trim();
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const category = document.getElementById('productCategory').value;
+            
+            if (!name) {
+                showNotification('Digite o nome do produto', 'error');
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                showNotification('Digite um preço válido', 'error');
+                return;
+            }
+            
+            const loading = document.getElementById('loadingIndicator');
+            loading.classList.remove('hidden');
+            
+            try {
+                await addDoc(productsCollection, {
+                    name,
+                    price,
+                    category,
+                    createdAt: serverTimestamp(),
+                    salesCount: 0
+                });
+                
+                showNotification('Produto cadastrado!', 'success');
+                closeModal('productModal');
+                await loadProducts();
+            } catch (error) {
+                console.error("Erro ao salvar produto:", error);
+                showNotification('Erro ao salvar produto', 'error');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        };
+
+        window.deleteProduct = async (productId) => {
+            if (confirm("Excluir este produto?")) {
+                try {
+                    await deleteDoc(doc(productsCollection, productId));
+                    showNotification('Produto excluído!', 'success');
+                    await loadProducts();
+                } catch (error) {
+                    console.error("Erro ao excluir produto:", error);
+                    showNotification('Erro ao excluir produto', 'error');
+                }
+            }
+        };
+
+        function updateProductsDisplay() {
+            const grid = document.getElementById('productsGrid');
+            const searchTerm = document.getElementById('productSearch')?.value.toLowerCase() || '';
+            
+            let filteredProducts = products;
+            
+            if (searchTerm) {
+                filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm) ||
+                    (product.category && product.category.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center p-8 text-gray-500">
+                        <i class="fas fa-box-open text-3xl text-gray-300 mb-3"></i>
+                        <p class="font-medium">Nenhum produto encontrado</p>
+                        <p class="text-sm mt-1">Adicione seu primeiro produto</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="card hover:shadow-lg transition-shadow">
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-gray-800 truncate">${product.name}</h3>
+                            <button onclick="deleteProduct('${product.id}')" class="text-red-500 hover:text-red-700 flex-shrink-0 ml-2">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                                ${product.category || 'Sem categoria'}
+                            </span>
+                        </div>
+                        <div class="text-lg font-bold text-agro-green mb-3">
+                            ${window.formatMoney(product.price)}
+                        </div>
+                        <button onclick="quickAdd('${product.name}', '${product.category || 'Outros'}', ${product.price})" 
+                                class="btn-primary w-full">
+                            <i class="fas fa-cart-plus mr-2"></i> Usar na Venda
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.searchProducts = () => {
+            updateProductsDisplay();
+        };
+
+        // Update screen with sales data
+        function updateScreen() {
+            const now = new Date();
+            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayISO = new Date(yesterday.getTime() - (yesterday.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const currentMonthISO = todayISO.substring(0, 7);
+
+            const todaySales = localSales.filter(s => s.date === todayISO);
+            const yesterSales = localSales.filter(s => s.date === yesterdayISO);
+            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
+
+            const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
+            
+            const totalToday = sum(todaySales);
+            const totalYesterday = sum(yesterSales);
+            const totalMonth = sum(monthSales);
+            
+            const sumDinheiro = sum(todaySales.filter(s => s.payment === 'Dinheiro'));
+            const sumPix = sum(todaySales.filter(s => s.payment === 'Pix'));
+            const sumCard = sum(todaySales.filter(s => s.payment === 'Débito' || s.payment === 'Crédito'));
+            const sumFiado = sum(todaySales.filter(s => s.payment === 'Fiado/Prazo'));
+            
+            document.getElementById('dashTotalToday').textContent = window.formatMoney(totalToday);
+            document.getElementById('dashTotalYesterday').textContent = window.formatMoney(totalYesterday);
+            document.getElementById('dashTotalMonth').textContent = window.formatMoney(totalMonth);
+            
+            document.getElementById('sumMoney').textContent = window.formatMoney(sumDinheiro);
+            document.getElementById('sumPix').textContent = window.formatMoney(sumPix);
+            document.getElementById('sumCard').textContent = window.formatMoney(sumCard);
+            document.getElementById('sumFiado').textContent = window.formatMoney(sumFiado);
+            
+            const avgTicket = todaySales.length > 0 ? totalToday / todaySales.length : 0;
+            document.getElementById('averageTicket').textContent = window.formatMoney(avgTicket);
+            
+            document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+
+            const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
+            document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
+
+            if(percent >= 100) {
+                 document.getElementById('progressBar').classList.replace('from-green-400', 'from-yellow-400');
+                 document.getElementById('progressBar').classList.replace('to-green-600', 'to-yellow-600');
+            } else {
+                 document.getElementById('progressBar').classList.replace('from-yellow-400', 'from-green-400');
+                 document.getElementById('progressBar').classList.replace('to-yellow-600', 'to-green-600');
+            }
+
+            const tbody = document.getElementById('todayTableBody');
+            tbody.innerHTML = '';
+            todaySales.forEach(s => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 text-xs text-gray-500">${s.time}</td>
+                        <td class="p-3 font-bold text-gray-700">${s.desc}</td>
+                        <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 text-xs">${s.category || '-'}</span></td>
+                        <td class="p-3 text-xs text-gray-500">${s.payment}</td>
+                        <td class="p-3 text-right font-bold text-green-700">${window.formatMoney(s.value)}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.deleteSale('${s.id}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+            
+            if(!document.getElementById('tab-history').classList.contains('hidden')) {
+                window.filterHistory();
+            }
+        }
+
+        // History filtering
+        window.filterHistory = () => {
+            const m = document.getElementById('filterMonth').value;
+            const d = document.getElementById('filterDate').value;
+            let list = localSales;
+            
+            if (d) {
+                list = list.filter(s => s.date === d);
+                document.getElementById('filterMonth').value = '';
+            } else if (m) {
+                list = list.filter(s => s.date.startsWith(m));
+                document.getElementById('filterDate').value = '';
+            }
+            
+            const total = list.reduce((sum, sale) => sum + sale.value, 0);
+            document.getElementById('historyTotal').textContent = window.formatMoney(total);
+            
+            renderHistoryTable(list);
+        };
+
+        function renderHistoryTable(sales) {
+            const tbody = document.getElementById('historyTableBody');
+            
+            if (sales.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-gray-500">
+                            <i class="fas fa-search text-3xl text-gray-300 mb-3"></i>
+                            <p class="font-medium">Nenhuma venda encontrada</p>
+                            <p class="text-sm mt-1">Tente ajustar os filtros</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = sales.map(sale => {
+                const dateBR = sale.date.split('-').reverse().join('/');
+                return `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 text-xs text-gray-500">${dateBR} ${sale.time}</td>
+                        <td class="p-3 font-bold">${sale.desc}</td>
+                        <td class="p-3 text-xs text-gray-500">${sale.category || '-'}</td>
+                        <td class="p-3 text-xs text-gray-500">${sale.payment}</td>
+                        <td class="p-3 text-right font-bold text-gray-700">${window.formatMoney(sale.value)}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.deleteSale('${sale.id}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        window.clearFilters = () => {
+            document.getElementById('filterMonth').value = '';
+            document.getElementById('filterDate').value = '';
+            window.filterHistory();
+        };
+
+        // Export Functions
+        window.exportCatalogPDF = () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Cabeçalho
+            doc.setFontSize(20);
+            doc.setTextColor(0, 144, 54);
+            doc.text('Catálogo de Produtos - AgroVida+', 105, 15, null, null, 'center');
+            
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 105, 25, null, null, 'center');
+            
+            // Dados da tabela
+            const tableData = products.map(p => [
+                p.name || '',
+                p.category || '',
+                window.formatMoney(p.price || 0).replace('R$ ', ''),
+                p.salesCount || 0
+            ]);
+            
+            doc.autoTable({
+                head: [['Produto', 'Categoria', 'Preço (R$)', 'Vendas']],
+                body: tableData,
+                startY: 35,
+                theme: 'grid',
+                headStyles: { fillColor: [0, 144, 54], textColor: [255, 255, 255] },
+                styles: { fontSize: 10 },
+                columnStyles: {
+                    2: { halign: 'right' },
+                    3: { halign: 'right' }
+                }
+            });
+            
+            // Rodapé
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(10);
+            doc.setTextColor(150, 150, 150);
+            doc.text(`Total de produtos: ${products.length}`, 105, finalY, null, null, 'center');
+            
+            doc.save(`catalogo-agrovida-${new Date().toISOString().slice(0,10)}.pdf`);
+            
+            showNotification('Catálogo exportado em PDF!', 'success');
+        };
+
+        window.exportCatalogExcel = () => {
+            const data = products.map(p => ({
+                'Produto': p.name || '',
+                'Categoria': p.category || '',
+                'Preço (R$)': p.price || 0,
+                'Vendas': p.salesCount || 0,
+                'Data Cadastro': p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-'
+            }));
+            
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo');
+            
+            // Auto ajustar largura das colunas
+            const wscols = [
+                { wch: 30 }, // Produto
+                { wch: 15 }, // Categoria
+                { wch: 15 }, // Preço
+                { wch: 10 }, // Vendas
+                { wch: 15 }  // Data
+            ];
+            worksheet['!cols'] = wscols;
+            
+            XLSX.writeFile(workbook, `catalogo-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
+            
+            showNotification('Catálogo exportado em Excel!', 'success');
+        };
+
+        window.exportHistoryExcel = () => {
+            const data = localSales.map(s => ({
+                'Data': s.date.split('-').reverse().join('/'),
+                'Hora': s.time || '',
+                'Produto': s.desc || '',
+                'Categoria': s.category || '',
+                'Pagamento': s.payment || '',
+                'Valor (R$)': s.value || 0
+            }));
+            
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendas');
+            
+            // Auto ajustar largura das colunas
+            const wscols = [
+                { wch: 12 }, // Data
+                { wch: 10 }, // Hora
+                { wch: 30 }, // Produto
+                { wch: 15 }, // Categoria
+                { wch: 15 }, // Pagamento
+                { wch: 15 }  // Valor
+            ];
+            worksheet['!cols'] = wscols;
+            
+            XLSX.writeFile(workbook, `vendas-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
+            
+            showNotification('Histórico exportado em Excel!', 'success');
+        };
+
+        window.exportCurrentMonthExcel = () => {
+            const currentMonthISO = new Date().toISOString().slice(0,7);
+            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
+            
+            const data = monthSales.map(s => ({
+                'Data': s.date.split('-').reverse().join('/'),
+                'Hora': s.time || '',
+                'Produto': s.desc || '',
+                'Categoria': s.category || '',
+                'Pagamento': s.payment || '',
+                'Valor (R$)': s.value || 0
+            }));
+            
+            const total = monthSales.reduce((sum, sale) => sum + sale.value, 0);
+            
+            // Adicionar linha de total
+            data.push({
+                'Data': 'TOTAL',
+                'Hora': '',
+                'Produto': '',
+                'Categoria': '',
+                'Pagamento': '',
+                'Valor (R$)': total
+            });
+            
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendas Mês');
+            
+            XLSX.writeFile(workbook, `vendas-mes-${currentMonthISO}.xlsx`);
+            
+            showNotification('Vendas do mês exportadas em Excel!', 'success');
+        };
+
+        window.createFullBackup = () => {
+            const backupData = {
+                timestamp: new Date().toISOString(),
+                sales: localSales,
+                products: products,
+                settings: {
+                    metaMensal: metaMensal,
+                    categories: categories,
+                    quickSaleData: quickSaleData
+                }
+            };
+            
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `backup-agrovida-${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Backup criado com sucesso!', 'success');
+        };
+
+        // Settings functions
+        function updateSettingsInfo() {
+            document.getElementById('totalSalesCount').textContent = localSales.length;
+            document.getElementById('totalProductsCount').textContent = products.length;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('pt-BR');
+            
+            // Atualizar meta padrão
+            const defaultGoal = localStorage.getItem('defaultMonthlyGoal') || 5000;
+            document.getElementById('defaultMonthlyGoal').value = defaultGoal;
+            
+            // Atualizar nome da loja
+            const storeName = localStorage.getItem('storeName') || 'AgroVida+';
+            document.getElementById('storeName').value = storeName;
+        }
+
+        window.changePassword = () => {
+            showModal('passwordModal');
+        };
+
+        window.confirmPasswordChange = () => {
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            
+            if (!newPass || !confirmPass) {
+                showNotification('Preencha ambos os campos', 'error');
+                return;
+            }
+            
+            if (newPass !== confirmPass) {
+                showNotification('As senhas não coincidem', 'error');
+                return;
+            }
+            
+            SENHA_LOJA = newPass;
+            document.getElementById('currentPassword').value = newPass;
+            closeModal('passwordModal');
+            showNotification('Senha alterada com sucesso!', 'success');
+        };
+
+        // Salvar configurações quando sair dos campos
+        document.getElementById('defaultMonthlyGoal').addEventListener('change', (e) => {
+            localStorage.setItem('defaultMonthlyGoal', e.target.value);
+            showNotification('Meta padrão salva!', 'success');
+        });
+
+        document.getElementById('storeName').addEventListener('change', (e) => {
+            localStorage.setItem('storeName', e.target.value);
+            showNotification('Nome da loja atualizado!', 'success');
+        });
+
+        window.clearAllData = () => {
+            if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os dados do sistema. Esta ação não pode ser desfeita.\n\nDigite "CONFIRMAR" para continuar:') === 'CONFIRMAR') {
+                if (confirm('ÚLTIMA CONFIRMAÇÃO: Tem certeza que deseja apagar TODOS os dados?')) {
+                    localStorage.clear();
+                    window.location.reload();
+                }
+            }
+        };
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        const q = query(salesCollection, orderBy("timestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            localSales = snapshot.docs.map(doc => ({ 
+                id: doc.id, 
+                ...doc.data(),
+                value: parseFloat(doc.data().value) || 0
+            }));
+            updateScreen();
+            updateQuickSaleButtons();
+            if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) {
+                updateSettingsInfo();
             }
         });
 
-        // Initialize date inputs
-        const now = new Date();
-        const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-        const currentMonth = today.substring(0, 7);
-        
-        window.addEventListener('load', () => {
-            // Set default dates
+        // Load products on startup
+        window.addEventListener('load', async () => {
+            await loadProducts();
+            updateCategorySelect();
+            loadCategories();
+            
+            // Set default dates for filters
+            const now = new Date();
+            const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const currentMonth = today.substring(0, 7);
+            
             document.getElementById('filterMonth').value = currentMonth;
             document.getElementById('filterMonth').max = currentMonth;
             document.getElementById('filterDate').max = today;
             
-            // Load initial data
-            loadSales();
-            loadProducts();
+            // Close modal when clicking outside
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) {
+                    e.target.classList.remove('active');
+                }
+            });
             
-            // Initialize with today's date
-            updateScreen();
+            // Enter key support
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && document.activeElement === document.getElementById('desc')) {
+                    document.getElementById('value').focus();
+                } else if (e.key === 'Enter' && document.activeElement === document.getElementById('value')) {
+                    window.addSale();
+                }
+            });
             
-            // Set initial tab from URL or default
-            const initialTab = window.location.hash.replace('#', '') || 'dashboard';
-            setTimeout(() => showTab(initialTab), 100);
-            
-            // Focus on product input
-            setTimeout(() => {
-                document.getElementById('desc')?.focus();
-            }, 500);
+            // Atualizar contagem de vendas nos produtos
+            products.forEach(async (product) => {
+                const salesCount = localSales.filter(s => s.desc === product.name).length;
+                if (salesCount !== product.salesCount) {
+                    try {
+                        const productRef = doc(productsCollection, product.id);
+                        await updateDoc(productRef, { salesCount });
+                    } catch (error) {
+                        console.error("Erro ao atualizar contagem de vendas:", error);
+                    }
+                }
+            });
         });
-
-        // Prevent form zoom on mobile iOS
-        document.addEventListener('touchstart', function() {}, {passive: true});
     </script>
 </body>
 </html>
