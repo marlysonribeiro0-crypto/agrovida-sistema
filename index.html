@@ -9,60 +9,51 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #009036;
             --primary-dark: #007a2d;
             --secondary: #FFB800;
         }
-        
         body { 
             background-color: #f3f4f6; 
             font-family: 'Segoe UI', sans-serif;
             overflow-x: hidden;
         }
-        
         .bg-agro-green { background-color: var(--primary); }
         .text-agro-green { color: var(--primary); }
         .bg-agro-yellow { background-color: var(--secondary); }
-        
         .sidebar { 
             min-height: 100vh;
             background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
         }
-        
         .logo-container {
             background: white;
             padding: 1.5rem;
             border-bottom: 1px solid rgba(0, 144, 54, 0.2);
         }
-        
         .logo-img {
             max-width: 180px;
             height: auto;
         }
-        
         .active-tab { 
             background-color: rgba(255, 255, 255, 0.15);
             border-right: 4px solid var(--secondary); 
         }
-        
         .fade-in { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { 
             from { opacity: 0; transform: translateY(10px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
-        
         .progress-bar { transition: width 1s ease-in-out; }
-        
         .card {
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             border: 1px solid #e5e7eb;
         }
-        
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -73,12 +64,10 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
         .btn-primary:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 144, 54, 0.2);
         }
-        
         .btn-secondary {
             background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
             color: white;
@@ -89,12 +78,10 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
         .btn-secondary:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
         .input-field {
             border: 2px solid #e5e7eb;
             border-radius: 10px;
@@ -103,28 +90,23 @@
             transition: all 0.2s;
             width: 100%;
         }
-        
         .input-field:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(0, 144, 54, 0.1);
         }
-        
         .table-responsive {
             overflow-x: auto;
         }
-        
         .table-responsive table {
             min-width: 600px;
         }
-        
         .quick-sale-buttons {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 8px;
             margin-top: 16px;
         }
-        
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -133,11 +115,9 @@
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
-            
             .sidebar.active {
                 transform: translateX(0);
             }
-            
             .mobile-menu-btn {
                 display: block;
                 position: fixed;
@@ -155,7 +135,6 @@
                 justify-content: center;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
-            
             .mobile-bottom-nav {
                 display: flex;
                 position: fixed;
@@ -167,7 +146,6 @@
                 padding: 8px 0;
                 z-index: 100;
             }
-            
             .mobile-bottom-nav button {
                 flex: 1;
                 display: flex;
@@ -180,27 +158,22 @@
                 font-size: 10px;
                 gap: 4px;
             }
-            
             .mobile-bottom-nav button.active {
                 color: var(--primary);
             }
-            
             main {
                 padding-bottom: 70px !important;
             }
-            
             .quick-sale-buttons {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-        
         @media (min-width: 769px) {
             .mobile-menu-btn,
             .mobile-bottom-nav {
                 display: none;
             }
         }
-        
         .notification {
             position: fixed;
             top: 20px;
@@ -216,29 +189,23 @@
             align-items: center;
             gap: 10px;
         }
-        
         .notification.success {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         }
-        
         .notification.error {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         }
-        
         .notification.warning {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
-        
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-        
         @keyframes slideOutRight {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(100%); opacity: 0; }
         }
-        
         .loading-spinner {
             width: 20px;
             height: 20px;
@@ -247,11 +214,9 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
         .modal-overlay {
             display: none;
             position: fixed;
@@ -264,11 +229,9 @@
             align-items: center;
             justify-content: center;
         }
-        
         .modal-overlay.active {
             display: flex;
         }
-        
         .modal-content {
             background: white;
             border-radius: 16px;
@@ -279,18 +242,15 @@
             overflow-y: auto;
             animation: slideUp 0.3s ease;
         }
-        
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
         .sortable {
             cursor: pointer;
             position: relative;
             padding-right: 20px !important;
         }
-        
         .sortable:after {
             content: "⇅";
             position: absolute;
@@ -300,25 +260,77 @@
             opacity: 0.3;
             font-size: 12px;
         }
-        
         .sortable.asc:after {
             content: "↑";
             opacity: 1;
         }
-        
         .sortable.desc:after {
             content: "↓";
             opacity: 1;
         }
+        /* Estilo para o campo de valor monetário */
+        .input-currency {
+            text-align: right;
+        }
+        /* Estilo para o botão de venda rápida */
+        .quick-sale-btn {
+            transition: transform 0.1s ease;
+        }
+        .quick-sale-btn:hover {
+            transform: scale(1.02);
+        }
+        /* Estilo para o status de conexão */
+        .connection-status {
+            font-size: 0.75rem; /* text-xs */
+            padding: 0.25rem 0.5rem; /* px-2 py-1 */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        /* Estilo para a miniatura da imagem do produto */
+        .product-image-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        /* Estilo para o gráfico */
+        .chart-container {
+            position: relative;
+            height: 400px; /* Ajuste conforme necessário */
+            margin-top: 20px;
+        }
+        /* Estilo para o campo de busca com sugestões */
+        .search-suggestions {
+            position: absolute;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            width: 100%;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .search-suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .search-suggestion-item:hover {
+            background-color: #f9fafb;
+        }
+        .search-suggestion-item:last-child {
+            border-bottom: none;
+            border-radius: 0 0 10px 10px;
+        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row">
-
     <!-- Mobile Menu Button -->
     <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
         <i class="fas fa-bars text-lg"></i>
     </button>
-
     <!-- Sidebar -->
     <aside class="sidebar text-white w-full md:w-64 flex-shrink-0 md:h-screen flex flex-col">
         <div class="logo-container">
@@ -326,17 +338,23 @@
                  onerror="this.style.display='none'; document.getElementById('altLogo').style.display='block'">
             <h1 id="altLogo" class="hidden text-agro-green font-bold text-xl mt-2 text-center">AGROVIDA+</h1>
         </div>
-        
-        <div class="p-3 text-center bg-white/10 text-xs flex justify-center items-center gap-2">
-            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Sistema Online
+        <!-- Status de Conexão -->
+        <div id="connectionStatus" class="p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-green-500 text-white">
+            <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Online
         </div>
-
         <nav class="mt-4 flex-1">
             <button onclick="showTab('dashboard')" id="btn-dashboard" class="w-full text-left p-4 hover:bg-white/10 transition active-tab flex items-center gap-3">
                 <i class="fas fa-cash-register text-xl w-6"></i> 
                 <div>
                     <span class="block font-bold">Balcão</span>
                     <span class="text-xs text-white/70 font-normal">Venda Rápida</span>
+                </div>
+            </button>
+            <button onclick="showTab('reports')" id="btn-reports" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
+                <i class="fas fa-chart-bar text-xl w-6"></i>
+                <div>
+                    <span class="block font-bold">Relatórios</span>
+                    <span class="text-xs text-white/70 font-normal">Avançados</span>
                 </div>
             </button>
             <button onclick="showTab('history')" id="btn-history" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
@@ -361,21 +379,17 @@
                 </div>
             </button>
         </nav>
-        <div class="p-4 text-center text-xs text-white/60">v5.0.0</div>
+        <div class="p-4 text-center text-xs text-white/60">v5.1.0</div>
     </aside>
-
     <!-- Main Content -->
     <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
-        
         <!-- Loading Indicator -->
         <div id="loadingIndicator" class="hidden fixed top-4 right-4 card z-50 p-3 items-center gap-2">
             <div class="loading-spinner"></div>
             <span class="text-sm font-medium">Salvando...</span>
         </div>
-
         <!-- Dashboard Tab -->
         <div id="tab-dashboard" class="fade-in">
-            
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div class="card p-4">
                     <p class="text-xs font-bold text-gray-500 uppercase">Vendas Hoje</p>
@@ -395,7 +409,6 @@
                     <h3 class="text-xl font-bold text-gray-800 mt-1" id="averageTicket">R$ 0,00</h3>
                 </div>
             </div>
-
             <div class="card p-4 mb-6">
                 <div class="flex justify-between items-end mb-2">
                     <div>
@@ -413,7 +426,6 @@
                     <div id="progressBar" class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full progress-bar" style="width: 0%"></div>
                 </div>
             </div>
-
             <div class="card mb-6">
                 <div class="p-4 border-b">
                     <h2 class="font-bold text-gray-700"><i class="fas fa-plus-circle text-agro-green mr-2"></i> Nova Venda</h2>
@@ -423,7 +435,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                         <div class="md:col-span-4">
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Produto</label>
-                            <input type="text" id="desc" class="input-field" placeholder="Ex: Ração..." required>
+                            <div class="relative">
+                                <input type="text" id="desc" class="input-field" placeholder="Ex: Ração..." required>
+                                <div id="descSuggestions" class="search-suggestions hidden"></div>
+                            </div>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
@@ -439,7 +454,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
-                            <input type="number" step="0.01" min="0" id="value" class="input-field" placeholder="0,00" required>
+                            <input type="text" id="value" class="input-field input-currency" placeholder="0,00" required>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pagamento</label>
@@ -457,7 +472,6 @@
                             </button>
                         </div>
                     </div>
-                    
                     <!-- Quick Sale Buttons -->
                     <div class="mt-4">
                         <div class="flex justify-between items-center mb-2">
@@ -472,12 +486,10 @@
                     </div>
                 </div>
             </div>
-
             <!-- Today's Sales -->
             <div class="card">
                 <div class="p-4 border-b flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <h2 class="font-bold text-gray-700">Movimentação do Dia</h2>
-                    
                     <div class="flex flex-wrap gap-2 text-xs font-semibold">
                         <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200">
                             💵 Dinheiro: <span id="sumMoney">R$ 0,00</span>
@@ -493,7 +505,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="table-responsive">
                     <table class="w-full text-sm">
                         <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
@@ -511,7 +522,87 @@
                 </div>
             </div>
         </div>
-
+        <!-- Reports Tab -->
+        <div id="tab-reports" class="hidden fade-in">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Relatórios Avançados</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Filtros Personalizados -->
+                <div class="card p-4">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4">Filtros Personalizados</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Data Inicial</label>
+                            <input type="date" id="customFilterStart" class="input-field">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Data Final</label>
+                            <input type="date" id="customFilterEnd" class="input-field">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Categoria (Opcional)</label>
+                            <select id="customFilterCategory" class="input-field">
+                                <option value="">Todas</option>
+                                <!-- Preenchido dinamicamente -->
+                            </select>
+                        </div>
+                        <button onclick="applyCustomFilter()" class="btn-primary w-full">Aplicar Filtros</button>
+                    </div>
+                </div>
+                <!-- Resumo do Período -->
+                <div class="card p-4">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4">Resumo do Período</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500">Total de Vendas</p>
+                            <p class="text-xl font-bold text-agro-green" id="customTotalSales">R$ 0,00</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500">Quantidade de Vendas</p>
+                            <p class="text-xl font-bold text-gray-800" id="customTotalCount">0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500">Ticket Médio</p>
+                            <p class="text-xl font-bold text-gray-800" id="customAverageTicket">R$ 0,00</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500">Lucro Estimado</p>
+                            <p class="text-xl font-bold text-purple-600" id="customProfit">R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="card p-4">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4">Evolução de Vendas (Diária)</h3>
+                    <div class="chart-container">
+                        <canvas id="dailySalesChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-4">
+                    <h3 class="font-bold text-lg text-gray-700 mb-4">Vendas por Categoria</h3>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-4">
+                <h3 class="font-bold text-lg text-gray-700 mb-4">Ranking de Produtos Mais Vendidos</h3>
+                <div class="table-responsive">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
+                            <tr>
+                                <th class="p-3">Produto</th>
+                                <th class="p-3 text-center">Quantidade</th>
+                                <th class="p-3 text-right">Valor Total</th>
+                                <th class="p-3 text-right">Lucro Estimado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topProductsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         <!-- History Tab -->
         <div id="tab-history" class="hidden fade-in">
             <div class="flex justify-between items-center mb-4">
@@ -522,7 +613,6 @@
                     </button>
                 </div>
             </div>
-            
             <div class="card p-4 mb-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
@@ -542,7 +632,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="card">
                 <div class="table-responsive">
                     <table class="w-full text-sm">
@@ -561,7 +650,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Products Tab -->
         <div id="tab-products" class="hidden fade-in">
             <div class="flex justify-between items-center mb-4">
@@ -575,7 +663,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- Search Bar -->
             <div class="card p-4 mb-4">
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -583,7 +670,7 @@
                         <div class="relative">
                             <input type="text" id="productSearch" 
                                    class="input-field pr-10"
-                                   placeholder="Buscar produto por nome ou categoria..."
+                                   placeholder="Buscar produto por nome, SKU ou categoria..."
                                    onkeyup="searchProducts()">
                             <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
@@ -600,35 +687,59 @@
                     </div>
                 </div>
             </div>
-
+            <!-- Advanced Filters -->
+            <div class="card p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar por Categoria</label>
+                        <select id="filterCategory" class="input-field" onchange="searchProducts()">
+                            <option value="">Todas</option>
+                            <!-- Preenchido dinamicamente -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar por Unidade</label>
+                        <select id="filterUnit" class="input-field" onchange="searchProducts()">
+                            <option value="">Todas</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Un">Un</option>
+                            <option value="Pacote">Pacote</option>
+                            <option value="Cx">Cx</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Preço Mínimo (R$)</label>
+                        <input type="number" step="0.01" id="filterPriceMin" class="input-field" placeholder="0,00" onchange="searchProducts()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Preço Máximo (R$)</label>
+                        <input type="number" step="0.01" id="filterPriceMax" class="input-field" placeholder="9999,99" onchange="searchProducts()">
+                    </div>
+                </div>
+            </div>
             <!-- Products Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="productsGrid">
                 <!-- Products will be loaded here -->
             </div>
         </div>
-
         <!-- Settings Tab -->
         <div id="tab-settings" class="hidden fade-in">
             <h2 class="text-xl font-bold text-gray-800 mb-6">Configurações do Sistema</h2>
-            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Configurações Gerais -->
                 <div class="card p-6">
                     <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
                         <i class="fas fa-cogs text-agro-green"></i> Configurações Gerais
                     </h3>
-                    
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Loja</label>
                             <input type="text" id="storeName" class="input-field" value="AgroVida+">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Meta Mensal Padrão (R$)</label>
                             <input type="number" step="0.01" id="defaultMonthlyGoal" class="input-field" value="5000">
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso</label>
                             <div class="flex gap-2">
@@ -638,13 +749,11 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Exportação de Dados -->
                 <div class="card p-6">
                     <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
                         <i class="fas fa-database text-agro-green"></i> Exportação de Dados
                     </h3>
-                    
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Exportar Histórico</label>
@@ -657,7 +766,6 @@
                                 </button>
                             </div>
                         </div>
-                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Exportar Catálogo</label>
                             <div class="flex flex-wrap gap-2">
@@ -669,7 +777,6 @@
                                 </button>
                             </div>
                         </div>
-                        
                         <div class="pt-4 border-t">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Backup Completo</label>
                             <button onclick="createFullBackup()" class="btn-primary w-full">
@@ -679,35 +786,30 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Categorias -->
                 <div class="card p-6">
                     <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
                         <i class="fas fa-tags text-agro-green"></i> Gerenciar Categorias
                     </h3>
-                    
                     <div class="space-y-4">
                         <div id="categoriesList">
                             <!-- Categorias serão carregadas aqui -->
                         </div>
-                        
                         <div class="flex gap-2">
                             <input type="text" id="newCategory" class="input-field" placeholder="Nova categoria">
                             <button onclick="addCategory()" class="btn-primary">Adicionar</button>
                         </div>
                     </div>
                 </div>
-
                 <!-- Informações do Sistema -->
                 <div class="card p-6">
                     <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2">
                         <i class="fas fa-info-circle text-agro-green"></i> Informações do Sistema
                     </h3>
-                    
                     <div class="space-y-3">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Versão</span>
-                            <span class="font-medium">5.0.0</span>
+                            <span class="font-medium">5.1.0</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Total de Vendas</span>
@@ -721,8 +823,11 @@
                             <span class="text-gray-600">Última Atualização</span>
                             <span class="font-medium" id="lastUpdate">-</span>
                         </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Status de Conexão</span>
+                            <span class="font-medium" id="connectionStatusText">Online</span>
+                        </div>
                     </div>
-                    
                     <div class="mt-6 pt-4 border-t">
                         <button onclick="clearAllData()" class="btn-secondary w-full bg-red-100 text-red-700 border-red-200 hover:bg-red-200">
                             <i class="fas fa-trash-alt mr-2"></i> Limpar Todos os Dados
@@ -733,12 +838,15 @@
             </div>
         </div>
     </main>
-
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-bottom-nav">
         <button onclick="showTab('dashboard')" id="mobile-btn-dashboard" class="active">
             <i class="fas fa-cash-register"></i>
             <span>Balcão</span>
+        </button>
+        <button onclick="showTab('reports')" id="mobile-btn-reports">
+            <i class="fas fa-chart-bar"></i>
+            <span>Relatórios</span>
         </button>
         <button onclick="showTab('history')" id="mobile-btn-history">
             <i class="fas fa-chart-line"></i>
@@ -753,7 +861,6 @@
             <span>Configurações</span>
         </button>
     </nav>
-
     <!-- Product Modal -->
     <div id="productModal" class="modal-overlay">
         <div class="modal-content">
@@ -765,15 +872,38 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Preço (R$) *</label>
-                        <input type="number" step="0.01" min="0" id="productPrice" class="input-field" required>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preço de Venda (R$) *</label>
+                        <input type="text" id="productPrice" class="input-field input-currency" required>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preço de Custo (R$)</label>
+                        <input type="text" id="productCost" class="input-field input-currency">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
                         <select id="productCategory" class="input-field">
                             <!-- Categorias serão carregadas dinamicamente -->
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Unidade de Medida</label>
+                        <select id="productUnit" class="input-field">
+                            <option value="Un">Unidade (Un)</option>
+                            <option value="Kg">Kilograma (Kg)</option>
+                            <option value="Pacote">Pacote</option>
+                            <option value="Cx">Caixa (Cx)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SKU/Código de Barras</label>
+                    <input type="text" id="productSKU" class="input-field" placeholder="Ex: ABC123">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Imagem do Produto</label>
+                    <input type="file" id="productImage" class="input-field" accept="image/*">
                 </div>
             </div>
             <div class="mt-6 flex justify-end gap-3">
@@ -782,7 +912,6 @@
             </div>
         </div>
     </div>
-
     <!-- Password Modal -->
     <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
@@ -803,18 +932,50 @@
             </div>
         </div>
     </div>
-
     <script type="module">
-        let SENHA_LOJA = "1234";
+        // --- Otimização: Função para formatar moeda com foco em performance ---
+        const formatter = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2
+        });
+        window.formatMoney = (val) => {
+            if (typeof val !== 'number') val = parseFloat(val) || 0;
+            return formatter.format(val);
+        };
+
+        // --- Nova funcionalidade: Monitoramento de Conexão ---
+        function updateConnectionStatus(isOnline) {
+            const statusElement = document.getElementById('connectionStatus');
+            const statusTextElement = document.getElementById('connectionStatusText');
+            if (isOnline) {
+                statusElement.className = 'p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-green-500 text-white';
+                statusElement.innerHTML = '<span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Online';
+                if (statusTextElement) statusTextElement.textContent = 'Online';
+            } else {
+                statusElement.className = 'p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-red-500 text-white';
+                statusElement.innerHTML = '<span class="w-2 h-2 bg-white rounded-full"></span> Offline';
+                if (statusTextElement) statusTextElement.textContent = 'Offline';
+                showNotification('Modo Offline Ativado', 'warning');
+            }
+        }
+
+        // Verifica status inicial
+        updateConnectionStatus(navigator.onLine);
+        window.addEventListener('online', () => updateConnectionStatus(true));
+        window.addEventListener('offline', () => updateConnectionStatus(false));
+
+        // --- Autenticação Simplificada ---
+        let SENHA_LOJA = localStorage.getItem('senhaAgro') || "1234";
         const tentativa = prompt("🔐 AgroVida Mais\nDigite a senha de acesso:");
         if (tentativa !== SENHA_LOJA) {
             document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px'>Acesso Negado</h1>";
             throw new Error("Senha Incorreta");
         }
 
+        // --- Importação e Configuração do Firebase ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         const firebaseConfig = {
             apiKey: "AIzaSyBZvxMB2qmz5IMugV6fOqq4pLUbhD7mJRU",
             authDomain: "agrovida-95ebb.firebaseapp.com",
@@ -823,16 +984,16 @@
             messagingSenderId: "1058005459532",
             appId: "1:1058005459532:web:f84be213da78c145648ae9"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const salesCollection = collection(db, "vendas_agrovida");
         const productsCollection = collection(db, "produtos_agrovida");
         const settingsCollection = collection(db, "configuracoes_agrovida");
 
+        // --- Variáveis de Estado Local ---
         let localSales = [];
         let products = [];
-        let metaMensal = localStorage.getItem('metaAgro') || 5000;
+        let metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
         let quickSaleData = JSON.parse(localStorage.getItem('quickSaleData')) || {};
         let categories = JSON.parse(localStorage.getItem('agroCategories')) || [
             'Ração', 'Medicamento', 'Ferramentas', 'Sementes', 
@@ -840,35 +1001,35 @@
         ];
         let currentProductSort = 'name_asc';
 
-        // Utility functions
-        window.formatMoney = (val) => {
-            if (typeof val !== 'number') val = parseFloat(val) || 0;
-            return val.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-        };
+        // --- Gráficos ---
+        let dailySalesChart = null;
+        let categoryChart = null;
 
-        // Mobile functions
+        // --- Funções de Navegação e UI ---
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('active');
         }
 
-        // Tab navigation
         window.showTab = (tab) => {
             document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('[id^="btn-"]').forEach(el => el.classList.remove('active-tab'));
             document.querySelectorAll('.mobile-bottom-nav button').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
             document.getElementById(`btn-${tab}`)?.classList.add('active-tab');
             document.getElementById(`mobile-btn-${tab}`)?.classList.add('active');
-            
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
-            
             if (tab === 'history') window.filterHistory();
             if (tab === 'products') {
                 loadProducts();
                 searchProducts();
+                loadFilterCategories();
+            }
+            if (tab === 'reports') {
+                loadFilterCategories(); // Para o filtro personalizado
+                // Carregar dados iniciais para relatórios (pode ser um período padrão)
+                applyCustomFilter(); // Isso chama updateReports
             }
             if (tab === 'settings') {
                 updateSettingsInfo();
@@ -876,43 +1037,46 @@
             }
         };
 
-        // Modal functions
         window.showModal = (modalId) => {
             document.getElementById(modalId).classList.add('active');
         };
-
         window.closeModal = (modalId) => {
             document.getElementById(modalId).classList.remove('active');
         };
-
         window.showAddProductModal = () => {
             document.getElementById('productName').value = '';
             document.getElementById('productPrice').value = '';
+            document.getElementById('productCost').value = '';
+            document.getElementById('productSKU').value = '';
+            document.getElementById('productImage').value = '';
             updateCategorySelect();
             document.getElementById('productCategory').value = categories[0] || 'Outros';
+            document.getElementById('productUnit').value = 'Un';
             window.showModal('productModal');
         };
-
         function updateCategorySelect() {
             const select = document.getElementById('productCategory');
-            select.innerHTML = categories.map(cat => 
-                `<option value="${cat}">${cat}</option>`
-            ).join('');
+            if (select) {
+                select.innerHTML = categories.map(cat => 
+                    `<option value="${cat}">${cat}</option>`
+                ).join('');
+            }
         }
 
-        // Categorias
+        // --- Funções de Categorias ---
         function loadCategories() {
             const categoriesList = document.getElementById('categoriesList');
-            categoriesList.innerHTML = categories.map((cat, index) => `
-                <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
-                    <span>${cat}</span>
-                    <button onclick="removeCategory(${index})" class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `).join('');
+            if (categoriesList) {
+                categoriesList.innerHTML = categories.map((cat, index) => `
+                    <div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                        <span>${cat}</span>
+                        <button onclick="removeCategory(${index})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
         }
-
         window.addCategory = () => {
             const newCat = document.getElementById('newCategory').value.trim();
             if (newCat && !categories.includes(newCat)) {
@@ -920,45 +1084,242 @@
                 localStorage.setItem('agroCategories', JSON.stringify(categories));
                 loadCategories();
                 updateCategorySelect();
+                loadFilterCategories(); // Atualiza o filtro de relatórios
                 document.getElementById('newCategory').value = '';
                 showNotification('Categoria adicionada!', 'success');
             }
         };
-
         window.removeCategory = (index) => {
             if (confirm(`Remover categoria "${categories[index]}"?`)) {
                 categories.splice(index, 1);
                 localStorage.setItem('agroCategories', JSON.stringify(categories));
                 loadCategories();
                 updateCategorySelect();
+                loadFilterCategories(); // Atualiza o filtro de relatórios
                 showNotification('Categoria removida!', 'success');
             }
         };
 
-        // Sales functions
+        // --- Funções de Produtos ---
+        async function loadProducts() {
+            try {
+                const q = query(productsCollection, orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                products = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                    price: parseFloat(doc.data().price) || 0,
+                    cost: parseFloat(doc.data().cost) || 0, // Novo campo
+                    salesCount: parseInt(doc.data().salesCount) || 0
+                }));
+                sortProducts();
+            } catch (error) {
+                console.error("Erro ao carregar produtos do Firestore:", error);
+                 const storedProducts = localStorage.getItem('localProducts');
+                 if (storedProducts) {
+                     products = JSON.parse(storedProducts);
+                     sortProducts();
+                 }
+            }
+        }
+
+        window.sortProducts = () => {
+            const sortValue = document.getElementById('productSort').value;
+            currentProductSort = sortValue;
+            const [field, order] = sortValue.split('_');
+            products.sort((a, b) => {
+                let aVal = a[field];
+                let bVal = b[field];
+                if (field === 'name') {
+                    aVal = aVal || '';
+                    bVal = bVal || '';
+                    return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                }
+                if (field === 'price') {
+                    aVal = parseFloat(aVal) || 0;
+                    bVal = parseFloat(bVal) || 0;
+                    return order === 'asc' ? aVal - bVal : bVal - aVal;
+                }
+                if (field === 'category') {
+                    aVal = aVal || '';
+                    bVal = bVal || '';
+                    return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                }
+                return 0;
+            });
+            updateProductsDisplay();
+        };
+
+        window.saveProduct = async () => {
+            const name = document.getElementById('productName').value.trim();
+            const priceStr = document.getElementById('productPrice').value;
+            const costStr = document.getElementById('productCost').value;
+            const category = document.getElementById('productCategory').value;
+            const unit = document.getElementById('productUnit').value;
+            const sku = document.getElementById('productSKU').value.trim();
+            const imageFile = document.getElementById('productImage').files[0];
+
+            if (!name) {
+                showNotification('Digite o nome do produto', 'error');
+                return;
+            }
+            const price = parseFloat(priceStr.replace(',', '.'));
+            const cost = parseFloat(costStr.replace(',', '.')) || 0;
+            if (isNaN(price) || price <= 0) {
+                showNotification('Digite um preço de venda válido', 'error');
+                return;
+            }
+            if (cost < 0) {
+                showNotification('O custo não pode ser negativo', 'error');
+                return;
+            }
+
+            const loading = document.getElementById('loadingIndicator');
+            if (loading) loading.classList.remove('hidden');
+
+            try {
+                const productData = {
+                    name,
+                    price,
+                    cost,
+                    category,
+                    unit, // Nova propriedade
+                    sku,  // Nova propriedade
+                    createdAt: serverTimestamp(),
+                    salesCount: 0
+                };
+
+                // Upload de imagem (simulado)
+                if (imageFile) {
+                    // Em um ambiente real, você usaria Firebase Storage
+                    productData.imageURL = URL.createObjectURL(imageFile); // Simula URL local
+                }
+
+                const docRef = await addDoc(productsCollection, productData);
+                showNotification('Produto cadastrado!', 'success');
+                closeModal('productModal');
+                await loadProducts();
+            } catch (error) {
+                console.error("Erro ao salvar produto no Firestore:", error);
+                showNotification('Erro ao salvar produto', 'error');
+            } finally {
+                if (loading) loading.classList.add('hidden');
+            }
+        };
+
+        window.deleteProduct = async (productId) => {
+            if (confirm("Excluir este produto?")) {
+                try {
+                    await deleteDoc(doc(productsCollection, productId));
+                    showNotification('Produto excluído!', 'success');
+                    await loadProducts();
+                } catch (error) {
+                    console.error("Erro ao excluir produto do Firestore:", error);
+                    showNotification('Erro ao excluir produto', 'error');
+                }
+            }
+        };
+
+        function updateProductsDisplay() {
+            const grid = document.getElementById('productsGrid');
+            if (!grid) return; // Proteção
+            const searchTerm = document.getElementById('productSearch')?.value.toLowerCase() || '';
+            const filterCat = document.getElementById('filterCategory').value;
+            const filterUnit = document.getElementById('filterUnit').value;
+            const filterMin = parseFloat(document.getElementById('filterPriceMin').value) || 0;
+            const filterMax = parseFloat(document.getElementById('filterPriceMax').value) || Infinity;
+
+            let filteredProducts = products.filter(product => {
+                const matchesSearch = !searchTerm || 
+                                      product.name.toLowerCase().includes(searchTerm) || 
+                                      (product.sku && product.sku.toLowerCase().includes(searchTerm)) ||
+                                      (product.category && product.category.toLowerCase().includes(searchTerm));
+                const matchesCat = !filterCat || product.category === filterCat;
+                const matchesUnit = !filterUnit || product.unit === filterUnit;
+                const matchesPrice = product.price >= filterMin && product.price <= filterMax;
+                return matchesSearch && matchesCat && matchesUnit && matchesPrice;
+            });
+
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center p-8 text-gray-500">
+                        <i class="fas fa-box-open text-3xl text-gray-300 mb-3"></i>
+                        <p class="font-medium">Nenhum produto encontrado</p>
+                        <p class="text-sm mt-1">Adicione seu primeiro produto</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="card hover:shadow-lg transition-shadow">
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-gray-800 truncate">${product.name}</h3>
+                            <button onclick="deleteProduct('${product.id}')" class="text-red-500 hover:text-red-700 flex-shrink-0 ml-2">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                                ${product.category || 'Sem categoria'}
+                            </span>
+                            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                                ${product.unit || 'Un'}
+                            </span>
+                            ${product.sku ? `<span class="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                                SKU: ${product.sku}
+                            </span>` : ''}
+                        </div>
+                        <div class="text-lg font-bold text-agro-green mb-3">
+                            ${window.formatMoney(product.price)}
+                        </div>
+                        ${product.imageURL ? `<img src="${product.imageURL}" alt="${product.name}" class="product-image-thumb mb-3 mx-auto">` : ''}
+                        <button onclick="quickAdd('${product.name}', '${product.category || 'Outros'}', ${product.price})" 
+                                class="btn-primary w-full">
+                            <i class="fas fa-cart-plus mr-2"></i> Usar na Venda
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.searchProducts = () => {
+            updateProductsDisplay();
+        };
+
+        function loadFilterCategories() {
+            const selectCat = document.getElementById('filterCategory');
+            const selectCustomCat = document.getElementById('customFilterCategory');
+            if (selectCat) {
+                selectCat.innerHTML = '<option value="">Todas</option>' + categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            }
+            if (selectCustomCat) {
+                selectCustomCat.innerHTML = '<option value="">Todas</option>' + categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            }
+        }
+
+        // --- Funções de Venda ---
         window.addSale = async () => {
             const desc = document.getElementById('desc').value.trim();
-            const value = document.getElementById('value').value;
-            const price = parseFloat(value);
-            
+            const valueStr = document.getElementById('value').value;
+            const price = parseFloat(valueStr.replace(',', '.'));
             if (!desc) {
                 showNotification('Digite o nome do produto', 'error');
                 return;
             }
-            
-            if (!value || isNaN(price) || price <= 0) {
+            if (!valueStr || isNaN(price) || price <= 0) {
                 showNotification('Digite um valor válido', 'error');
                 return;
             }
-            
             const loading = document.getElementById('loadingIndicator');
             const addButton = document.querySelector('button[onclick="addSale()"]');
-            addButton.disabled = true; 
+            if (!addButton) return; // Proteção contra race condition
+            addButton.disabled = true;
             loading.classList.remove('hidden');
-            
+
             const now = new Date();
             const localDateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            
             const saleData = {
                 date: localDateISO,
                 timestamp: now.toISOString(),
@@ -968,44 +1329,53 @@
                 value: price,
                 payment: document.getElementById('payment').value
             };
-            
+
+            // Otimização: Adiciona localmente primeiro para feedback imediato
+            localSales.unshift(saleData);
+            updateScreen();
+            updateQuickSaleButtons();
+
             try {
                 await addDoc(salesCollection, saleData);
-                
-                // Update quick sale data
+                // Atualiza quick sale data local
                 if (!quickSaleData[desc]) {
-                    quickSaleData[desc] = { 
-                        category: saleData.category, 
-                        price: price, 
-                        count: 0 
-                    };
+                    quickSaleData[desc] = { category: saleData.category, price: price, count: 0 };
                 }
                 quickSaleData[desc].count++;
                 localStorage.setItem('quickSaleData', JSON.stringify(quickSaleData));
-                
                 document.getElementById('desc').value = '';
                 document.getElementById('value').value = '';
                 document.getElementById('desc').focus();
-                showNotification('Venda registrada!', 'success');
-                
-                updateQuickSaleButtons();
-            } catch(e) { 
-                console.error("Erro:", e);
-                showNotification("Erro ao salvar venda", 'error'); 
-            }
-            finally { 
-                addButton.disabled = false; 
-                loading.classList.add('hidden'); 
+                // showNotification('Venda registrada!', 'success'); // Feedback local é suficiente
+            } catch(e) {
+                console.error("Erro ao salvar no Firestore:", e);
+                if (navigator.onLine) {
+                    showNotification("Erro ao salvar venda no servidor", 'error');
+                    localSales = localSales.filter(s => s.timestamp !== saleData.timestamp);
+                    updateScreen();
+                } else {
+                     showNotification("Venda salva localmente. Enviando quando houver conexão...", 'warning');
+                }
+            } finally {
+                addButton.disabled = false;
+                loading.classList.add('hidden');
             }
         };
 
-        window.deleteSale = async (id) => {
+        window.deleteSale = async (id, timestamp) => { // Adiciona timestamp como fallback
             if(confirm("Excluir esta venda?")) {
                 try {
                     await deleteDoc(doc(db, "vendas_agrovida", id));
                     showNotification('Venda excluída!', 'success');
                 } catch (error) {
-                    showNotification('Erro ao excluir venda', 'error');
+                    console.error("Erro ao excluir do Firestore:", error);
+                    if (navigator.onLine) {
+                         showNotification('Erro ao excluir venda', 'error');
+                    } else {
+                        localSales = localSales.filter(s => s.id !== id && s.timestamp !== timestamp);
+                        updateScreen();
+                        showNotification('Venda excluída localmente. Sincronizar quando houver conexão.', 'warning');
+                    }
                 }
             }
         };
@@ -1026,64 +1396,54 @@
             window.showTab('history');
         };
 
-        // Update quick sale buttons
+        // --- Atualização dos Botões de Venda Rápida ---
         function updateQuickSaleButtons() {
-            // Count sales frequency
             const salesFrequency = {};
             localSales.forEach(sale => {
                 if (sale.desc) {
                     salesFrequency[sale.desc] = (salesFrequency[sale.desc] || 0) + 1;
                 }
             });
-            
-            // Sort by frequency
+
             const sortedSales = Object.entries(salesFrequency)
                 .sort((a, b) => b[1] - a[1])
-                .slice(0, 8); // Top 8 most sold items
-            
+                .slice(0, 8);
+
             const container = document.getElementById('quickSaleButtons');
-            
+            if (!container) return; // Proteção
+
             if (sortedSales.length === 0) {
-                // Show default buttons
                 container.innerHTML = `
-                    <button onclick="quickAdd('Ração Premium', 'Ração', 89.90)" 
-                            class="p-3 bg-green-50 rounded-lg hover:bg-green-100 transition border border-green-100 text-left">
+                    <button onclick="quickAdd('Ração Premium', 'Ração', 89.90)" class="quick-sale-btn p-3 bg-green-50 rounded-lg hover:bg-green-100 transition border border-green-100 text-left">
                         <div class="font-medium text-sm text-gray-800">Ração Premium</div>
-                        <div class="text-xs text-gray-500">R$ 89,90</div>
+                        <div class="text-xs text-gray-500">${window.formatMoney(89.90)}</div>
                     </button>
-                    <button onclick="quickAdd('Vermífugo', 'Medicamento', 35.50)" 
-                            class="p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition border border-blue-100 text-left">
+                    <button onclick="quickAdd('Vermífugo', 'Medicamento', 35.50)" class="quick-sale-btn p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition border border-blue-100 text-left">
                         <div class="font-medium text-sm text-gray-800">Vermífugo</div>
-                        <div class="text-xs text-gray-500">R$ 35,50</div>
+                        <div class="text-xs text-gray-500">${window.formatMoney(35.50)}</div>
                     </button>
-                    <button onclick="quickAdd('Consulta Veterinária', 'Serviço/Vet', 120.00)" 
-                            class="p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition border border-purple-100 text-left">
+                    <button onclick="quickAdd('Consulta Veterinária', 'Serviço/Vet', 120.00)" class="quick-sale-btn p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition border border-purple-100 text-left">
                         <div class="font-medium text-sm text-gray-800">Consulta Vet</div>
-                        <div class="text-xs text-gray-500">R$ 120,00</div>
+                        <div class="text-xs text-gray-500">${window.formatMoney(120.00)}</div>
                     </button>
-                    <button onclick="quickAdd('Ferramenta Agrícola', 'Ferramentas', 45.00)" 
-                            class="p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition border border-orange-100 text-left">
+                    <button onclick="quickAdd('Ferramenta Agrícola', 'Ferramentas', 45.00)" class="quick-sale-btn p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition border border-orange-100 text-left">
                         <div class="font-medium text-sm text-gray-800">Ferramenta</div>
-                        <div class="text-xs text-gray-500">R$ 45,00</div>
+                        <div class="text-xs text-gray-500">${window.formatMoney(45.00)}</div>
                     </button>
                 `;
                 return;
             }
-            
-            // Create buttons from most sold items
+
             let buttonsHTML = '';
             sortedSales.forEach(([productName, count]) => {
-                const product = products.find(p => p.name === productName) || 
+                const product = products.find(p => p.name === productName) ||
                                localSales.find(s => s.desc === productName);
-                
                 if (product) {
                     const price = product.price || 0;
                     const category = product.category || 'Outros';
                     const colorClass = getCategoryColorClass(category);
-                    
                     buttonsHTML += `
-                        <button onclick="quickAdd('${productName}', '${category}', ${price})" 
-                                class="p-3 ${colorClass} rounded-lg hover:opacity-90 transition border text-left">
+                        <button onclick="quickAdd('${productName}', '${category}', ${price})" class="quick-sale-btn p-3 ${colorClass} rounded-lg hover:opacity-90 transition border text-left">
                             <div class="font-medium text-sm text-gray-800 truncate">${productName}</div>
                             <div class="flex justify-between items-center">
                                 <span class="text-xs text-gray-500">${window.formatMoney(price)}</span>
@@ -1093,7 +1453,6 @@
                     `;
                 }
             });
-            
             container.innerHTML = buttonsHTML;
         }
 
@@ -1118,171 +1477,12 @@
         window.quickAdd = (name, category, price) => {
             document.getElementById('desc').value = name;
             document.getElementById('category').value = category;
-            document.getElementById('value').value = price;
+            document.getElementById('value').value = price.toFixed(2).replace('.', ',');
             document.getElementById('desc').focus();
             showNotification(`${name} adicionado ao formulário`, 'success');
         };
 
-        // Load and manage products
-        async function loadProducts() {
-            try {
-                const q = query(productsCollection, orderBy("createdAt", "desc"));
-                const snapshot = await getDocs(q);
-                products = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    price: parseFloat(doc.data().price) || 0,
-                    salesCount: parseInt(doc.data().salesCount) || 0
-                }));
-                sortProducts();
-            } catch (error) {
-                console.error("Erro ao carregar produtos:", error);
-            }
-        }
-
-        window.sortProducts = () => {
-            const sortValue = document.getElementById('productSort').value;
-            currentProductSort = sortValue;
-            
-            const [field, order] = sortValue.split('_');
-            
-            products.sort((a, b) => {
-                let aVal = a[field];
-                let bVal = b[field];
-                
-                // Para ordenação por nome
-                if (field === 'name') {
-                    aVal = aVal || '';
-                    bVal = bVal || '';
-                    return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-                }
-                
-                // Para ordenação por preço
-                if (field === 'price') {
-                    aVal = parseFloat(aVal) || 0;
-                    bVal = parseFloat(bVal) || 0;
-                    return order === 'asc' ? aVal - bVal : bVal - aVal;
-                }
-                
-                // Para ordenação por categoria
-                if (field === 'category') {
-                    aVal = aVal || '';
-                    bVal = bVal || '';
-                    return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-                }
-                
-                return 0;
-            });
-            
-            updateProductsDisplay();
-        };
-
-        window.saveProduct = async () => {
-            const name = document.getElementById('productName').value.trim();
-            const price = parseFloat(document.getElementById('productPrice').value);
-            const category = document.getElementById('productCategory').value;
-            
-            if (!name) {
-                showNotification('Digite o nome do produto', 'error');
-                return;
-            }
-            
-            if (isNaN(price) || price <= 0) {
-                showNotification('Digite um preço válido', 'error');
-                return;
-            }
-            
-            const loading = document.getElementById('loadingIndicator');
-            loading.classList.remove('hidden');
-            
-            try {
-                await addDoc(productsCollection, {
-                    name,
-                    price,
-                    category,
-                    createdAt: serverTimestamp(),
-                    salesCount: 0
-                });
-                
-                showNotification('Produto cadastrado!', 'success');
-                closeModal('productModal');
-                await loadProducts();
-            } catch (error) {
-                console.error("Erro ao salvar produto:", error);
-                showNotification('Erro ao salvar produto', 'error');
-            } finally {
-                loading.classList.add('hidden');
-            }
-        };
-
-        window.deleteProduct = async (productId) => {
-            if (confirm("Excluir este produto?")) {
-                try {
-                    await deleteDoc(doc(productsCollection, productId));
-                    showNotification('Produto excluído!', 'success');
-                    await loadProducts();
-                } catch (error) {
-                    console.error("Erro ao excluir produto:", error);
-                    showNotification('Erro ao excluir produto', 'error');
-                }
-            }
-        };
-
-        function updateProductsDisplay() {
-            const grid = document.getElementById('productsGrid');
-            const searchTerm = document.getElementById('productSearch')?.value.toLowerCase() || '';
-            
-            let filteredProducts = products;
-            
-            if (searchTerm) {
-                filteredProducts = products.filter(product => 
-                    product.name.toLowerCase().includes(searchTerm) ||
-                    (product.category && product.category.toLowerCase().includes(searchTerm))
-                );
-            }
-            
-            if (filteredProducts.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center p-8 text-gray-500">
-                        <i class="fas fa-box-open text-3xl text-gray-300 mb-3"></i>
-                        <p class="font-medium">Nenhum produto encontrado</p>
-                        <p class="text-sm mt-1">Adicione seu primeiro produto</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            grid.innerHTML = filteredProducts.map(product => `
-                <div class="card hover:shadow-lg transition-shadow">
-                    <div class="p-4">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold text-gray-800 truncate">${product.name}</h3>
-                            <button onclick="deleteProduct('${product.id}')" class="text-red-500 hover:text-red-700 flex-shrink-0 ml-2">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="mb-3">
-                            <span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                                ${product.category || 'Sem categoria'}
-                            </span>
-                        </div>
-                        <div class="text-lg font-bold text-agro-green mb-3">
-                            ${window.formatMoney(product.price)}
-                        </div>
-                        <button onclick="quickAdd('${product.name}', '${product.category || 'Outros'}', ${product.price})" 
-                                class="btn-primary w-full">
-                            <i class="fas fa-cart-plus mr-2"></i> Usar na Venda
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.searchProducts = () => {
-            updateProductsDisplay();
-        };
-
-        // Update screen with sales data
+        // --- Atualização da Tela Principal ---
         function updateScreen() {
             const now = new Date();
             const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
@@ -1296,36 +1496,34 @@
             const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
 
             const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
-            
             const totalToday = sum(todaySales);
             const totalYesterday = sum(yesterSales);
             const totalMonth = sum(monthSales);
-            
+
             const sumDinheiro = sum(todaySales.filter(s => s.payment === 'Dinheiro'));
             const sumPix = sum(todaySales.filter(s => s.payment === 'Pix'));
             const sumCard = sum(todaySales.filter(s => s.payment === 'Débito' || s.payment === 'Crédito'));
             const sumFiado = sum(todaySales.filter(s => s.payment === 'Fiado/Prazo'));
-            
+
             document.getElementById('dashTotalToday').textContent = window.formatMoney(totalToday);
             document.getElementById('dashTotalYesterday').textContent = window.formatMoney(totalYesterday);
             document.getElementById('dashTotalMonth').textContent = window.formatMoney(totalMonth);
-            
             document.getElementById('sumMoney').textContent = window.formatMoney(sumDinheiro);
             document.getElementById('sumPix').textContent = window.formatMoney(sumPix);
             document.getElementById('sumCard').textContent = window.formatMoney(sumCard);
             document.getElementById('sumFiado').textContent = window.formatMoney(sumFiado);
-            
+
             const avgTicket = todaySales.length > 0 ? totalToday / todaySales.length : 0;
             document.getElementById('averageTicket').textContent = window.formatMoney(avgTicket);
-            
-            document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('pt-BR', {
+
+            document.getElementById('dateDisplay').textContent = now.toLocaleDateString('pt-BR', {
                 weekday: 'long',
                 day: 'numeric',
                 month: 'long'
             });
 
             const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
-            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressBar').style.width = `${percent}%`;
             document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
             document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
 
@@ -1338,34 +1536,35 @@
             }
 
             const tbody = document.getElementById('todayTableBody');
-            tbody.innerHTML = '';
-            todaySales.forEach(s => {
-                tbody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 text-xs text-gray-500">${s.time}</td>
-                        <td class="p-3 font-bold text-gray-700">${s.desc}</td>
-                        <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 text-xs">${s.category || '-'}</span></td>
-                        <td class="p-3 text-xs text-gray-500">${s.payment}</td>
-                        <td class="p-3 text-right font-bold text-green-700">${window.formatMoney(s.value)}</td>
-                        <td class="p-3 text-center">
-                            <button onclick="window.deleteSale('${s.id}')" class="text-red-500 hover:text-red-700">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
-            });
-            
+            if (tbody) {
+                tbody.innerHTML = '';
+                todaySales.forEach(s => {
+                    tbody.innerHTML += `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-3 text-xs text-gray-500">${s.time}</td>
+                            <td class="p-3 font-bold text-gray-700">${s.desc}</td>
+                            <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 text-xs">${s.category || '-'}</span></td>
+                            <td class="p-3 text-xs text-gray-500">${s.payment}</td>
+                            <td class="p-3 text-right font-bold text-green-700">${window.formatMoney(s.value)}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="window.deleteSale('${s.id}', '${s.timestamp}')" class="text-red-500 hover:text-red-700">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+            }
+
             if(!document.getElementById('tab-history').classList.contains('hidden')) {
                 window.filterHistory();
             }
         }
 
-        // History filtering
+        // --- Funções de Histórico ---
         window.filterHistory = () => {
             const m = document.getElementById('filterMonth').value;
             const d = document.getElementById('filterDate').value;
             let list = localSales;
-            
             if (d) {
                 list = list.filter(s => s.date === d);
                 document.getElementById('filterMonth').value = '';
@@ -1373,16 +1572,14 @@
                 list = list.filter(s => s.date.startsWith(m));
                 document.getElementById('filterDate').value = '';
             }
-            
             const total = list.reduce((sum, sale) => sum + sale.value, 0);
             document.getElementById('historyTotal').textContent = window.formatMoney(total);
-            
             renderHistoryTable(list);
         };
 
         function renderHistoryTable(sales) {
             const tbody = document.getElementById('historyTableBody');
-            
+            if (!tbody) return; // Proteção
             if (sales.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -1395,7 +1592,6 @@
                 `;
                 return;
             }
-            
             tbody.innerHTML = sales.map(sale => {
                 const dateBR = sale.date.split('-').reverse().join('/');
                 return `
@@ -1406,7 +1602,7 @@
                         <td class="p-3 text-xs text-gray-500">${sale.payment}</td>
                         <td class="p-3 text-right font-bold text-gray-700">${window.formatMoney(sale.value)}</td>
                         <td class="p-3 text-center">
-                            <button onclick="window.deleteSale('${sale.id}')" class="text-red-500 hover:text-red-700">
+                            <button onclick="window.deleteSale('${sale.id}', '${sale.timestamp}')" class="text-red-500 hover:text-red-700">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -1420,80 +1616,253 @@
             window.filterHistory();
         };
 
-        // Export Functions
+        // --- Funções de Relatórios Avançados ---
+        function updateReports(startDateISO, endDateISO, categoryFilter = '') {
+            // Filtra vendas no período
+            let filteredSales = localSales.filter(sale => {
+                const saleDate = new Date(sale.date + 'T00:00:00');
+                const start = new Date(startDateISO + 'T00:00:00');
+                const end = new Date(endDateISO + 'T23:59:59');
+                const matchesDate = saleDate >= start && saleDate <= end;
+                const matchesCategory = !categoryFilter || sale.category === categoryFilter;
+                return matchesDate && matchesCategory;
+            });
+
+            const totalSales = filteredSales.reduce((sum, s) => sum + s.value, 0);
+            const totalCount = filteredSales.length;
+            const avgTicket = totalCount > 0 ? totalSales / totalCount : 0;
+
+            // Calcula lucro estimado
+            let totalProfit = 0;
+            filteredSales.forEach(sale => {
+                const product = products.find(p => p.name === sale.desc);
+                if (product && product.cost) {
+                    const profitPerItem = sale.value - product.cost;
+                    totalProfit += profitPerItem;
+                }
+            });
+
+            document.getElementById('customTotalSales').textContent = window.formatMoney(totalSales);
+            document.getElementById('customTotalCount').textContent = totalCount;
+            document.getElementById('customAverageTicket').textContent = window.formatMoney(avgTicket);
+            document.getElementById('customProfit').textContent = window.formatMoney(totalProfit);
+
+            // --- Atualizar Gráficos ---
+            updateDailySalesChart(filteredSales);
+            updateCategoryChart(filteredSales);
+            updateTopProductsTable(filteredSales);
+        }
+
+        function updateDailySalesChart(sales) {
+            const ctx = document.getElementById('dailySalesChart').getContext('2d');
+            // Agrupa vendas por dia
+            const dailyData = {};
+            sales.forEach(sale => {
+                if (!dailyData[sale.date]) {
+                    dailyData[sale.date] = 0;
+                }
+                dailyData[sale.date] += sale.value;
+            });
+
+            const dates = Object.keys(dailyData).sort();
+            const values = dates.map(date => dailyData[date]);
+
+            if (dailySalesChart) {
+                dailySalesChart.destroy();
+            }
+            dailySalesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Vendas (R$)',
+                        data: values,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Evolução Diária'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCategoryChart(sales) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            // Agrupa vendas por categoria
+            const categoryData = {};
+            sales.forEach(sale => {
+                if (!categoryData[sale.category]) {
+                    categoryData[sale.category] = 0;
+                }
+                categoryData[sale.category] += sale.value;
+            });
+
+            const categories = Object.keys(categoryData);
+            const values = Object.values(categoryData);
+
+            if (categoryChart) {
+                categoryChart.destroy();
+            }
+            categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Vendas por Categoria (R$)',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 205, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)',
+                            'rgba(199, 199, 199, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribuição por Categoria'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTopProductsTable(sales) {
+            const topProductsData = {};
+            sales.forEach(sale => {
+                if (!topProductsData[sale.desc]) {
+                    topProductsData[sale.desc] = { count: 0, totalValue: 0, totalProfit: 0 };
+                }
+                topProductsData[sale.desc].count++;
+                topProductsData[sale.desc].totalValue += sale.value;
+                // Calcula lucro estimado para o produto
+                const product = products.find(p => p.name === sale.desc);
+                if (product && product.cost) {
+                    topProductsData[sale.desc].totalProfit += (sale.value - product.cost);
+                }
+            });
+
+            const sortedProducts = Object.entries(topProductsData)
+                .sort((a, b) => b[1].count - a[1].count)
+                .slice(0, 10); // Top 10
+
+            const tbody = document.getElementById('topProductsTableBody');
+            tbody.innerHTML = '';
+            sortedProducts.forEach(([name, data]) => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 font-bold">${name}</td>
+                        <td class="p-3 text-center">${data.count}</td>
+                        <td class="p-3 text-right font-bold text-gray-700">${window.formatMoney(data.totalValue)}</td>
+                        <td class="p-3 text-right font-bold text-purple-600">${window.formatMoney(data.totalProfit)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.applyCustomFilter = () => {
+            const start = document.getElementById('customFilterStart').value;
+            const end = document.getElementById('customFilterEnd').value;
+            const category = document.getElementById('customFilterCategory').value;
+            if (!start || !end) {
+                showNotification('Selecione as datas inicial e final', 'error');
+                return;
+            }
+            if (new Date(start) > new Date(end)) {
+                showNotification('Data inicial não pode ser maior que a final', 'error');
+                return;
+            }
+            updateReports(start, end, category);
+        };
+
+        // --- Funções de Exportação (mantidas iguais) ---
         window.exportCatalogPDF = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Cabeçalho
             doc.setFontSize(20);
             doc.setTextColor(0, 144, 54);
             doc.text('Catálogo de Produtos - AgroVida+', 105, 15, null, null, 'center');
-            
             doc.setFontSize(12);
             doc.setTextColor(100, 100, 100);
             doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 105, 25, null, null, 'center');
-            
-            // Dados da tabela
             const tableData = products.map(p => [
                 p.name || '',
                 p.category || '',
+                p.unit || 'Un',
+                p.sku || '-',
                 window.formatMoney(p.price || 0).replace('R$ ', ''),
+                window.formatMoney(p.cost || 0).replace('R$ ', ''), // Novo campo
                 p.salesCount || 0
             ]);
-            
             doc.autoTable({
-                head: [['Produto', 'Categoria', 'Preço (R$)', 'Vendas']],
+                head: [['Produto', 'Categoria', 'Unidade', 'SKU', 'Preço (R$)', 'Custo (R$)', 'Vendas']],
                 body: tableData,
                 startY: 35,
                 theme: 'grid',
                 headStyles: { fillColor: [0, 144, 54], textColor: [255, 255, 255] },
                 styles: { fontSize: 10 },
                 columnStyles: {
-                    2: { halign: 'right' },
-                    3: { halign: 'right' }
+                    4: { halign: 'right' },
+                    5: { halign: 'right' },
+                    6: { halign: 'right' }
                 }
             });
-            
-            // Rodapé
             const finalY = doc.lastAutoTable.finalY + 10;
             doc.setFontSize(10);
             doc.setTextColor(150, 150, 150);
             doc.text(`Total de produtos: ${products.length}`, 105, finalY, null, null, 'center');
-            
             doc.save(`catalogo-agrovida-${new Date().toISOString().slice(0,10)}.pdf`);
-            
             showNotification('Catálogo exportado em PDF!', 'success');
         };
-
         window.exportCatalogExcel = () => {
             const data = products.map(p => ({
                 'Produto': p.name || '',
                 'Categoria': p.category || '',
+                'Unidade': p.unit || 'Un',
+                'SKU': p.sku || '',
                 'Preço (R$)': p.price || 0,
+                'Custo (R$)': p.cost || 0, // Novo campo
                 'Vendas': p.salesCount || 0,
                 'Data Cadastro': p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-'
             }));
-            
             const worksheet = XLSX.utils.json_to_sheet(data);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo');
-            
-            // Auto ajustar largura das colunas
             const wscols = [
                 { wch: 30 }, // Produto
                 { wch: 15 }, // Categoria
+                { wch: 10 }, // Unidade
+                { wch: 15 }, // SKU
                 { wch: 15 }, // Preço
+                { wch: 15 }, // Custo
                 { wch: 10 }, // Vendas
                 { wch: 15 }  // Data
             ];
             worksheet['!cols'] = wscols;
-            
             XLSX.writeFile(workbook, `catalogo-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
-            
             showNotification('Catálogo exportado em Excel!', 'success');
         };
-
         window.exportHistoryExcel = () => {
             const data = localSales.map(s => ({
                 'Data': s.date.split('-').reverse().join('/'),
@@ -1503,12 +1872,9 @@
                 'Pagamento': s.payment || '',
                 'Valor (R$)': s.value || 0
             }));
-            
             const worksheet = XLSX.utils.json_to_sheet(data);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendas');
-            
-            // Auto ajustar largura das colunas
             const wscols = [
                 { wch: 12 }, // Data
                 { wch: 10 }, // Hora
@@ -1518,16 +1884,12 @@
                 { wch: 15 }  // Valor
             ];
             worksheet['!cols'] = wscols;
-            
             XLSX.writeFile(workbook, `vendas-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
-            
             showNotification('Histórico exportado em Excel!', 'success');
         };
-
         window.exportCurrentMonthExcel = () => {
             const currentMonthISO = new Date().toISOString().slice(0,7);
             const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
-            
             const data = monthSales.map(s => ({
                 'Data': s.date.split('-').reverse().join('/'),
                 'Hora': s.time || '',
@@ -1536,10 +1898,7 @@
                 'Pagamento': s.payment || '',
                 'Valor (R$)': s.value || 0
             }));
-            
             const total = monthSales.reduce((sum, sale) => sum + sale.value, 0);
-            
-            // Adicionar linha de total
             data.push({
                 'Data': 'TOTAL',
                 'Hora': '',
@@ -1548,16 +1907,12 @@
                 'Pagamento': '',
                 'Valor (R$)': total
             });
-            
             const worksheet = XLSX.utils.json_to_sheet(data);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendas Mês');
-            
             XLSX.writeFile(workbook, `vendas-mes-${currentMonthISO}.xlsx`);
-            
             showNotification('Vendas do mês exportadas em Excel!', 'success');
         };
-
         window.createFullBackup = () => {
             const backupData = {
                 timestamp: new Date().toISOString(),
@@ -1569,72 +1924,56 @@
                     quickSaleData: quickSaleData
                 }
             };
-            
             const dataStr = JSON.stringify(backupData, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
             const exportFileDefaultName = `backup-agrovida-${new Date().toISOString().slice(0,10)}.json`;
-            
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
-            
             showNotification('Backup criado com sucesso!', 'success');
         };
 
-        // Settings functions
+        // --- Funções de Configurações ---
         function updateSettingsInfo() {
             document.getElementById('totalSalesCount').textContent = localSales.length;
             document.getElementById('totalProductsCount').textContent = products.length;
             document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('pt-BR');
-            
-            // Atualizar meta padrão
-            const defaultGoal = localStorage.getItem('defaultMonthlyGoal') || 5000;
+            const defaultGoal = parseFloat(localStorage.getItem('defaultMonthlyGoal')) || 5000;
             document.getElementById('defaultMonthlyGoal').value = defaultGoal;
-            
-            // Atualizar nome da loja
             const storeName = localStorage.getItem('storeName') || 'AgroVida+';
             document.getElementById('storeName').value = storeName;
         }
-
         window.changePassword = () => {
             showModal('passwordModal');
         };
-
         window.confirmPasswordChange = () => {
             const newPass = document.getElementById('newPassword').value;
             const confirmPass = document.getElementById('confirmPassword').value;
-            
             if (!newPass || !confirmPass) {
                 showNotification('Preencha ambos os campos', 'error');
                 return;
             }
-            
             if (newPass !== confirmPass) {
                 showNotification('As senhas não coincidem', 'error');
                 return;
             }
-            
             SENHA_LOJA = newPass;
+            localStorage.setItem('senhaAgro', newPass); // Armazena a nova senha
             document.getElementById('currentPassword').value = newPass;
             closeModal('passwordModal');
             showNotification('Senha alterada com sucesso!', 'success');
         };
-
-        // Salvar configurações quando sair dos campos
         document.getElementById('defaultMonthlyGoal').addEventListener('change', (e) => {
             localStorage.setItem('defaultMonthlyGoal', e.target.value);
             showNotification('Meta padrão salva!', 'success');
         });
-
         document.getElementById('storeName').addEventListener('change', (e) => {
             localStorage.setItem('storeName', e.target.value);
             showNotification('Nome da loja atualizado!', 'success');
         });
-
         window.clearAllData = () => {
-            if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os dados do sistema. Esta ação não pode ser desfeita.\n\nDigite "CONFIRMAR" para continuar:') === 'CONFIRMAR') {
+            if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os dados do sistema. Esta ação não pode ser desfeita.\nDigite "CONFIRMAR" para continuar:') === 'CONFIRMAR') {
                 if (confirm('ÚLTIMA CONFIRMAÇÃO: Tem certeza que deseja apagar TODOS os dados?')) {
                     localStorage.clear();
                     window.location.reload();
@@ -1642,7 +1981,7 @@
             }
         };
 
-        // Notification system
+        // --- Sistema de Notificações ---
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -1650,71 +1989,132 @@
                 <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
                 <span>${message}</span>
             `;
-            
             document.body.appendChild(notification);
-            
             setTimeout(() => {
                 notification.style.animation = 'slideOutRight 0.3s ease';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
 
-        // Initialize
-        const q = query(salesCollection, orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            localSales = snapshot.docs.map(doc => ({ 
-                id: doc.id, 
-                ...doc.data(),
-                value: parseFloat(doc.data().value) || 0
-            }));
-            updateScreen();
-            updateQuickSaleButtons();
-            if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) {
-                updateSettingsInfo();
+        // --- Melhor Formatação de Dados ---
+        // Formatação automática para campos de moeda
+        document.getElementById('value').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+            value = (parseFloat(value) / 100).toFixed(2); // Converte para float e divide por 100
+            e.target.value = value.replace('.', ','); // Substitui ponto por vírgula
+        });
+
+        document.getElementById('productPrice').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = (parseFloat(value) / 100).toFixed(2);
+            e.target.value = value.replace('.', ',');
+        });
+
+        document.getElementById('productCost').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = (parseFloat(value) / 100).toFixed(2);
+            e.target.value = value.replace('.', ',');
+        });
+
+        // --- Pesquisa Instantânea e Sugestões ---
+        const descInput = document.getElementById('desc');
+        const suggestionsDiv = document.getElementById('descSuggestions');
+
+        descInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            if (query.length < 2) {
+                suggestionsDiv.classList.add('hidden');
+                return;
+            }
+
+            const matches = products
+                .filter(p => p.name.toLowerCase().includes(query))
+                .slice(0, 5); // Limita a 5 sugestões
+
+            if (matches.length > 0) {
+                suggestionsDiv.innerHTML = matches.map(p => 
+                    `<div class="search-suggestion-item" onclick="selectSuggestion('${p.name}', '${p.category}', ${p.price})">${p.name}</div>`
+                ).join('');
+                suggestionsDiv.classList.remove('hidden');
+            } else {
+                suggestionsDiv.classList.add('hidden');
             }
         });
 
-        // Load products on startup
+        descInput.addEventListener('blur', function() {
+            // Adiciona um pequeno atraso para que o clique na sugestão seja processado
+            setTimeout(() => {
+                suggestionsDiv.classList.add('hidden');
+            }, 200);
+        });
+
+        window.selectSuggestion = (name, category, price) => {
+            descInput.value = name;
+            document.getElementById('category').value = category;
+            document.getElementById('value').value = price.toFixed(2).replace('.', ',');
+            suggestionsDiv.classList.add('hidden');
+            descInput.focus();
+        };
+
+        // --- Inicialização e Sincronização com Firestore ---
+        const q = query(salesCollection, orderBy("timestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            const updatedSales = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                value: parseFloat(doc.data().value) || 0
+            }));
+
+            if (JSON.stringify(localSales) !== JSON.stringify(updatedSales)) {
+                localSales = updatedSales;
+                updateScreen();
+                updateQuickSaleButtons();
+                if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) {
+                    updateSettingsInfo();
+                }
+                // Atualiza os relatórios se a aba estiver ativa
+                if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) {
+                    applyCustomFilter(); // Recalcula com os dados atualizados
+                }
+            }
+        }, (error) => {
+             console.error("Erro no listener de vendas:", error);
+        });
+
+        // --- Eventos e Inicializações ---
         window.addEventListener('load', async () => {
             await loadProducts();
             updateCategorySelect();
             loadCategories();
-            
-            // Set default dates for filters
+            loadFilterCategories(); // Para os filtros de relatórios e produtos
+
             const now = new Date();
             const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
             const currentMonth = today.substring(0, 7);
-            
             document.getElementById('filterMonth').value = currentMonth;
             document.getElementById('filterMonth').max = currentMonth;
             document.getElementById('filterDate').max = today;
-            
-            // Close modal when clicking outside
+
+            // Define datas padrão para relatórios (últimos 30 dias)
+            const thirtyDaysAgo = new Date(now);
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            const thirtyDaysISO = new Date(thirtyDaysAgo.getTime() - (thirtyDaysAgo.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            document.getElementById('customFilterStart').value = thirtyDaysISO;
+            document.getElementById('customFilterEnd').value = today;
+
             document.addEventListener('click', (e) => {
                 if (e.target.classList.contains('modal-overlay')) {
                     e.target.classList.remove('active');
                 }
             });
-            
-            // Enter key support
+
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && document.activeElement === document.getElementById('desc')) {
+                    e.preventDefault();
                     document.getElementById('value').focus();
                 } else if (e.key === 'Enter' && document.activeElement === document.getElementById('value')) {
+                    e.preventDefault();
                     window.addSale();
-                }
-            });
-            
-            // Atualizar contagem de vendas nos produtos
-            products.forEach(async (product) => {
-                const salesCount = localSales.filter(s => s.desc === product.name).length;
-                if (salesCount !== product.salesCount) {
-                    try {
-                        const productRef = doc(productsCollection, product.id);
-                        await updateDoc(productRef, { salesCount });
-                    } catch (error) {
-                        console.error("Erro ao atualizar contagem de vendas:", error);
-                    }
                 }
             });
         });
