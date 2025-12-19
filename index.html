@@ -379,7 +379,7 @@
                 </div>
             </button>
         </nav>
-        <div class="p-4 text-center text-xs text-white/60">v5.1.0</div>
+        <div class="p-4 text-center text-xs text-white/60">v5.1.2</div>
     </aside>
     <!-- Main Content -->
     <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
@@ -443,13 +443,7 @@
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
                             <select id="category" class="input-field">
-                                <option value="Ração">Ração</option>
-                                <option value="Medicamento">Medicamento</option>
-                                <option value="Ferramentas">Ferramentas</option>
-                                <option value="Sementes">Sementes</option>
-                                <option value="Acessórios">Acessórios</option>
-                                <option value="Serviço/Vet">Serviço/Vet</option>
-                                <option value="Outros">Outros</option>
+                                <!-- Categorias serão carregadas dinamicamente -->
                             </select>
                         </div>
                         <div class="md:col-span-2">
@@ -470,18 +464,6 @@
                             <button onclick="addSale()" class="btn-primary w-full h-[46px] flex items-center justify-center">
                                 <i class="fas fa-check mr-2"></i> Adicionar
                             </button>
-                        </div>
-                    </div>
-                    <!-- Quick Sale Buttons -->
-                    <div class="mt-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm font-medium text-gray-700">Venda Rápida</span>
-                            <button onclick="refreshQuickSaleButtons()" class="text-xs text-agro-green hover:text-green-700">
-                                <i class="fas fa-sync-alt mr-1"></i> Atualizar
-                            </button>
-                        </div>
-                        <div class="quick-sale-buttons" id="quickSaleButtons">
-                            <!-- Botões serão carregados aqui -->
                         </div>
                     </div>
                 </div>
@@ -809,7 +791,7 @@
                     <div class="space-y-3">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Versão</span>
-                            <span class="font-medium">5.1.0</span>
+                            <span class="font-medium">5.1.2</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Total de Vendas</span>
@@ -864,7 +846,7 @@
     <!-- Product Modal -->
     <div id="productModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Adicionar Produto</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-4" id="productModalTitle">Adicionar Produto</h3>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto *</label>
@@ -878,6 +860,16 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Preço de Custo (R$)</label>
                         <input type="text" id="productCost" class="input-field input-currency">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preço com Desconto (R$)</label>
+                        <input type="text" id="productDiscountPrice" class="input-field input-currency" placeholder="Opcional">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor Mínimo com Desconto</label>
+                        <input type="number" id="productMinQuantityForDiscount" class="input-field" placeholder="Quantidade mínima">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -901,14 +893,10 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">SKU/Código de Barras</label>
                     <input type="text" id="productSKU" class="input-field" placeholder="Ex: ABC123">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Imagem do Produto</label>
-                    <input type="file" id="productImage" class="input-field" accept="image/*">
-                </div>
             </div>
             <div class="mt-6 flex justify-end gap-3">
                 <button onclick="closeModal('productModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
-                <button onclick="saveProduct()" class="btn-primary px-4 py-2">Salvar Produto</button>
+                <button onclick="saveProduct()" id="saveProductBtn" class="btn-primary px-4 py-2">Salvar Produto</button>
             </div>
         </div>
     </div>
@@ -994,12 +982,12 @@
         let localSales = [];
         let products = [];
         let metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
-        let quickSaleData = JSON.parse(localStorage.getItem('quickSaleData')) || {};
         let categories = JSON.parse(localStorage.getItem('agroCategories')) || [
             'Ração', 'Medicamento', 'Ferramentas', 'Sementes', 
             'Acessórios', 'Serviço/Vet', 'Outros'
         ];
         let currentProductSort = 'name_asc';
+        let editingProductId = null; // Para controle de edição
 
         // --- Gráficos ---
         let dailySalesChart = null;
@@ -1035,27 +1023,68 @@
                 updateSettingsInfo();
                 loadCategories();
             }
+            if (tab === 'dashboard') {
+                updateCategorySelectForSales();
+            }
         };
 
         window.showModal = (modalId) => {
             document.getElementById(modalId).classList.add('active');
         };
+        
         window.closeModal = (modalId) => {
             document.getElementById(modalId).classList.remove('active');
         };
+        
         window.showAddProductModal = () => {
+            editingProductId = null;
+            document.getElementById('productModalTitle').textContent = 'Adicionar Produto';
+            document.getElementById('saveProductBtn').textContent = 'Salvar Produto';
             document.getElementById('productName').value = '';
             document.getElementById('productPrice').value = '';
             document.getElementById('productCost').value = '';
+            document.getElementById('productDiscountPrice').value = '';
+            document.getElementById('productMinQuantityForDiscount').value = '';
             document.getElementById('productSKU').value = '';
-            document.getElementById('productImage').value = '';
-            updateCategorySelect();
             document.getElementById('productCategory').value = categories[0] || 'Outros';
             document.getElementById('productUnit').value = 'Un';
             window.showModal('productModal');
         };
+        
+        window.showEditProductModal = (productId) => {
+            console.log("Editando produto com ID:", productId);
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                console.error("Produto não encontrado!");
+                showNotification("Produto não encontrado", "error");
+                return;
+            }
+            
+            editingProductId = productId;
+            document.getElementById('productModalTitle').textContent = 'Editar Produto';
+            document.getElementById('saveProductBtn').textContent = 'Atualizar Produto';
+            document.getElementById('productName').value = product.name || '';
+            document.getElementById('productPrice').value = (product.price || 0).toFixed(2).replace('.', ',');
+            document.getElementById('productCost').value = (product.cost || 0).toFixed(2).replace('.', ',');
+            document.getElementById('productDiscountPrice').value = (product.discountPrice || 0) > 0 ? (product.discountPrice || 0).toFixed(2).replace('.', ',') : '';
+            document.getElementById('productMinQuantityForDiscount').value = product.minQuantityForDiscount || '';
+            document.getElementById('productSKU').value = product.sku || '';
+            document.getElementById('productCategory').value = product.category || categories[0] || 'Outros';
+            document.getElementById('productUnit').value = product.unit || 'Un';
+            window.showModal('productModal');
+        };
+        
         function updateCategorySelect() {
             const select = document.getElementById('productCategory');
+            if (select) {
+                select.innerHTML = categories.map(cat => 
+                    `<option value="${cat}">${cat}</option>`
+                ).join('');
+            }
+        }
+        
+        function updateCategorySelectForSales() {
+            const select = document.getElementById('category');
             if (select) {
                 select.innerHTML = categories.map(cat => 
                     `<option value="${cat}">${cat}</option>`
@@ -1077,6 +1106,7 @@
                 `).join('');
             }
         }
+        
         window.addCategory = () => {
             const newCat = document.getElementById('newCategory').value.trim();
             if (newCat && !categories.includes(newCat)) {
@@ -1084,17 +1114,20 @@
                 localStorage.setItem('agroCategories', JSON.stringify(categories));
                 loadCategories();
                 updateCategorySelect();
+                updateCategorySelectForSales(); // ATUALIZA O SELECT DE VENDAS
                 loadFilterCategories(); // Atualiza o filtro de relatórios
                 document.getElementById('newCategory').value = '';
                 showNotification('Categoria adicionada!', 'success');
             }
         };
+        
         window.removeCategory = (index) => {
             if (confirm(`Remover categoria "${categories[index]}"?`)) {
                 categories.splice(index, 1);
                 localStorage.setItem('agroCategories', JSON.stringify(categories));
                 loadCategories();
                 updateCategorySelect();
+                updateCategorySelectForSales(); // ATUALIZA O SELECT DE VENDAS
                 loadFilterCategories(); // Atualiza o filtro de relatórios
                 showNotification('Categoria removida!', 'success');
             }
@@ -1109,7 +1142,9 @@
                     id: doc.id,
                     ...doc.data(),
                     price: parseFloat(doc.data().price) || 0,
-                    cost: parseFloat(doc.data().cost) || 0, // Novo campo
+                    cost: parseFloat(doc.data().cost) || 0,
+                    discountPrice: parseFloat(doc.data().discountPrice) || 0,
+                    minQuantityForDiscount: parseInt(doc.data().minQuantityForDiscount) || 0,
                     salesCount: parseInt(doc.data().salesCount) || 0
                 }));
                 sortProducts();
@@ -1154,10 +1189,11 @@
             const name = document.getElementById('productName').value.trim();
             const priceStr = document.getElementById('productPrice').value;
             const costStr = document.getElementById('productCost').value;
+            const discountPriceStr = document.getElementById('productDiscountPrice').value;
+            const minQuantityForDiscount = document.getElementById('productMinQuantityForDiscount').value;
             const category = document.getElementById('productCategory').value;
             const unit = document.getElementById('productUnit').value;
             const sku = document.getElementById('productSKU').value.trim();
-            const imageFile = document.getElementById('productImage').files[0];
 
             if (!name) {
                 showNotification('Digite o nome do produto', 'error');
@@ -1165,12 +1201,18 @@
             }
             const price = parseFloat(priceStr.replace(',', '.'));
             const cost = parseFloat(costStr.replace(',', '.')) || 0;
+            const discountPrice = discountPriceStr ? parseFloat(discountPriceStr.replace(',', '.')) : 0;
+            
             if (isNaN(price) || price <= 0) {
                 showNotification('Digite um preço de venda válido', 'error');
                 return;
             }
             if (cost < 0) {
                 showNotification('O custo não pode ser negativo', 'error');
+                return;
+            }
+            if (discountPrice > price) {
+                showNotification('O preço com desconto não pode ser maior que o preço normal', 'error');
                 return;
             }
 
@@ -1182,21 +1224,25 @@
                     name,
                     price,
                     cost,
+                    discountPrice,
+                    minQuantityForDiscount: minQuantityForDiscount || 0,
                     category,
-                    unit, // Nova propriedade
-                    sku,  // Nova propriedade
-                    createdAt: serverTimestamp(),
+                    unit,
+                    sku,
+                    updatedAt: serverTimestamp(),
                     salesCount: 0
                 };
 
-                // Upload de imagem (simulado)
-                if (imageFile) {
-                    // Em um ambiente real, você usaria Firebase Storage
-                    productData.imageURL = URL.createObjectURL(imageFile); // Simula URL local
+                // Se estiver editando, atualiza. Senão, cria novo.
+                if (editingProductId) {
+                    await updateDoc(doc(productsCollection, editingProductId), productData);
+                    showNotification('Produto atualizado!', 'success');
+                } else {
+                    productData.createdAt = serverTimestamp();
+                    await addDoc(productsCollection, productData);
+                    showNotification('Produto cadastrado!', 'success');
                 }
-
-                const docRef = await addDoc(productsCollection, productData);
-                showNotification('Produto cadastrado!', 'success');
+                
                 closeModal('productModal');
                 await loadProducts();
             } catch (error) {
@@ -1256,9 +1302,14 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="font-bold text-gray-800 truncate">${product.name}</h3>
-                            <button onclick="deleteProduct('${product.id}')" class="text-red-500 hover:text-red-700 flex-shrink-0 ml-2">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="window.showEditProductModal('${product.id}')" class="text-blue-500 hover:text-blue-700 flex-shrink-0">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteProduct('${product.id}')" class="text-red-500 hover:text-red-700 flex-shrink-0">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="flex items-center gap-2 mb-3">
                             <span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
@@ -1271,10 +1322,23 @@
                                 SKU: ${product.sku}
                             </span>` : ''}
                         </div>
-                        <div class="text-lg font-bold text-agro-green mb-3">
-                            ${window.formatMoney(product.price)}
+                        <div class="space-y-2 mb-3">
+                            <div class="text-lg font-bold text-agro-green">
+                                ${window.formatMoney(product.price)}
+                            </div>
+                            ${product.discountPrice > 0 ? `
+                                <div class="text-sm font-bold text-green-600">
+                                    <i class="fas fa-tag mr-1"></i> Com desconto: ${window.formatMoney(product.discountPrice)}
+                                    ${product.minQuantityForDiscount > 0 ? 
+                                        `<span class="text-xs text-gray-500">(Mín. ${product.minQuantityForDiscount} un)</span>` : ''}
+                                </div>
+                            ` : ''}
+                            ${product.cost > 0 ? `
+                                <div class="text-xs text-gray-500">
+                                    Custo: ${window.formatMoney(product.cost)}
+                                </div>
+                            ` : ''}
                         </div>
-                        ${product.imageURL ? `<img src="${product.imageURL}" alt="${product.name}" class="product-image-thumb mb-3 mx-auto">` : ''}
                         <button onclick="quickAdd('${product.name}', '${product.category || 'Outros'}', ${product.price})" 
                                 class="btn-primary w-full">
                             <i class="fas fa-cart-plus mr-2"></i> Usar na Venda
@@ -1333,20 +1397,12 @@
             // Otimização: Adiciona localmente primeiro para feedback imediato
             localSales.unshift(saleData);
             updateScreen();
-            updateQuickSaleButtons();
 
             try {
                 await addDoc(salesCollection, saleData);
-                // Atualiza quick sale data local
-                if (!quickSaleData[desc]) {
-                    quickSaleData[desc] = { category: saleData.category, price: price, count: 0 };
-                }
-                quickSaleData[desc].count++;
-                localStorage.setItem('quickSaleData', JSON.stringify(quickSaleData));
                 document.getElementById('desc').value = '';
                 document.getElementById('value').value = '';
                 document.getElementById('desc').focus();
-                // showNotification('Venda registrada!', 'success'); // Feedback local é suficiente
             } catch(e) {
                 console.error("Erro ao salvar no Firestore:", e);
                 if (navigator.onLine) {
@@ -1380,13 +1436,72 @@
             }
         };
 
-        window.editMeta = () => {
+        // --- META MENSAL GLOBAL NO FIRESTORE ---
+        async function loadMetaMensal() {
+            try {
+                const metaDoc = doc(settingsCollection, "metaMensal");
+                const metaSnapshot = await getDoc(metaDoc);
+                if (metaSnapshot.exists()) {
+                    metaMensal = metaSnapshot.data().valor || 5000;
+                } else {
+                    // Cria documento padrão se não existir
+                    await setDoc(metaDoc, { valor: 5000 });
+                }
+                updateMetaDisplay();
+            } catch (error) {
+                console.error("Erro ao carregar meta do Firestore:", error);
+                metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
+                updateMetaDisplay();
+            }
+        }
+
+        async function saveMetaMensal(novoValor) {
+            try {
+                const metaDoc = doc(settingsCollection, "metaMensal");
+                await setDoc(metaDoc, { valor: novoValor });
+                metaMensal = novoValor;
+                localStorage.setItem('metaAgro', novoValor);
+                updateMetaDisplay();
+                showNotification('Meta atualizada globalmente!', 'success');
+                return true;
+            } catch (error) {
+                console.error("Erro ao salvar meta no Firestore:", error);
+                // Fallback para localStorage
+                metaMensal = novoValor;
+                localStorage.setItem('metaAgro', novoValor);
+                updateMetaDisplay();
+                showNotification('Meta atualizada localmente', 'warning');
+                return false;
+            }
+        }
+
+        function updateMetaDisplay() {
+            document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
+            
+            // Atualiza a barra de progresso
+            const now = new Date();
+            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const currentMonthISO = todayISO.substring(0, 7);
+            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
+            const totalMonth = monthSales.reduce((acc, c) => acc + c.value, 0);
+            
+            const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
+
+            if(percent >= 100) {
+                 document.getElementById('progressBar').classList.replace('from-green-400', 'from-yellow-400');
+                 document.getElementById('progressBar').classList.replace('to-green-600', 'to-yellow-600');
+            } else {
+                 document.getElementById('progressBar').classList.replace('from-yellow-400', 'from-green-400');
+                 document.getElementById('progressBar').classList.replace('to-yellow-600', 'to-green-600');
+            }
+        }
+
+        window.editMeta = async () => {
             const nova = prompt("Nova Meta (R$):", metaMensal);
             if(nova && !isNaN(nova)) {
-                metaMensal = parseFloat(nova);
-                localStorage.setItem('metaAgro', metaMensal);
-                updateScreen();
-                showNotification('Meta atualizada!', 'success');
+                await saveMetaMensal(parseFloat(nova));
             }
         };
 
@@ -1394,92 +1509,6 @@
             const t = new Date();
             document.getElementById('filterMonth').value = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0');
             window.showTab('history');
-        };
-
-        // --- Atualização dos Botões de Venda Rápida ---
-        function updateQuickSaleButtons() {
-            const salesFrequency = {};
-            localSales.forEach(sale => {
-                if (sale.desc) {
-                    salesFrequency[sale.desc] = (salesFrequency[sale.desc] || 0) + 1;
-                }
-            });
-
-            const sortedSales = Object.entries(salesFrequency)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 8);
-
-            const container = document.getElementById('quickSaleButtons');
-            if (!container) return; // Proteção
-
-            if (sortedSales.length === 0) {
-                container.innerHTML = `
-                    <button onclick="quickAdd('Ração Premium', 'Ração', 89.90)" class="quick-sale-btn p-3 bg-green-50 rounded-lg hover:bg-green-100 transition border border-green-100 text-left">
-                        <div class="font-medium text-sm text-gray-800">Ração Premium</div>
-                        <div class="text-xs text-gray-500">${window.formatMoney(89.90)}</div>
-                    </button>
-                    <button onclick="quickAdd('Vermífugo', 'Medicamento', 35.50)" class="quick-sale-btn p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition border border-blue-100 text-left">
-                        <div class="font-medium text-sm text-gray-800">Vermífugo</div>
-                        <div class="text-xs text-gray-500">${window.formatMoney(35.50)}</div>
-                    </button>
-                    <button onclick="quickAdd('Consulta Veterinária', 'Serviço/Vet', 120.00)" class="quick-sale-btn p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition border border-purple-100 text-left">
-                        <div class="font-medium text-sm text-gray-800">Consulta Vet</div>
-                        <div class="text-xs text-gray-500">${window.formatMoney(120.00)}</div>
-                    </button>
-                    <button onclick="quickAdd('Ferramenta Agrícola', 'Ferramentas', 45.00)" class="quick-sale-btn p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition border border-orange-100 text-left">
-                        <div class="font-medium text-sm text-gray-800">Ferramenta</div>
-                        <div class="text-xs text-gray-500">${window.formatMoney(45.00)}</div>
-                    </button>
-                `;
-                return;
-            }
-
-            let buttonsHTML = '';
-            sortedSales.forEach(([productName, count]) => {
-                const product = products.find(p => p.name === productName) ||
-                               localSales.find(s => s.desc === productName);
-                if (product) {
-                    const price = product.price || 0;
-                    const category = product.category || 'Outros';
-                    const colorClass = getCategoryColorClass(category);
-                    buttonsHTML += `
-                        <button onclick="quickAdd('${productName}', '${category}', ${price})" class="quick-sale-btn p-3 ${colorClass} rounded-lg hover:opacity-90 transition border text-left">
-                            <div class="font-medium text-sm text-gray-800 truncate">${productName}</div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-500">${window.formatMoney(price)}</span>
-                                <span class="text-xs text-gray-400">${count}x</span>
-                            </div>
-                        </button>
-                    `;
-                }
-            });
-            container.innerHTML = buttonsHTML;
-        }
-
-        function getCategoryColorClass(category) {
-            const colors = {
-                'Ração': 'bg-green-50 border-green-100',
-                'Medicamento': 'bg-blue-50 border-blue-100',
-                'Ferramentas': 'bg-orange-50 border-orange-100',
-                'Sementes': 'bg-yellow-50 border-yellow-100',
-                'Acessórios': 'bg-purple-50 border-purple-100',
-                'Serviço/Vet': 'bg-pink-50 border-pink-100',
-                'Outros': 'bg-gray-50 border-gray-100'
-            };
-            return colors[category] || 'bg-gray-50 border-gray-100';
-        }
-
-        window.refreshQuickSaleButtons = () => {
-            updateQuickSaleButtons();
-            showNotification('Botões atualizados!', 'success');
-        };
-
-        window.quickAdd = (name, category, price) => {
-            document.getElementById('desc').value = name;
-            document.getElementById('category').value = category;
-            document.getElementById('value').value = price.toFixed(2).replace('.', ',');
-            document.getElementById('desc').focus();
-            showNotification(`${name} adicionado ao formulário`, 'success');
         };
 
         // --- Atualização da Tela Principal ---
@@ -1522,18 +1551,8 @@
                 month: 'long'
             });
 
-            const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
-            document.getElementById('progressBar').style.width = `${percent}%`;
-            document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
-            document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
-
-            if(percent >= 100) {
-                 document.getElementById('progressBar').classList.replace('from-green-400', 'from-yellow-400');
-                 document.getElementById('progressBar').classList.replace('to-green-600', 'to-yellow-600');
-            } else {
-                 document.getElementById('progressBar').classList.replace('from-yellow-400', 'from-green-400');
-                 document.getElementById('progressBar').classList.replace('to-yellow-600', 'to-green-600');
-            }
+            // Atualiza a meta (chama a função separada)
+            updateMetaDisplay();
 
             const tbody = document.getElementById('todayTableBody');
             if (tbody) {
@@ -1812,20 +1831,24 @@
                 p.unit || 'Un',
                 p.sku || '-',
                 window.formatMoney(p.price || 0).replace('R$ ', ''),
-                window.formatMoney(p.cost || 0).replace('R$ ', ''), // Novo campo
+                window.formatMoney(p.cost || 0).replace('R$ ', ''),
+                p.discountPrice > 0 ? window.formatMoney(p.discountPrice).replace('R$ ', '') : '-',
+                p.minQuantityForDiscount > 0 ? p.minQuantityForDiscount : '-',
                 p.salesCount || 0
             ]);
             doc.autoTable({
-                head: [['Produto', 'Categoria', 'Unidade', 'SKU', 'Preço (R$)', 'Custo (R$)', 'Vendas']],
+                head: [['Produto', 'Categoria', 'Unidade', 'SKU', 'Preço (R$)', 'Custo (R$)', 'Desconto (R$)', 'Qtde Mín.', 'Vendas']],
                 body: tableData,
                 startY: 35,
                 theme: 'grid',
                 headStyles: { fillColor: [0, 144, 54], textColor: [255, 255, 255] },
-                styles: { fontSize: 10 },
+                styles: { fontSize: 9 },
                 columnStyles: {
                     4: { halign: 'right' },
                     5: { halign: 'right' },
-                    6: { halign: 'right' }
+                    6: { halign: 'right' },
+                    7: { halign: 'right' },
+                    8: { halign: 'right' }
                 }
             });
             const finalY = doc.lastAutoTable.finalY + 10;
@@ -1835,6 +1858,7 @@
             doc.save(`catalogo-agrovida-${new Date().toISOString().slice(0,10)}.pdf`);
             showNotification('Catálogo exportado em PDF!', 'success');
         };
+        
         window.exportCatalogExcel = () => {
             const data = products.map(p => ({
                 'Produto': p.name || '',
@@ -1842,7 +1866,9 @@
                 'Unidade': p.unit || 'Un',
                 'SKU': p.sku || '',
                 'Preço (R$)': p.price || 0,
-                'Custo (R$)': p.cost || 0, // Novo campo
+                'Custo (R$)': p.cost || 0,
+                'Preço c/ Desconto (R$)': p.discountPrice > 0 ? p.discountPrice : '',
+                'Qtde Mínima para Desconto': p.minQuantityForDiscount > 0 ? p.minQuantityForDiscount : '',
                 'Vendas': p.salesCount || 0,
                 'Data Cadastro': p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-'
             }));
@@ -1856,6 +1882,8 @@
                 { wch: 15 }, // SKU
                 { wch: 15 }, // Preço
                 { wch: 15 }, // Custo
+                { wch: 15 }, // Desconto
+                { wch: 10 }, // Qtde Mín
                 { wch: 10 }, // Vendas
                 { wch: 15 }  // Data
             ];
@@ -1863,6 +1891,7 @@
             XLSX.writeFile(workbook, `catalogo-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
             showNotification('Catálogo exportado em Excel!', 'success');
         };
+        
         window.exportHistoryExcel = () => {
             const data = localSales.map(s => ({
                 'Data': s.date.split('-').reverse().join('/'),
@@ -1887,6 +1916,7 @@
             XLSX.writeFile(workbook, `vendas-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
             showNotification('Histórico exportado em Excel!', 'success');
         };
+        
         window.exportCurrentMonthExcel = () => {
             const currentMonthISO = new Date().toISOString().slice(0,7);
             const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
@@ -1913,6 +1943,7 @@
             XLSX.writeFile(workbook, `vendas-mes-${currentMonthISO}.xlsx`);
             showNotification('Vendas do mês exportadas em Excel!', 'success');
         };
+        
         window.createFullBackup = () => {
             const backupData = {
                 timestamp: new Date().toISOString(),
@@ -1920,8 +1951,7 @@
                 products: products,
                 settings: {
                     metaMensal: metaMensal,
-                    categories: categories,
-                    quickSaleData: quickSaleData
+                    categories: categories
                 }
             };
             const dataStr = JSON.stringify(backupData, null, 2);
@@ -1944,9 +1974,11 @@
             const storeName = localStorage.getItem('storeName') || 'AgroVida+';
             document.getElementById('storeName').value = storeName;
         }
+        
         window.changePassword = () => {
             showModal('passwordModal');
         };
+        
         window.confirmPasswordChange = () => {
             const newPass = document.getElementById('newPassword').value;
             const confirmPass = document.getElementById('confirmPassword').value;
@@ -1964,14 +1996,17 @@
             closeModal('passwordModal');
             showNotification('Senha alterada com sucesso!', 'success');
         };
+        
         document.getElementById('defaultMonthlyGoal').addEventListener('change', (e) => {
             localStorage.setItem('defaultMonthlyGoal', e.target.value);
             showNotification('Meta padrão salva!', 'success');
         });
+        
         document.getElementById('storeName').addEventListener('change', (e) => {
             localStorage.setItem('storeName', e.target.value);
             showNotification('Nome da loja atualizado!', 'success');
         });
+        
         window.clearAllData = () => {
             if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os dados do sistema. Esta ação não pode ser desfeita.\nDigite "CONFIRMAR" para continuar:') === 'CONFIRMAR') {
                 if (confirm('ÚLTIMA CONFIRMAÇÃO: Tem certeza que deseja apagar TODOS os dados?')) {
@@ -2011,6 +2046,12 @@
         });
 
         document.getElementById('productCost').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = (parseFloat(value) / 100).toFixed(2);
+            e.target.value = value.replace('.', ',');
+        });
+
+        document.getElementById('productDiscountPrice').addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             value = (parseFloat(value) / 100).toFixed(2);
             e.target.value = value.replace('.', ',');
@@ -2056,6 +2097,14 @@
             descInput.focus();
         };
 
+        window.quickAdd = (name, category, price) => {
+            document.getElementById('desc').value = name;
+            document.getElementById('category').value = category;
+            document.getElementById('value').value = price.toFixed(2).replace('.', ',');
+            document.getElementById('desc').focus();
+            showNotification(`${name} adicionado ao formulário`, 'success');
+        };
+
         // --- Inicialização e Sincronização com Firestore ---
         const q = query(salesCollection, orderBy("timestamp", "desc"));
         onSnapshot(q, (snapshot) => {
@@ -2068,7 +2117,6 @@
             if (JSON.stringify(localSales) !== JSON.stringify(updatedSales)) {
                 localSales = updatedSales;
                 updateScreen();
-                updateQuickSaleButtons();
                 if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) {
                     updateSettingsInfo();
                 }
@@ -2084,7 +2132,9 @@
         // --- Eventos e Inicializações ---
         window.addEventListener('load', async () => {
             await loadProducts();
+            await loadMetaMensal(); // CARREGA A META DO FIRESTORE
             updateCategorySelect();
+            updateCategorySelectForSales(); // ATUALIZA O SELECT DE VENDAS NA PÁGINA INICIAL
             loadCategories();
             loadFilterCategories(); // Para os filtros de relatórios e produtos
 
