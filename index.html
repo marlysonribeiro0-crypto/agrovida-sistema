@@ -16,6 +16,8 @@
             --primary: #009036;
             --primary-dark: #007a2d;
             --secondary: #FFB800;
+            --expense: #ef4444;
+            --expense-dark: #dc2626;
         }
         body { 
             background-color: #f3f4f6; 
@@ -25,6 +27,8 @@
         .bg-agro-green { background-color: var(--primary); }
         .text-agro-green { color: var(--primary); }
         .bg-agro-yellow { background-color: var(--secondary); }
+        .bg-expense-red { background-color: var(--expense); }
+        .text-expense-red { color: var(--expense); }
         .sidebar { 
             min-height: 100vh;
             background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -67,6 +71,20 @@
         .btn-primary:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 144, 54, 0.2);
+        }
+        .btn-expense {
+            background: linear-gradient(135deg, var(--expense) 0%, var(--expense-dark) 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-expense:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
         }
         .btn-secondary {
             background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
@@ -324,6 +342,45 @@
             border-bottom: none;
             border-radius: 0 0 10px 10px;
         }
+        /* Estilo para saldo */
+        .balance-positive {
+            color: #059669;
+        }
+        .balance-negative {
+            color: #dc2626;
+        }
+        /* Estilo para transação de saída */
+        .expense-row {
+            background-color: #fef2f2;
+        }
+        .expense-row:hover {
+            background-color: #fee2e2;
+        }
+        /* Estilo para os filtros de transação */
+        .transaction-type-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .type-filter-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .type-filter-btn.active {
+            border-color: var(--primary);
+            background: #f0fdf4;
+            color: var(--primary);
+        }
+        .type-filter-btn.expense.active {
+            border-color: var(--expense);
+            background: #fef2f2;
+            color: var(--expense);
+        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row">
@@ -347,7 +404,7 @@
                 <i class="fas fa-cash-register text-xl w-6"></i> 
                 <div>
                     <span class="block font-bold">Balcão</span>
-                    <span class="text-xs text-white/70 font-normal">Venda Rápida</span>
+                    <span class="text-xs text-white/70 font-normal">Vendas/Saídas</span>
                 </div>
             </button>
             <button onclick="showTab('reports')" id="btn-reports" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
@@ -361,7 +418,14 @@
                 <i class="fas fa-chart-line text-xl w-6"></i>
                 <div>
                     <span class="block font-bold">Histórico</span>
-                    <span class="text-xs text-white/70 font-normal">Relatórios</span>
+                    <span class="text-xs text-white/70 font-normal">Vendas/Saídas</span>
+                </div>
+            </button>
+            <button onclick="showTab('expenses')" id="btn-expenses" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
+                <i class="fas fa-money-bill-wave text-xl w-6"></i>
+                <div>
+                    <span class="block font-bold">Saídas</span>
+                    <span class="text-xs text-white/70 font-normal">Despesas</span>
                 </div>
             </button>
             <button onclick="showTab('products')" id="btn-products" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
@@ -379,7 +443,7 @@
                 </div>
             </button>
         </nav>
-        <div class="p-4 text-center text-xs text-white/60">v5.1.2</div>
+        <div class="p-4 text-center text-xs text-white/60">v5.2.0</div>
     </aside>
     <!-- Main Content -->
     <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
@@ -390,25 +454,31 @@
         </div>
         <!-- Dashboard Tab -->
         <div id="tab-dashboard" class="fade-in">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <!-- CORREÇÃO: Adicionado botão de acumulado do mês -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                 <div class="card p-4">
                     <p class="text-xs font-bold text-gray-500 uppercase">Vendas Hoje</p>
                     <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalToday">R$ 0,00</h3>
                 </div>
                 <div class="card p-4">
-                    <p class="text-xs font-bold text-gray-500 uppercase">Vendas Ontem</p>
-                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalYesterday">R$ 0,00</h3>
+                    <p class="text-xs font-bold text-gray-500 uppercase">Saídas Hoje</p>
+                    <h3 class="text-xl font-bold text-expense-red mt-1" id="dashExpensesToday">R$ 0,00</h3>
                 </div>
                 <div class="card p-4">
-                    <p class="text-xs font-bold text-gray-500 uppercase">Acumulado Mês</p>
-                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalMonth">R$ 0,00</h3>
-                    <button onclick="goToHistoryCurrentMonth()" class="text-xs text-blue-600 font-bold mt-2 hover:underline">VER DETALHES →</button>
+                    <p class="text-xs font-bold text-gray-500 uppercase">Saldo do Dia</p>
+                    <h3 class="text-xl font-bold mt-1" id="dashBalanceToday">R$ 0,00</h3>
                 </div>
                 <div class="card p-4">
                     <p class="text-xs font-bold text-gray-500 uppercase">Ticket Médio</p>
                     <h3 class="text-xl font-bold text-gray-800 mt-1" id="averageTicket">R$ 0,00</h3>
                 </div>
+                <!-- CORREÇÃO: Botão de acumulado do mês adicionado aqui -->
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Acumulado Mês</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalMonth">R$ 0,00</h3>
+                </div>
             </div>
+            
             <div class="card p-4 mb-6">
                 <div class="flex justify-between items-end mb-2">
                     <div>
@@ -426,15 +496,24 @@
                     <div id="progressBar" class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full progress-bar" style="width: 0%"></div>
                 </div>
             </div>
+
+            <!-- Seção de Nova Transação -->
             <div class="card mb-6">
                 <div class="p-4 border-b">
-                    <h2 class="font-bold text-gray-700"><i class="fas fa-plus-circle text-agro-green mr-2"></i> Nova Venda</h2>
-                    <span id="dateDisplay" class="text-sm text-gray-500"></span>
+                    <h2 class="font-bold text-gray-700"><i class="fas fa-exchange-alt text-agro-green mr-2"></i> Nova Transação</h2>
+                    <div class="flex gap-4 mt-2">
+                        <button id="transactionTypeSale" class="type-filter-btn active" onclick="setTransactionType('sale')">
+                            <i class="fas fa-plus-circle mr-2"></i> Venda
+                        </button>
+                        <button id="transactionTypeExpense" class="type-filter-btn" onclick="setTransactionType('expense')">
+                            <i class="fas fa-minus-circle mr-2"></i> Saída/Despesa
+                        </button>
+                    </div>
                 </div>
                 <div class="p-4">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                         <div class="md:col-span-4">
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Produto</label>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="transactionLabel">Produto</label>
                             <div class="relative">
                                 <input type="text" id="desc" class="input-field" placeholder="Ex: Ração..." required>
                                 <div id="descSuggestions" class="search-suggestions hidden"></div>
@@ -461,29 +540,27 @@
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <button onclick="addSale()" class="btn-primary w-full h-[46px] flex items-center justify-center">
-                                <i class="fas fa-check mr-2"></i> Adicionar
+                            <button onclick="addTransaction()" id="addTransactionBtn" class="btn-primary w-full h-[46px] flex items-center justify-center">
+                                <i class="fas fa-check mr-2"></i> Adicionar Venda
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Today's Sales -->
+
+            <!-- Today's Transactions -->
             <div class="card">
                 <div class="p-4 border-b flex flex-col md:flex-row justify-between md:items-center gap-4">
                     <h2 class="font-bold text-gray-700">Movimentação do Dia</h2>
                     <div class="flex flex-wrap gap-2 text-xs font-semibold">
                         <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200">
-                            💵 Dinheiro: <span id="sumMoney">R$ 0,00</span>
+                            💵 Vendas: <span id="sumSales">R$ 0,00</span>
+                        </div>
+                        <div class="bg-red-100 text-red-800 px-3 py-1 rounded-full border border-red-200">
+                            📉 Saídas: <span id="sumExpenses">R$ 0,00</span>
                         </div>
                         <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-200">
-                            💠 Pix: <span id="sumPix">R$ 0,00</span>
-                        </div>
-                        <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full border border-purple-200">
-                            💳 Cartão: <span id="sumCard">R$ 0,00</span>
-                        </div>
-                        <div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full border border-orange-200">
-                            📝 Fiado: <span id="sumFiado">R$ 0,00</span>
+                            📊 Saldo: <span id="sumBalance">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
@@ -491,15 +568,18 @@
                     <table class="w-full text-sm">
                         <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
                             <tr>
+                                <th class="p-3">Tipo</th>
                                 <th class="p-3">Hora</th>
-                                <th class="p-3">Produto</th>
+                                <th class="p-3">Descrição</th>
                                 <th class="p-3">Categoria</th>
                                 <th class="p-3">Pagamento</th>
                                 <th class="p-3 text-right">Valor</th>
                                 <th class="p-3 text-center">Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="todayTableBody"></tbody>
+                        <tbody id="todayTableBody">
+                            <!-- As transações serão carregadas aqui -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -521,6 +601,14 @@
                             <input type="date" id="customFilterEnd" class="input-field">
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Transação</label>
+                            <select id="customFilterType" class="input-field">
+                                <option value="all">Todas</option>
+                                <option value="sale">Vendas</option>
+                                <option value="expense">Saídas</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Categoria (Opcional)</label>
                             <select id="customFilterCategory" class="input-field">
                                 <option value="">Todas</option>
@@ -539,12 +627,12 @@
                             <p class="text-xl font-bold text-agro-green" id="customTotalSales">R$ 0,00</p>
                         </div>
                         <div class="text-center">
-                            <p class="text-xs text-gray-500">Quantidade de Vendas</p>
-                            <p class="text-xl font-bold text-gray-800" id="customTotalCount">0</p>
+                            <p class="text-xs text-gray-500">Total de Saídas</p>
+                            <p class="text-xl font-bold text-expense-red" id="customTotalExpenses">R$ 0,00</p>
                         </div>
                         <div class="text-center">
-                            <p class="text-xs text-gray-500">Ticket Médio</p>
-                            <p class="text-xl font-bold text-gray-800" id="customAverageTicket">R$ 0,00</p>
+                            <p class="text-xs text-gray-500">Saldo Líquido</p>
+                            <p class="text-xl font-bold text-gray-800" id="customNetBalance">R$ 0,00</p>
                         </div>
                         <div class="text-center">
                             <p class="text-xs text-gray-500">Lucro Estimado</p>
@@ -556,31 +644,32 @@
             <!-- Gráficos -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div class="card p-4">
-                    <h3 class="font-bold text-lg text-gray-700 mb-4">Evolução de Vendas (Diária)</h3>
+                    <h3 class="font-bold text-lg text-gray-700 mb-4">Fluxo de Caixa (Diário)</h3>
                     <div class="chart-container">
-                        <canvas id="dailySalesChart"></canvas>
+                        <canvas id="cashFlowChart"></canvas>
                     </div>
                 </div>
                 <div class="card p-4">
-                    <h3 class="font-bold text-lg text-gray-700 mb-4">Vendas por Categoria</h3>
+                    <h3 class="font-bold text-lg text-gray-700 mb-4">Distribuição por Categoria</h3>
                     <div class="chart-container">
                         <canvas id="categoryChart"></canvas>
                     </div>
                 </div>
             </div>
             <div class="card p-4">
-                <h3 class="font-bold text-lg text-gray-700 mb-4">Ranking de Produtos Mais Vendidos</h3>
+                <h3 class="font-bold text-lg text-gray-700 mb-4">Maiores Despesas</h3>
                 <div class="table-responsive">
                     <table class="w-full text-sm">
                         <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
                             <tr>
-                                <th class="p-3">Produto</th>
-                                <th class="p-3 text-center">Quantidade</th>
-                                <th class="p-3 text-right">Valor Total</th>
-                                <th class="p-3 text-right">Lucro Estimado</th>
+                                <th class="p-3">Descrição</th>
+                                <th class="p-3">Categoria</th>
+                                <th class="p-3 text-center">Data</th>
+                                <th class="p-3 text-right">Valor</th>
+                                <th class="p-3 text-center">Pagamento</th>
                             </tr>
                         </thead>
-                        <tbody id="topProductsTableBody"></tbody>
+                        <tbody id="topExpensesTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -596,7 +685,7 @@
                 </div>
             </div>
             <div class="card p-4 mb-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar Mês</label>
                         <input type="month" id="filterMonth" class="input-field" onchange="filterHistory()">
@@ -606,8 +695,16 @@
                         <input type="date" id="filterDate" class="input-field" onchange="filterHistory()">
                     </div>
                     <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tipo</label>
+                        <select id="filterType" class="input-field" onchange="filterHistory()">
+                            <option value="all">Todos</option>
+                            <option value="sale">Vendas</option>
+                            <option value="expense">Saídas</option>
+                        </select>
+                    </div>
+                    <div>
                         <div class="text-xs text-gray-500 mb-1">Total do Filtro:</div>
-                        <div class="text-xl font-bold text-agro-green" id="historyTotal">R$ 0,00</div>
+                        <div class="text-xl font-bold" id="historyTotal">R$ 0,00</div>
                     </div>
                     <div class="flex items-end">
                         <button onclick="clearFilters()" class="text-blue-600 text-sm hover:underline">Limpar Filtros</button>
@@ -619,8 +716,9 @@
                     <table class="w-full text-sm">
                         <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
                             <tr>
+                                <th class="p-3">Tipo</th>
                                 <th class="p-3">Data</th>
-                                <th class="p-3">Produto</th>
+                                <th class="p-3">Descrição</th>
                                 <th class="p-3">Categoria</th>
                                 <th class="p-3">Pagamento</th>
                                 <th class="p-3 text-right">Valor</th>
@@ -628,6 +726,80 @@
                             </tr>
                         </thead>
                         <tbody id="historyTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Expenses Tab -->
+        <div id="tab-expenses" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Gestão de Saídas</h2>
+                <div class="flex gap-2">
+                    <button onclick="exportExpensesExcel()" class="btn-secondary flex items-center gap-2">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button onclick="showAddExpenseModal()" class="btn-expense">
+                        <i class="fas fa-plus mr-2"></i> Nova Saída
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Saídas do Mês</p>
+                    <h3 class="text-xl font-bold text-expense-red mt-1" id="expensesMonth">R$ 0,00</h3>
+                </div>
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Maior Despesa</p>
+                    <h3 class="text-xl font-bold text-expense-red mt-1" id="highestExpense">R$ 0,00</h3>
+                </div>
+                <div class="card p-4">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Categoria com Mais Saídas</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-1" id="topExpenseCategory">-</h3>
+                </div>
+            </div>
+            
+            <div class="card p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar Mês</label>
+                        <input type="month" id="expenseFilterMonth" class="input-field" onchange="filterExpenses()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
+                        <select id="expenseFilterCategory" class="input-field" onchange="filterExpenses()">
+                            <option value="">Todas</option>
+                            <!-- Preenchido dinamicamente -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor Mínimo</label>
+                        <input type="number" step="0.01" id="expenseFilterMin" class="input-field" placeholder="0,00" onchange="filterExpenses()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor Máximo</label>
+                        <input type="number" step="0.01" id="expenseFilterMax" class="input-field" placeholder="9999,99" onchange="filterExpenses()">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="p-4 border-b">
+                    <h3 class="font-bold text-gray-700">Histórico de Saídas</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
+                            <tr>
+                                <th class="p-3">Data</th>
+                                <th class="p-3">Descrição</th>
+                                <th class="p-3">Categoria</th>
+                                <th class="p-3">Pagamento</th>
+                                <th class="p-3 text-right">Valor</th>
+                                <th class="p-3 text-center">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -746,6 +918,9 @@
                                 <button onclick="exportCurrentMonthExcel()" class="btn-secondary flex-1 min-w-[150px]">
                                     <i class="fas fa-calendar-alt mr-2"></i> Mês Atual
                                 </button>
+                                <button onclick="exportExpensesExcel()" class="btn-expense flex-1 min-w-[150px]">
+                                    <i class="fas fa-file-excel mr-2"></i> Saídas Excel
+                                </button>
                             </div>
                         </div>
                         <div>
@@ -791,11 +966,15 @@
                     <div class="space-y-3">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Versão</span>
-                            <span class="font-medium">5.1.2</span>
+                            <span class="font-medium">5.2.0</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Total de Vendas</span>
                             <span class="font-medium" id="totalSalesCount">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total de Saídas</span>
+                            <span class="font-medium" id="totalExpensesCount">0</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Total de Produtos</span>
@@ -833,6 +1012,10 @@
         <button onclick="showTab('history')" id="mobile-btn-history">
             <i class="fas fa-chart-line"></i>
             <span>Histórico</span>
+        </button>
+        <button onclick="showTab('expenses')" id="mobile-btn-expenses">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Saídas</span>
         </button>
         <button onclick="showTab('products')" id="mobile-btn-products">
             <i class="fas fa-boxes"></i>
@@ -900,6 +1083,54 @@
             </div>
         </div>
     </div>
+    <!-- Expense Modal -->
+    <div id="expenseModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-lg font-bold text-gray-800 mb-4" id="expenseModalTitle">Nova Saída/Despesa</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
+                    <input type="text" id="expenseDesc" class="input-field" placeholder="Ex: Pagamento de contas, compra de suprimentos..." required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Categoria *</label>
+                        <select id="expenseCategory" class="input-field" required>
+                            <!-- Preenchido dinamicamente com categorias de despesas -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor (R$) *</label>
+                        <input type="text" id="expenseValue" class="input-field input-currency" placeholder="0,00" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento *</label>
+                        <select id="expensePayment" class="input-field" required>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Débito">Débito</option>
+                            <option value="Crédito">Crédito</option>
+                            <option value="Transferência">Transferência</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                        <input type="date" id="expenseDate" class="input-field">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Observações (Opcional)</label>
+                    <textarea id="expenseNotes" class="input-field" rows="3" placeholder="Detalhes adicionais sobre esta despesa..."></textarea>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="closeModal('expenseModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
+                <button onclick="saveExpense()" id="saveExpenseBtn" class="btn-expense px-4 py-2">Salvar Saída</button>
+            </div>
+        </div>
+    </div>
     <!-- Password Modal -->
     <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
@@ -963,7 +1194,7 @@
 
         // --- Importação e Configuração do Firebase ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch, limit, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         const firebaseConfig = {
             apiKey: "AIzaSyBZvxMB2qmz5IMugV6fOqq4pLUbhD7mJRU",
             authDomain: "agrovida-95ebb.firebaseapp.com",
@@ -975,22 +1206,30 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const salesCollection = collection(db, "vendas_agrovida");
+        const expensesCollection = collection(db, "saidas_agrovida");
         const productsCollection = collection(db, "produtos_agrovida");
         const settingsCollection = collection(db, "configuracoes_agrovida");
 
         // --- Variáveis de Estado Local ---
         let localSales = [];
+        let localExpenses = [];
         let products = [];
         let metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
         let categories = JSON.parse(localStorage.getItem('agroCategories')) || [
             'Ração', 'Medicamento', 'Ferramentas', 'Sementes', 
             'Acessórios', 'Serviço/Vet', 'Outros'
         ];
+        let expenseCategories = JSON.parse(localStorage.getItem('agroExpenseCategories')) || [
+            'Aluguel', 'Salários', 'Contas (Água/Luz)', 'Internet/Telefone',
+            'Manutenção', 'Transporte', 'Suprimentos', 'Marketing', 'Outros'
+        ];
         let currentProductSort = 'name_asc';
-        let editingProductId = null; // Para controle de edição
+        let editingProductId = null;
+        let editingExpenseId = null;
+        let transactionType = 'sale'; // 'sale' ou 'expense'
 
         // --- Gráficos ---
-        let dailySalesChart = null;
+        let cashFlowChart = null;
         let categoryChart = null;
 
         // --- Funções de Navegação e UI ---
@@ -1009,15 +1248,20 @@
                 toggleSidebar();
             }
             if (tab === 'history') window.filterHistory();
+            if (tab === 'expenses') {
+                filterExpenses();
+                updateExpenseSummary();
+                loadExpenseCategories();
+            }
             if (tab === 'products') {
                 loadProducts();
                 searchProducts();
                 loadFilterCategories();
             }
             if (tab === 'reports') {
-                loadFilterCategories(); // Para o filtro personalizado
-                // Carregar dados iniciais para relatórios (pode ser um período padrão)
-                applyCustomFilter(); // Isso chama updateReports
+                loadFilterCategories();
+                loadExpenseCategoriesForReports();
+                applyCustomFilter();
             }
             if (tab === 'settings') {
                 updateSettingsInfo();
@@ -1025,6 +1269,38 @@
             }
             if (tab === 'dashboard') {
                 updateCategorySelectForSales();
+                setTransactionType('sale');
+                // CORREÇÃO: Forçar atualização da tela do dashboard
+                updateScreen();
+            }
+        };
+
+        window.setTransactionType = (type) => {
+            transactionType = type;
+            const saleBtn = document.getElementById('transactionTypeSale');
+            const expenseBtn = document.getElementById('transactionTypeExpense');
+            const addBtn = document.getElementById('addTransactionBtn');
+            
+            if (type === 'sale') {
+                saleBtn.classList.add('active');
+                expenseBtn.classList.remove('active');
+                addBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Adicionar Venda';
+                addBtn.className = 'btn-primary w-full h-[46px] flex items-center justify-center';
+                document.getElementById('transactionLabel').textContent = 'Produto';
+                document.getElementById('desc').placeholder = 'Ex: Ração...';
+                document.getElementById('category').innerHTML = categories.map(cat => 
+                    `<option value="${cat}">${cat}</option>`
+                ).join('');
+            } else {
+                saleBtn.classList.remove('active');
+                expenseBtn.classList.add('active', 'expense');
+                addBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Adicionar Saída';
+                addBtn.className = 'btn-expense w-full h-[46px] flex items-center justify-center';
+                document.getElementById('transactionLabel').textContent = 'Descrição';
+                document.getElementById('desc').placeholder = 'Ex: Pagamento de contas...';
+                document.getElementById('category').innerHTML = expenseCategories.map(cat => 
+                    `<option value="${cat}">${cat}</option>`
+                ).join('');
             }
         };
 
@@ -1034,6 +1310,24 @@
         
         window.closeModal = (modalId) => {
             document.getElementById(modalId).classList.remove('active');
+        };
+        
+        window.showAddExpenseModal = () => {
+            editingExpenseId = null;
+            document.getElementById('expenseModalTitle').textContent = 'Nova Saída/Despesa';
+            document.getElementById('saveExpenseBtn').textContent = 'Salvar Saída';
+            document.getElementById('expenseDesc').value = '';
+            document.getElementById('expenseValue').value = '';
+            document.getElementById('expenseNotes').value = '';
+            document.getElementById('expensePayment').value = 'Dinheiro';
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            
+            const categorySelect = document.getElementById('expenseCategory');
+            categorySelect.innerHTML = expenseCategories.map(cat => 
+                `<option value="${cat}">${cat}</option>`
+            ).join('');
+            
+            window.showModal('expenseModal');
         };
         
         window.showAddProductModal = () => {
@@ -1048,29 +1342,6 @@
             document.getElementById('productSKU').value = '';
             document.getElementById('productCategory').value = categories[0] || 'Outros';
             document.getElementById('productUnit').value = 'Un';
-            window.showModal('productModal');
-        };
-        
-        window.showEditProductModal = (productId) => {
-            console.log("Editando produto com ID:", productId);
-            const product = products.find(p => p.id === productId);
-            if (!product) {
-                console.error("Produto não encontrado!");
-                showNotification("Produto não encontrado", "error");
-                return;
-            }
-            
-            editingProductId = productId;
-            document.getElementById('productModalTitle').textContent = 'Editar Produto';
-            document.getElementById('saveProductBtn').textContent = 'Atualizar Produto';
-            document.getElementById('productName').value = product.name || '';
-            document.getElementById('productPrice').value = (product.price || 0).toFixed(2).replace('.', ',');
-            document.getElementById('productCost').value = (product.cost || 0).toFixed(2).replace('.', ',');
-            document.getElementById('productDiscountPrice').value = (product.discountPrice || 0) > 0 ? (product.discountPrice || 0).toFixed(2).replace('.', ',') : '';
-            document.getElementById('productMinQuantityForDiscount').value = product.minQuantityForDiscount || '';
-            document.getElementById('productSKU').value = product.sku || '';
-            document.getElementById('productCategory').value = product.category || categories[0] || 'Outros';
-            document.getElementById('productUnit').value = product.unit || 'Un';
             window.showModal('productModal');
         };
         
@@ -1107,6 +1378,24 @@
             }
         }
         
+        function loadExpenseCategories() {
+            const expenseCategorySelect = document.getElementById('expenseFilterCategory');
+            if (expenseCategorySelect) {
+                expenseCategorySelect.innerHTML = '<option value="">Todas</option>' + 
+                    expenseCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            }
+        }
+        
+        function loadExpenseCategoriesForReports() {
+            const customFilterCategory = document.getElementById('customFilterCategory');
+            if (customFilterCategory) {
+                // Combinar categorias de produtos e despesas
+                const allCategories = [...new Set([...categories, ...expenseCategories])];
+                customFilterCategory.innerHTML = '<option value="">Todas</option>' + 
+                    allCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            }
+        }
+        
         window.addCategory = () => {
             const newCat = document.getElementById('newCategory').value.trim();
             if (newCat && !categories.includes(newCat)) {
@@ -1114,10 +1403,20 @@
                 localStorage.setItem('agroCategories', JSON.stringify(categories));
                 loadCategories();
                 updateCategorySelect();
-                updateCategorySelectForSales(); // ATUALIZA O SELECT DE VENDAS
-                loadFilterCategories(); // Atualiza o filtro de relatórios
+                updateCategorySelectForSales();
+                loadFilterCategories();
                 document.getElementById('newCategory').value = '';
                 showNotification('Categoria adicionada!', 'success');
+            }
+        };
+        
+        window.addExpenseCategory = () => {
+            const newCat = prompt("Nova categoria de despesa:");
+            if (newCat && !expenseCategories.includes(newCat)) {
+                expenseCategories.push(newCat);
+                localStorage.setItem('agroExpenseCategories', JSON.stringify(expenseCategories));
+                loadExpenseCategories();
+                showNotification('Categoria de despesa adicionada!', 'success');
             }
         };
         
@@ -1127,10 +1426,786 @@
                 localStorage.setItem('agroCategories', JSON.stringify(categories));
                 loadCategories();
                 updateCategorySelect();
-                updateCategorySelectForSales(); // ATUALIZA O SELECT DE VENDAS
-                loadFilterCategories(); // Atualiza o filtro de relatórios
+                updateCategorySelectForSales();
+                loadFilterCategories();
                 showNotification('Categoria removida!', 'success');
             }
+        };
+
+        // --- Funções de Transações (Vendas e Saídas) ---
+        window.addTransaction = async () => {
+            const desc = document.getElementById('desc').value.trim();
+            const valueStr = document.getElementById('value').value;
+            const price = parseFloat(valueStr.replace(',', '.'));
+            
+            if (!desc) {
+                showNotification('Digite a descrição', 'error');
+                return;
+            }
+            if (!valueStr || isNaN(price) || price <= 0) {
+                showNotification('Digite um valor válido', 'error');
+                return;
+            }
+            
+            const loading = document.getElementById('loadingIndicator');
+            const addButton = document.getElementById('addTransactionBtn');
+            addButton.disabled = true;
+            loading.classList.remove('hidden');
+
+            const now = new Date();
+            const localDateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            
+            if (transactionType === 'sale') {
+                // Adicionar venda
+                const saleData = {
+                    date: localDateISO,
+                    timestamp: now.toISOString(),
+                    time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+                    desc: desc,
+                    category: document.getElementById('category').value,
+                    value: price,
+                    payment: document.getElementById('payment').value,
+                    type: 'sale'
+                };
+
+                try {
+                    await addDoc(salesCollection, saleData);
+                    // NÃO adicionamos localmente - o listener do Firestore vai atualizar
+                    
+                    showNotification('Venda salva com sucesso!', 'success');
+                    document.getElementById('desc').value = '';
+                    document.getElementById('value').value = '';
+                    document.getElementById('desc').focus();
+                } catch(e) {
+                    console.error("Erro ao salvar venda:", e);
+                    showNotification("Erro ao salvar venda no servidor", 'error');
+                }
+            } else {
+                // Adicionar saída
+                const expenseData = {
+                    date: localDateISO,
+                    timestamp: now.toISOString(),
+                    time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+                    desc: desc,
+                    category: document.getElementById('category').value,
+                    value: price,
+                    payment: document.getElementById('payment').value,
+                    type: 'expense'
+                };
+
+                try {
+                    await addDoc(expensesCollection, expenseData);
+                    // NÃO adicionamos localmente - o listener do Firestore vai atualizar
+                    
+                    showNotification('Saída salva com sucesso!', 'success');
+                    document.getElementById('desc').value = '';
+                    document.getElementById('value').value = '';
+                    document.getElementById('desc').focus();
+                } catch(e) {
+                    console.error("Erro ao salvar saída:", e);
+                    showNotification("Erro ao salvar saída no servidor", 'error');
+                }
+            }
+
+            addButton.disabled = false;
+            loading.classList.add('hidden');
+        };
+
+        // Função para salvar saída do modal
+        window.saveExpense = async () => {
+            const desc = document.getElementById('expenseDesc').value.trim();
+            const valueStr = document.getElementById('expenseValue').value;
+            const price = parseFloat(valueStr.replace(',', '.'));
+            const category = document.getElementById('expenseCategory').value;
+            const payment = document.getElementById('expensePayment').value;
+            const notes = document.getElementById('expenseNotes').value;
+            let date = document.getElementById('expenseDate').value;
+            
+            if (!desc) {
+                showNotification('Digite a descrição', 'error');
+                return;
+            }
+            if (!valueStr || isNaN(price) || price <= 0) {
+                showNotification('Digite um valor válido', 'error');
+                return;
+            }
+            if (!category) {
+                showNotification('Selecione uma categoria', 'error');
+                return;
+            }
+            
+            const now = new Date();
+            if (!date) {
+                date = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            }
+            
+            const loading = document.getElementById('loadingIndicator');
+            const saveBtn = document.getElementById('saveExpenseBtn');
+            saveBtn.disabled = true;
+            loading.classList.remove('hidden');
+
+            const expenseData = {
+                date: date,
+                timestamp: now.toISOString(),
+                time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+                desc: desc,
+                category: category,
+                value: price,
+                payment: payment,
+                type: 'expense',
+                notes: notes
+            };
+
+            try {
+                await addDoc(expensesCollection, expenseData);
+                // NÃO adicionamos localmente - o listener do Firestore vai atualizar
+                
+                showNotification('Saída salva com sucesso!', 'success');
+                closeModal('expenseModal');
+            } catch(e) {
+                console.error("Erro ao salvar saída:", e);
+                showNotification("Erro ao salvar saída no servidor", 'error');
+            } finally {
+                saveBtn.disabled = false;
+                loading.classList.add('hidden');
+            }
+        };
+
+        window.deleteTransaction = async (type, id, timestamp) => {
+            if(confirm("Excluir esta transação?")) {
+                try {
+                    if (type === 'sale') {
+                        await deleteDoc(doc(db, "vendas_agrovida", id));
+                        localSales = localSales.filter(s => s.id !== id);
+                    } else {
+                        await deleteDoc(doc(db, "saidas_agrovida", id));
+                        localExpenses = localExpenses.filter(e => e.id !== id);
+                    }
+                    updateScreen();
+                    showNotification('Transação excluída!', 'success');
+                } catch (error) {
+                    console.error("Erro ao excluir:", error);
+                    showNotification('Erro ao excluir transação', 'error');
+                }
+            }
+        };
+
+        // --- META MENSAL GLOBAL NO FIRESTORE ---
+        async function loadMetaMensal() {
+            try {
+                const metaDoc = doc(settingsCollection, "metaMensal");
+                const metaSnapshot = await getDoc(metaDoc);
+                if (metaSnapshot.exists()) {
+                    metaMensal = metaSnapshot.data().valor || 5000;
+                } else {
+                    await setDoc(metaDoc, { valor: 5000 });
+                }
+                updateMetaDisplay();
+            } catch (error) {
+                console.error("Erro ao carregar meta do Firestore:", error);
+                metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
+                updateMetaDisplay();
+            }
+        }
+
+        async function saveMetaMensal(novoValor) {
+            try {
+                const metaDoc = doc(settingsCollection, "metaMensal");
+                await setDoc(metaDoc, { valor: novoValor });
+                metaMensal = novoValor;
+                localStorage.setItem('metaAgro', novoValor);
+                updateMetaDisplay();
+                showNotification('Meta atualizada globalmente!', 'success');
+                return true;
+            } catch (error) {
+                console.error("Erro ao salvar meta no Firestore:", error);
+                metaMensal = novoValor;
+                localStorage.setItem('metaAgro', novoValor);
+                updateMetaDisplay();
+                showNotification('Meta atualizada localmente', 'warning');
+                return false;
+            }
+        }
+
+        function updateMetaDisplay() {
+            document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
+            
+            const now = new Date();
+            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            const currentMonthISO = todayISO.substring(0, 7);
+            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
+            const totalMonth = monthSales.reduce((acc, c) => acc + c.value, 0);
+            
+            const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
+
+            if(percent >= 100) {
+                 document.getElementById('progressBar').classList.replace('from-green-400', 'from-yellow-400');
+                 document.getElementById('progressBar').classList.replace('to-green-600', 'to-yellow-600');
+            } else {
+                 document.getElementById('progressBar').classList.replace('from-yellow-400', 'from-green-400');
+                 document.getElementById('progressBar').classList.replace('to-yellow-600', 'to-green-600');
+            }
+        }
+
+        window.editMeta = async () => {
+            const nova = prompt("Nova Meta (R$):", metaMensal);
+            if(nova && !isNaN(nova)) {
+                await saveMetaMensal(parseFloat(nova));
+            }
+        };
+
+        // --- Atualização da Tela Principal ---
+        function updateScreen() {
+            try {
+                const now = new Date();
+                const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                const currentMonthISO = todayISO.substring(0, 7);
+
+                const todaySales = localSales.filter(s => s.date === todayISO);
+                const todayExpenses = localExpenses.filter(e => e.date === todayISO);
+                const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
+
+                const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
+                const totalToday = sum(todaySales);
+                const totalExpensesToday = sum(todayExpenses);
+                const totalMonth = sum(monthSales);
+                const balanceToday = totalToday - totalExpensesToday;
+
+                document.getElementById('dashTotalToday').textContent = window.formatMoney(totalToday);
+                document.getElementById('dashExpensesToday').textContent = window.formatMoney(totalExpensesToday);
+                document.getElementById('dashBalanceToday').textContent = window.formatMoney(balanceToday);
+                document.getElementById('dashBalanceToday').className = `text-xl font-bold mt-1 ${balanceToday >= 0 ? 'balance-positive' : 'balance-negative'}`;
+                
+                // CORREÇÃO: Adicionado acumulado do mês
+                document.getElementById('dashTotalMonth').textContent = window.formatMoney(totalMonth);
+                
+                document.getElementById('sumSales').textContent = window.formatMoney(totalToday);
+                document.getElementById('sumExpenses').textContent = window.formatMoney(totalExpensesToday);
+                document.getElementById('sumBalance').textContent = window.formatMoney(balanceToday);
+
+                // CORREÇÃO: Ticket médio calculado corretamente
+                const avgTicket = todaySales.length > 0 ? totalToday / todaySales.length : 0;
+                document.getElementById('averageTicket').textContent = window.formatMoney(avgTicket);
+
+                updateMetaDisplay();
+
+                // CORREÇÃO: Atualizar tabela do dia (vendas + saídas) corretamente
+                const tbody = document.getElementById('todayTableBody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    
+                    // Combinar e ordenar por horário
+                    const allTransactions = [
+                        ...todaySales.map(s => ({...s, transactionType: 'sale'})),
+                        ...todayExpenses.map(e => ({...e, transactionType: 'expense'}))
+                    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    
+                    if (allTransactions.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="p-8 text-center text-gray-500">
+                                    <i class="fas fa-search text-3xl text-gray-300 mb-3"></i>
+                                    <p class="font-medium">Nenhuma transação hoje</p>
+                                    <p class="text-sm mt-1">Adicione sua primeira transação</p>
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        allTransactions.forEach(t => {
+                            const isExpense = t.transactionType === 'expense';
+                            tbody.innerHTML += `
+                                <tr class="border-b hover:bg-gray-50 ${isExpense ? 'expense-row' : ''}">
+                                    <td class="p-3">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${isExpense ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                            ${isExpense ? '📉 Saída' : '📈 Venda'}
+                                        </span>
+                                    </td>
+                                    <td class="p-3 text-xs text-gray-500">${t.time}</td>
+                                    <td class="p-3 font-bold text-gray-700">${t.desc}</td>
+                                    <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 text-xs">${t.category || '-'}</span></td>
+                                    <td class="p-3 text-xs text-gray-500">${t.payment}</td>
+                                    <td class="p-3 text-right font-bold ${isExpense ? 'text-red-700' : 'text-green-700'}">
+                                        ${isExpense ? '-' : ''}${window.formatMoney(t.value)}
+                                    </td>
+                                    <td class="p-3 text-center">
+                                        <button onclick="window.deleteTransaction('${t.transactionType}', '${t.id}', '${t.timestamp}')" class="text-red-500 hover:text-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
+                        });
+                    }
+                }
+
+                if(!document.getElementById('tab-history').classList.contains('hidden')) {
+                    window.filterHistory();
+                }
+                if(!document.getElementById('tab-expenses').classList.contains('hidden')) {
+                    filterExpenses();
+                    updateExpenseSummary();
+                }
+            } catch (error) {
+                console.error("Erro em updateScreen:", error);
+            }
+        }
+
+        // --- Funções de Histórico ---
+        window.filterHistory = () => {
+            const m = document.getElementById('filterMonth').value;
+            const d = document.getElementById('filterDate').value;
+            const type = document.getElementById('filterType').value;
+            
+            let salesList = [...localSales];
+            let expensesList = [...localExpenses];
+            
+            if (d) {
+                salesList = salesList.filter(s => s.date === d);
+                expensesList = expensesList.filter(e => e.date === d);
+                document.getElementById('filterMonth').value = '';
+            } else if (m) {
+                salesList = salesList.filter(s => s.date.startsWith(m));
+                expensesList = expensesList.filter(e => e.date.startsWith(m));
+                document.getElementById('filterDate').value = '';
+            }
+            
+            let allTransactions = [];
+            if (type === 'all' || type === 'sale') {
+                allTransactions = [...allTransactions, ...salesList.map(s => ({...s, transactionType: 'sale'}))];
+            }
+            if (type === 'all' || type === 'expense') {
+                allTransactions = [...allTransactions, ...expensesList.map(e => ({...e, transactionType: 'expense'}))];
+            }
+            
+            allTransactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            const total = allTransactions.reduce((sum, trans) => {
+                return trans.transactionType === 'expense' ? sum - trans.value : sum + trans.value;
+            }, 0);
+            
+            document.getElementById('historyTotal').textContent = window.formatMoney(total);
+            document.getElementById('historyTotal').className = `text-xl font-bold ${total >= 0 ? 'text-agro-green' : 'text-expense-red'}`;
+            
+            renderHistoryTable(allTransactions);
+        };
+
+        function renderHistoryTable(transactions) {
+            const tbody = document.getElementById('historyTableBody');
+            if (!tbody) return;
+            
+            if (transactions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-gray-500">
+                            <i class="fas fa-search text-3xl text-gray-300 mb-3"></i>
+                            <p class="font-medium">Nenhuma transação encontrada</p>
+                            <p class="text-sm mt-1">Tente ajustar os filtros</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = transactions.map(trans => {
+                const dateBR = trans.date.split('-').reverse().join('/');
+                const isExpense = trans.transactionType === 'expense';
+                
+                return `
+                    <tr class="border-b hover:bg-gray-50 ${isExpense ? 'expense-row' : ''}">
+                        <td class="p-3">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${isExpense ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${isExpense ? '📉 Saída' : '📈 Venda'}
+                            </span>
+                        </td>
+                        <td class="p-3 text-xs text-gray-500">${dateBR} ${trans.time}</td>
+                        <td class="p-3 font-bold">${trans.desc}</td>
+                        <td class="p-3 text-xs text-gray-500">${trans.category || '-'}</td>
+                        <td class="p-3 text-xs text-gray-500">${trans.payment}</td>
+                        <td class="p-3 text-right font-bold ${isExpense ? 'text-red-700' : 'text-gray-700'}">
+                            ${isExpense ? '-' : ''}${window.formatMoney(trans.value)}
+                        </td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.deleteTransaction('${trans.transactionType}', '${trans.id}', '${trans.timestamp}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        window.clearFilters = () => {
+            document.getElementById('filterMonth').value = '';
+            document.getElementById('filterDate').value = '';
+            document.getElementById('filterType').value = 'all';
+            window.filterHistory();
+        };
+
+        // --- Funções de Saídas/Despesas ---
+        window.filterExpenses = () => {
+            const m = document.getElementById('expenseFilterMonth').value;
+            const category = document.getElementById('expenseFilterCategory').value;
+            const min = parseFloat(document.getElementById('expenseFilterMin').value) || 0;
+            const max = parseFloat(document.getElementById('expenseFilterMax').value) || Infinity;
+            
+            let filteredExpenses = localExpenses;
+            
+            if (m) {
+                filteredExpenses = filteredExpenses.filter(e => e.date.startsWith(m));
+            }
+            
+            if (category) {
+                filteredExpenses = filteredExpenses.filter(e => e.category === category);
+            }
+            
+            filteredExpenses = filteredExpenses.filter(e => e.value >= min && e.value <= max);
+            filteredExpenses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            renderExpensesTable(filteredExpenses);
+        };
+
+        function renderExpensesTable(expenses) {
+            const tbody = document.getElementById('expensesTableBody');
+            if (!tbody) return;
+            
+            // CORREÇÃO: Limpar tabela antes de renderizar para evitar duplicação
+            tbody.innerHTML = '';
+            
+            if (expenses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-gray-500">
+                            <i class="fas fa-search text-3xl text-gray-300 mb-3"></i>
+                            <p class="font-medium">Nenhuma despesa encontrada</p>
+                            <p class="text-sm mt-1">Tente ajustar os filtros</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            expenses.forEach(expense => {
+                const dateBR = expense.date.split('-').reverse().join('/');
+                tbody.innerHTML += `
+                    <tr class="border-b expense-row hover:bg-red-50">
+                        <td class="p-3 text-xs text-gray-500">${dateBR}</td>
+                        <td class="p-3 font-bold text-gray-700">${expense.desc}</td>
+                        <td class="p-3"><span class="bg-red-100 px-2 py-1 rounded text-red-600 text-xs">${expense.category || '-'}</span></td>
+                        <td class="p-3 text-xs text-gray-500">${expense.payment}</td>
+                        <td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(expense.value)}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.deleteTransaction('expense', '${expense.id}', '${expense.timestamp}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function updateExpenseSummary() {
+            const now = new Date();
+            const currentMonthISO = now.toISOString().substring(0, 7);
+            const monthExpenses = localExpenses.filter(e => e.date.startsWith(currentMonthISO));
+            
+            const totalMonthExpenses = monthExpenses.reduce((sum, e) => sum + e.value, 0);
+            const highestExpense = monthExpenses.length > 0 ? Math.max(...monthExpenses.map(e => e.value)) : 0;
+            
+            // Encontrar categoria com mais gastos
+            const categoryTotals = {};
+            monthExpenses.forEach(e => {
+                categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.value;
+            });
+            
+            let topCategory = '-';
+            let topCategoryValue = 0;
+            
+            Object.entries(categoryTotals).forEach(([category, total]) => {
+                if (total > topCategoryValue) {
+                    topCategory = category;
+                    topCategoryValue = total;
+                }
+            });
+            
+            document.getElementById('expensesMonth').textContent = window.formatMoney(totalMonthExpenses);
+            document.getElementById('highestExpense').textContent = window.formatMoney(highestExpense);
+            document.getElementById('topExpenseCategory').textContent = topCategory;
+        }
+
+        // --- Funções de Relatórios Avançados ---
+        function updateReports(startDateISO, endDateISO, typeFilter = 'all', categoryFilter = '') {
+            // Filtrar vendas e saídas no período
+            let filteredSales = localSales.filter(sale => {
+                const saleDate = new Date(sale.date + 'T00:00:00');
+                const start = new Date(startDateISO + 'T00:00:00');
+                const end = new Date(endDateISO + 'T23:59:59');
+                const matchesDate = saleDate >= start && saleDate <= end;
+                const matchesCategory = !categoryFilter || sale.category === categoryFilter;
+                const matchesType = typeFilter === 'all' || typeFilter === 'sale';
+                return matchesDate && matchesCategory && matchesType;
+            });
+
+            let filteredExpenses = localExpenses.filter(expense => {
+                const expenseDate = new Date(expense.date + 'T00:00:00');
+                const start = new Date(startDateISO + 'T00:00:00');
+                const end = new Date(endDateISO + 'T23:59:59');
+                const matchesDate = expenseDate >= start && expenseDate <= end;
+                const matchesCategory = !categoryFilter || expense.category === categoryFilter;
+                const matchesType = typeFilter === 'all' || typeFilter === 'expense';
+                return matchesDate && matchesCategory && matchesType;
+            });
+
+            const totalSales = filteredSales.reduce((sum, s) => sum + s.value, 0);
+            const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.value, 0);
+            const netBalance = totalSales - totalExpenses;
+            const totalCount = filteredSales.length + filteredExpenses.length;
+
+            // Calcula lucro estimado (considerando custo dos produtos)
+            let totalProfit = 0;
+            filteredSales.forEach(sale => {
+                const product = products.find(p => p.name === sale.desc);
+                if (product && product.cost) {
+                    const profitPerItem = sale.value - product.cost;
+                    totalProfit += profitPerItem;
+                }
+            });
+            totalProfit -= totalExpenses; // Subtrai despesas
+
+            document.getElementById('customTotalSales').textContent = window.formatMoney(totalSales);
+            document.getElementById('customTotalExpenses').textContent = window.formatMoney(totalExpenses);
+            document.getElementById('customNetBalance').textContent = window.formatMoney(netBalance);
+            document.getElementById('customNetBalance').className = `text-xl font-bold ${netBalance >= 0 ? 'text-agro-green' : 'text-expense-red'}`;
+            document.getElementById('customProfit').textContent = window.formatMoney(totalProfit);
+
+            // --- Atualizar Gráficos ---
+            updateCashFlowChart(filteredSales, filteredExpenses, startDateISO, endDateISO);
+            updateCategoryChart(filteredSales, filteredExpenses);
+            updateTopExpensesTable(filteredExpenses);
+        }
+
+        function updateCashFlowChart(sales, expenses, startDate, endDate) {
+            const ctx = document.getElementById('cashFlowChart').getContext('2d');
+            
+            // Verificar se o canvas existe
+            if (!ctx) return;
+            
+            // Gerar array de datas entre startDate e endDate
+            const dates = [];
+            let currentDate = new Date(startDate);
+            const endDateObj = new Date(endDate);
+            
+            while (currentDate <= endDateObj) {
+                dates.push(new Date(currentDate).toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            // Agrupar vendas e despesas por dia
+            const salesByDay = {};
+            const expensesByDay = {};
+            const balanceByDay = {};
+            
+            dates.forEach(date => {
+                salesByDay[date] = 0;
+                expensesByDay[date] = 0;
+                balanceByDay[date] = 0;
+            });
+            
+            sales.forEach(sale => {
+                if (salesByDay[sale.date] !== undefined) {
+                    salesByDay[sale.date] += sale.value;
+                }
+            });
+            
+            expenses.forEach(expense => {
+                if (expensesByDay[expense.date] !== undefined) {
+                    expensesByDay[expense.date] += expense.value;
+                }
+            });
+            
+            dates.forEach(date => {
+                balanceByDay[date] = salesByDay[date] - expensesByDay[date];
+            });
+            
+            const formattedDates = dates.map(date => {
+                const d = new Date(date);
+                return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+            });
+
+            if (cashFlowChart) {
+                cashFlowChart.destroy();
+            }
+            
+            cashFlowChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: formattedDates,
+                    datasets: [
+                        {
+                            label: 'Vendas',
+                            data: dates.map(date => salesByDay[date]),
+                            backgroundColor: 'rgba(34, 197, 94, 0.5)',
+                            borderColor: 'rgb(34, 197, 94)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Saídas',
+                            data: dates.map(date => expensesByDay[date]),
+                            backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                            borderColor: 'rgb(239, 68, 68)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Saldo',
+                            data: dates.map(date => balanceByDay[date]),
+                            type: 'line',
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.1,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Fluxo de Caixa Diário'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCategoryChart(sales, expenses) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            // Verificar se o canvas existe
+            if (!ctx) return;
+            
+            // Combinar categorias de vendas e despesas
+            const categoryData = {};
+            
+            sales.forEach(sale => {
+                if (!categoryData[sale.category]) {
+                    categoryData[sale.category] = { sales: 0, expenses: 0 };
+                }
+                categoryData[sale.category].sales += sale.value;
+            });
+            
+            expenses.forEach(expense => {
+                if (!categoryData[expense.category]) {
+                    categoryData[expense.category] = { sales: 0, expenses: 0 };
+                }
+                categoryData[expense.category].expenses += expense.value;
+            });
+            
+            const categories = Object.keys(categoryData);
+            const salesData = categories.map(cat => categoryData[cat].sales);
+            const expensesData = categories.map(cat => categoryData[cat].expenses);
+
+            if (categoryChart) {
+                categoryChart.destroy();
+            }
+            
+            categoryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [
+                        {
+                            label: 'Vendas',
+                            data: salesData,
+                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                            borderColor: 'rgb(34, 197, 94)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Saídas',
+                            data: expensesData,
+                            backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                            borderColor: 'rgb(239, 68, 68)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribuição por Categoria'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTopExpensesTable(expenses) {
+            const sortedExpenses = [...expenses]
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 10); // Top 10 maiores despesas
+
+            const tbody = document.getElementById('topExpensesTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            sortedExpenses.forEach(expense => {
+                const dateBR = expense.date.split('-').reverse().join('/');
+                tbody.innerHTML += `
+                    <tr class="border-b expense-row hover:bg-red-50">
+                        <td class="p-3 font-bold">${expense.desc}</td>
+                        <td class="p-3"><span class="bg-red-100 px-2 py-1 rounded text-red-600 text-xs">${expense.category || '-'}</span></td>
+                        <td class="p-3 text-center text-xs text-gray-500">${dateBR}</td>
+                        <td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(expense.value)}</td>
+                        <td class="p-3 text-center text-xs text-gray-500">${expense.payment}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.applyCustomFilter = () => {
+            const start = document.getElementById('customFilterStart').value;
+            const end = document.getElementById('customFilterEnd').value;
+            const type = document.getElementById('customFilterType').value;
+            const category = document.getElementById('customFilterCategory').value;
+            
+            if (!start || !end) {
+                showNotification('Selecione as datas inicial e final', 'error');
+                return;
+            }
+            if (new Date(start) > new Date(end)) {
+                showNotification('Data inicial não pode ser maior que a final', 'error');
+                return;
+            }
+            updateReports(start, end, type, category);
         };
 
         // --- Funções de Produtos ---
@@ -1149,12 +2224,12 @@
                 }));
                 sortProducts();
             } catch (error) {
-                console.error("Erro ao carregar produtos do Firestore:", error);
-                 const storedProducts = localStorage.getItem('localProducts');
-                 if (storedProducts) {
-                     products = JSON.parse(storedProducts);
-                     sortProducts();
-                 }
+                console.error("Erro ao carregar produtos:", error);
+                const storedProducts = localStorage.getItem('localProducts');
+                if (storedProducts) {
+                    products = JSON.parse(storedProducts);
+                    sortProducts();
+                }
             }
         }
 
@@ -1207,14 +2282,6 @@
                 showNotification('Digite um preço de venda válido', 'error');
                 return;
             }
-            if (cost < 0) {
-                showNotification('O custo não pode ser negativo', 'error');
-                return;
-            }
-            if (discountPrice > price) {
-                showNotification('O preço com desconto não pode ser maior que o preço normal', 'error');
-                return;
-            }
 
             const loading = document.getElementById('loadingIndicator');
             if (loading) loading.classList.remove('hidden');
@@ -1233,7 +2300,6 @@
                     salesCount: 0
                 };
 
-                // Se estiver editando, atualiza. Senão, cria novo.
                 if (editingProductId) {
                     await updateDoc(doc(productsCollection, editingProductId), productData);
                     showNotification('Produto atualizado!', 'success');
@@ -1246,7 +2312,7 @@
                 closeModal('productModal');
                 await loadProducts();
             } catch (error) {
-                console.error("Erro ao salvar produto no Firestore:", error);
+                console.error("Erro ao salvar produto:", error);
                 showNotification('Erro ao salvar produto', 'error');
             } finally {
                 if (loading) loading.classList.add('hidden');
@@ -1260,7 +2326,7 @@
                     showNotification('Produto excluído!', 'success');
                     await loadProducts();
                 } catch (error) {
-                    console.error("Erro ao excluir produto do Firestore:", error);
+                    console.error("Erro ao excluir produto:", error);
                     showNotification('Erro ao excluir produto', 'error');
                 }
             }
@@ -1268,7 +2334,8 @@
 
         function updateProductsDisplay() {
             const grid = document.getElementById('productsGrid');
-            if (!grid) return; // Proteção
+            if (!grid) return;
+            
             const searchTerm = document.getElementById('productSearch')?.value.toLowerCase() || '';
             const filterCat = document.getElementById('filterCategory').value;
             const filterUnit = document.getElementById('filterUnit').value;
@@ -1354,468 +2421,81 @@
 
         function loadFilterCategories() {
             const selectCat = document.getElementById('filterCategory');
-            const selectCustomCat = document.getElementById('customFilterCategory');
             if (selectCat) {
                 selectCat.innerHTML = '<option value="">Todas</option>' + categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
             }
-            if (selectCustomCat) {
-                selectCustomCat.innerHTML = '<option value="">Todas</option>' + categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-            }
         }
 
-        // --- Funções de Venda ---
-        window.addSale = async () => {
-            const desc = document.getElementById('desc').value.trim();
-            const valueStr = document.getElementById('value').value;
-            const price = parseFloat(valueStr.replace(',', '.'));
-            if (!desc) {
-                showNotification('Digite o nome do produto', 'error');
-                return;
-            }
-            if (!valueStr || isNaN(price) || price <= 0) {
-                showNotification('Digite um valor válido', 'error');
-                return;
-            }
-            const loading = document.getElementById('loadingIndicator');
-            const addButton = document.querySelector('button[onclick="addSale()"]');
-            if (!addButton) return; // Proteção contra race condition
-            addButton.disabled = true;
-            loading.classList.remove('hidden');
-
-            const now = new Date();
-            const localDateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            const saleData = {
-                date: localDateISO,
-                timestamp: now.toISOString(),
-                time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-                desc: desc,
-                category: document.getElementById('category').value,
-                value: price,
-                payment: document.getElementById('payment').value
-            };
-
-            // Otimização: Adiciona localmente primeiro para feedback imediato
-            localSales.unshift(saleData);
-            updateScreen();
-
-            try {
-                await addDoc(salesCollection, saleData);
-                document.getElementById('desc').value = '';
-                document.getElementById('value').value = '';
-                document.getElementById('desc').focus();
-            } catch(e) {
-                console.error("Erro ao salvar no Firestore:", e);
-                if (navigator.onLine) {
-                    showNotification("Erro ao salvar venda no servidor", 'error');
-                    localSales = localSales.filter(s => s.timestamp !== saleData.timestamp);
-                    updateScreen();
-                } else {
-                     showNotification("Venda salva localmente. Enviando quando houver conexão...", 'warning');
-                }
-            } finally {
-                addButton.disabled = false;
-                loading.classList.add('hidden');
-            }
-        };
-
-        window.deleteSale = async (id, timestamp) => { // Adiciona timestamp como fallback
-            if(confirm("Excluir esta venda?")) {
-                try {
-                    await deleteDoc(doc(db, "vendas_agrovida", id));
-                    showNotification('Venda excluída!', 'success');
-                } catch (error) {
-                    console.error("Erro ao excluir do Firestore:", error);
-                    if (navigator.onLine) {
-                         showNotification('Erro ao excluir venda', 'error');
-                    } else {
-                        localSales = localSales.filter(s => s.id !== id && s.timestamp !== timestamp);
-                        updateScreen();
-                        showNotification('Venda excluída localmente. Sincronizar quando houver conexão.', 'warning');
-                    }
-                }
-            }
-        };
-
-        // --- META MENSAL GLOBAL NO FIRESTORE ---
-        async function loadMetaMensal() {
-            try {
-                const metaDoc = doc(settingsCollection, "metaMensal");
-                const metaSnapshot = await getDoc(metaDoc);
-                if (metaSnapshot.exists()) {
-                    metaMensal = metaSnapshot.data().valor || 5000;
-                } else {
-                    // Cria documento padrão se não existir
-                    await setDoc(metaDoc, { valor: 5000 });
-                }
-                updateMetaDisplay();
-            } catch (error) {
-                console.error("Erro ao carregar meta do Firestore:", error);
-                metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
-                updateMetaDisplay();
-            }
-        }
-
-        async function saveMetaMensal(novoValor) {
-            try {
-                const metaDoc = doc(settingsCollection, "metaMensal");
-                await setDoc(metaDoc, { valor: novoValor });
-                metaMensal = novoValor;
-                localStorage.setItem('metaAgro', novoValor);
-                updateMetaDisplay();
-                showNotification('Meta atualizada globalmente!', 'success');
-                return true;
-            } catch (error) {
-                console.error("Erro ao salvar meta no Firestore:", error);
-                // Fallback para localStorage
-                metaMensal = novoValor;
-                localStorage.setItem('metaAgro', novoValor);
-                updateMetaDisplay();
-                showNotification('Meta atualizada localmente', 'warning');
-                return false;
-            }
-        }
-
-        function updateMetaDisplay() {
-            document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
+        // --- Funções de Exportação ---
+        window.exportExpensesExcel = () => {
+            const data = localExpenses.map(e => ({
+                'Data': e.date.split('-').reverse().join('/'),
+                'Hora': e.time || '',
+                'Descrição': e.desc || '',
+                'Categoria': e.category || '',
+                'Pagamento': e.payment || '',
+                'Valor (R$)': e.value || 0
+            }));
             
-            // Atualiza a barra de progresso
-            const now = new Date();
-            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            const currentMonthISO = todayISO.substring(0, 7);
-            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
-            const totalMonth = monthSales.reduce((acc, c) => acc + c.value, 0);
+            const total = localExpenses.reduce((sum, expense) => sum + expense.value, 0);
+            data.push({
+                'Data': 'TOTAL',
+                'Hora': '',
+                'Descrição': '',
+                'Categoria': '',
+                'Pagamento': '',
+                'Valor (R$)': total
+            });
             
-            const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
-            document.getElementById('progressBar').style.width = `${percent}%`;
-            document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
-
-            if(percent >= 100) {
-                 document.getElementById('progressBar').classList.replace('from-green-400', 'from-yellow-400');
-                 document.getElementById('progressBar').classList.replace('to-green-600', 'to-yellow-600');
-            } else {
-                 document.getElementById('progressBar').classList.replace('from-yellow-400', 'from-green-400');
-                 document.getElementById('progressBar').classList.replace('to-yellow-600', 'to-green-600');
-            }
-        }
-
-        window.editMeta = async () => {
-            const nova = prompt("Nova Meta (R$):", metaMensal);
-            if(nova && !isNaN(nova)) {
-                await saveMetaMensal(parseFloat(nova));
-            }
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Saídas');
+            const wscols = [
+                { wch: 12 }, // Data
+                { wch: 10 }, // Hora
+                { wch: 30 }, // Descrição
+                { wch: 15 }, // Categoria
+                { wch: 15 }, // Pagamento
+                { wch: 15 }  // Valor
+            ];
+            worksheet['!cols'] = wscols;
+            XLSX.writeFile(workbook, `saidas-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
+            showNotification('Saídas exportadas em Excel!', 'success');
         };
 
-        window.goToHistoryCurrentMonth = () => {
-            const t = new Date();
-            document.getElementById('filterMonth').value = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0');
-            window.showTab('history');
+        window.exportHistoryExcel = () => {
+            const allTransactions = [
+                ...localSales.map(s => ({...s, type: 'Venda'})),
+                ...localExpenses.map(e => ({...e, type: 'Saída'}))
+            ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            const data = allTransactions.map(t => ({
+                'Tipo': t.type,
+                'Data': t.date.split('-').reverse().join('/'),
+                'Hora': t.time || '',
+                'Descrição': t.desc || '',
+                'Categoria': t.category || '',
+                'Pagamento': t.payment || '',
+                'Valor (R$)': t.type === 'Saída' ? -t.value : t.value
+            }));
+            
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Histórico');
+            const wscols = [
+                { wch: 10 }, // Tipo
+                { wch: 12 }, // Data
+                { wch: 10 }, // Hora
+                { wch: 30 }, // Descrição
+                { wch: 15 }, // Categoria
+                { wch: 15 }, // Pagamento
+                { wch: 15 }  // Valor
+            ];
+            worksheet['!cols'] = wscols;
+            XLSX.writeFile(workbook, `historico-completo-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
+            showNotification('Histórico exportado em Excel!', 'success');
         };
 
-        // --- Atualização da Tela Principal ---
-        function updateScreen() {
-            const now = new Date();
-            const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            const yesterday = new Date(now);
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayISO = new Date(yesterday.getTime() - (yesterday.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            const currentMonthISO = todayISO.substring(0, 7);
-
-            const todaySales = localSales.filter(s => s.date === todayISO);
-            const yesterSales = localSales.filter(s => s.date === yesterdayISO);
-            const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
-
-            const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
-            const totalToday = sum(todaySales);
-            const totalYesterday = sum(yesterSales);
-            const totalMonth = sum(monthSales);
-
-            const sumDinheiro = sum(todaySales.filter(s => s.payment === 'Dinheiro'));
-            const sumPix = sum(todaySales.filter(s => s.payment === 'Pix'));
-            const sumCard = sum(todaySales.filter(s => s.payment === 'Débito' || s.payment === 'Crédito'));
-            const sumFiado = sum(todaySales.filter(s => s.payment === 'Fiado/Prazo'));
-
-            document.getElementById('dashTotalToday').textContent = window.formatMoney(totalToday);
-            document.getElementById('dashTotalYesterday').textContent = window.formatMoney(totalYesterday);
-            document.getElementById('dashTotalMonth').textContent = window.formatMoney(totalMonth);
-            document.getElementById('sumMoney').textContent = window.formatMoney(sumDinheiro);
-            document.getElementById('sumPix').textContent = window.formatMoney(sumPix);
-            document.getElementById('sumCard').textContent = window.formatMoney(sumCard);
-            document.getElementById('sumFiado').textContent = window.formatMoney(sumFiado);
-
-            const avgTicket = todaySales.length > 0 ? totalToday / todaySales.length : 0;
-            document.getElementById('averageTicket').textContent = window.formatMoney(avgTicket);
-
-            document.getElementById('dateDisplay').textContent = now.toLocaleDateString('pt-BR', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long'
-            });
-
-            // Atualiza a meta (chama a função separada)
-            updateMetaDisplay();
-
-            const tbody = document.getElementById('todayTableBody');
-            if (tbody) {
-                tbody.innerHTML = '';
-                todaySales.forEach(s => {
-                    tbody.innerHTML += `
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-3 text-xs text-gray-500">${s.time}</td>
-                            <td class="p-3 font-bold text-gray-700">${s.desc}</td>
-                            <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 text-xs">${s.category || '-'}</span></td>
-                            <td class="p-3 text-xs text-gray-500">${s.payment}</td>
-                            <td class="p-3 text-right font-bold text-green-700">${window.formatMoney(s.value)}</td>
-                            <td class="p-3 text-center">
-                                <button onclick="window.deleteSale('${s.id}', '${s.timestamp}')" class="text-red-500 hover:text-red-700">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
-                });
-            }
-
-            if(!document.getElementById('tab-history').classList.contains('hidden')) {
-                window.filterHistory();
-            }
-        }
-
-        // --- Funções de Histórico ---
-        window.filterHistory = () => {
-            const m = document.getElementById('filterMonth').value;
-            const d = document.getElementById('filterDate').value;
-            let list = localSales;
-            if (d) {
-                list = list.filter(s => s.date === d);
-                document.getElementById('filterMonth').value = '';
-            } else if (m) {
-                list = list.filter(s => s.date.startsWith(m));
-                document.getElementById('filterDate').value = '';
-            }
-            const total = list.reduce((sum, sale) => sum + sale.value, 0);
-            document.getElementById('historyTotal').textContent = window.formatMoney(total);
-            renderHistoryTable(list);
-        };
-
-        function renderHistoryTable(sales) {
-            const tbody = document.getElementById('historyTableBody');
-            if (!tbody) return; // Proteção
-            if (sales.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-8 text-center text-gray-500">
-                            <i class="fas fa-search text-3xl text-gray-300 mb-3"></i>
-                            <p class="font-medium">Nenhuma venda encontrada</p>
-                            <p class="text-sm mt-1">Tente ajustar os filtros</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            tbody.innerHTML = sales.map(sale => {
-                const dateBR = sale.date.split('-').reverse().join('/');
-                return `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 text-xs text-gray-500">${dateBR} ${sale.time}</td>
-                        <td class="p-3 font-bold">${sale.desc}</td>
-                        <td class="p-3 text-xs text-gray-500">${sale.category || '-'}</td>
-                        <td class="p-3 text-xs text-gray-500">${sale.payment}</td>
-                        <td class="p-3 text-right font-bold text-gray-700">${window.formatMoney(sale.value)}</td>
-                        <td class="p-3 text-center">
-                            <button onclick="window.deleteSale('${sale.id}', '${sale.timestamp}')" class="text-red-500 hover:text-red-700">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
-            }).join('');
-        }
-
-        window.clearFilters = () => {
-            document.getElementById('filterMonth').value = '';
-            document.getElementById('filterDate').value = '';
-            window.filterHistory();
-        };
-
-        // --- Funções de Relatórios Avançados ---
-        function updateReports(startDateISO, endDateISO, categoryFilter = '') {
-            // Filtra vendas no período
-            let filteredSales = localSales.filter(sale => {
-                const saleDate = new Date(sale.date + 'T00:00:00');
-                const start = new Date(startDateISO + 'T00:00:00');
-                const end = new Date(endDateISO + 'T23:59:59');
-                const matchesDate = saleDate >= start && saleDate <= end;
-                const matchesCategory = !categoryFilter || sale.category === categoryFilter;
-                return matchesDate && matchesCategory;
-            });
-
-            const totalSales = filteredSales.reduce((sum, s) => sum + s.value, 0);
-            const totalCount = filteredSales.length;
-            const avgTicket = totalCount > 0 ? totalSales / totalCount : 0;
-
-            // Calcula lucro estimado
-            let totalProfit = 0;
-            filteredSales.forEach(sale => {
-                const product = products.find(p => p.name === sale.desc);
-                if (product && product.cost) {
-                    const profitPerItem = sale.value - product.cost;
-                    totalProfit += profitPerItem;
-                }
-            });
-
-            document.getElementById('customTotalSales').textContent = window.formatMoney(totalSales);
-            document.getElementById('customTotalCount').textContent = totalCount;
-            document.getElementById('customAverageTicket').textContent = window.formatMoney(avgTicket);
-            document.getElementById('customProfit').textContent = window.formatMoney(totalProfit);
-
-            // --- Atualizar Gráficos ---
-            updateDailySalesChart(filteredSales);
-            updateCategoryChart(filteredSales);
-            updateTopProductsTable(filteredSales);
-        }
-
-        function updateDailySalesChart(sales) {
-            const ctx = document.getElementById('dailySalesChart').getContext('2d');
-            // Agrupa vendas por dia
-            const dailyData = {};
-            sales.forEach(sale => {
-                if (!dailyData[sale.date]) {
-                    dailyData[sale.date] = 0;
-                }
-                dailyData[sale.date] += sale.value;
-            });
-
-            const dates = Object.keys(dailyData).sort();
-            const values = dates.map(date => dailyData[date]);
-
-            if (dailySalesChart) {
-                dailySalesChart.destroy();
-            }
-            dailySalesChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        label: 'Vendas (R$)',
-                        data: values,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Evolução Diária'
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateCategoryChart(sales) {
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            // Agrupa vendas por categoria
-            const categoryData = {};
-            sales.forEach(sale => {
-                if (!categoryData[sale.category]) {
-                    categoryData[sale.category] = 0;
-                }
-                categoryData[sale.category] += sale.value;
-            });
-
-            const categories = Object.keys(categoryData);
-            const values = Object.values(categoryData);
-
-            if (categoryChart) {
-                categoryChart.destroy();
-            }
-            categoryChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        label: 'Vendas por Categoria (R$)',
-                        data: values,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.8)',
-                            'rgba(54, 162, 235, 0.8)',
-                            'rgba(255, 205, 86, 0.8)',
-                            'rgba(75, 192, 192, 0.8)',
-                            'rgba(153, 102, 255, 0.8)',
-                            'rgba(255, 159, 64, 0.8)',
-                            'rgba(199, 199, 199, 0.8)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribuição por Categoria'
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateTopProductsTable(sales) {
-            const topProductsData = {};
-            sales.forEach(sale => {
-                if (!topProductsData[sale.desc]) {
-                    topProductsData[sale.desc] = { count: 0, totalValue: 0, totalProfit: 0 };
-                }
-                topProductsData[sale.desc].count++;
-                topProductsData[sale.desc].totalValue += sale.value;
-                // Calcula lucro estimado para o produto
-                const product = products.find(p => p.name === sale.desc);
-                if (product && product.cost) {
-                    topProductsData[sale.desc].totalProfit += (sale.value - product.cost);
-                }
-            });
-
-            const sortedProducts = Object.entries(topProductsData)
-                .sort((a, b) => b[1].count - a[1].count)
-                .slice(0, 10); // Top 10
-
-            const tbody = document.getElementById('topProductsTableBody');
-            tbody.innerHTML = '';
-            sortedProducts.forEach(([name, data]) => {
-                tbody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 font-bold">${name}</td>
-                        <td class="p-3 text-center">${data.count}</td>
-                        <td class="p-3 text-right font-bold text-gray-700">${window.formatMoney(data.totalValue)}</td>
-                        <td class="p-3 text-right font-bold text-purple-600">${window.formatMoney(data.totalProfit)}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        window.applyCustomFilter = () => {
-            const start = document.getElementById('customFilterStart').value;
-            const end = document.getElementById('customFilterEnd').value;
-            const category = document.getElementById('customFilterCategory').value;
-            if (!start || !end) {
-                showNotification('Selecione as datas inicial e final', 'error');
-                return;
-            }
-            if (new Date(start) > new Date(end)) {
-                showNotification('Data inicial não pode ser maior que a final', 'error');
-                return;
-            }
-            updateReports(start, end, category);
-        };
-
-        // --- Funções de Exportação (mantidas iguais) ---
         window.exportCatalogPDF = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -1892,51 +2572,64 @@
             showNotification('Catálogo exportado em Excel!', 'success');
         };
         
-        window.exportHistoryExcel = () => {
-            const data = localSales.map(s => ({
-                'Data': s.date.split('-').reverse().join('/'),
-                'Hora': s.time || '',
-                'Produto': s.desc || '',
-                'Categoria': s.category || '',
-                'Pagamento': s.payment || '',
-                'Valor (R$)': s.value || 0
-            }));
-            const worksheet = XLSX.utils.json_to_sheet(data);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendas');
-            const wscols = [
-                { wch: 12 }, // Data
-                { wch: 10 }, // Hora
-                { wch: 30 }, // Produto
-                { wch: 15 }, // Categoria
-                { wch: 15 }, // Pagamento
-                { wch: 15 }  // Valor
-            ];
-            worksheet['!cols'] = wscols;
-            XLSX.writeFile(workbook, `vendas-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
-            showNotification('Histórico exportado em Excel!', 'success');
-        };
-        
         window.exportCurrentMonthExcel = () => {
             const currentMonthISO = new Date().toISOString().slice(0,7);
             const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
-            const data = monthSales.map(s => ({
-                'Data': s.date.split('-').reverse().join('/'),
-                'Hora': s.time || '',
-                'Produto': s.desc || '',
-                'Categoria': s.category || '',
-                'Pagamento': s.payment || '',
-                'Valor (R$)': s.value || 0
-            }));
-            const total = monthSales.reduce((sum, sale) => sum + sale.value, 0);
+            const monthExpenses = localExpenses.filter(e => e.date.startsWith(currentMonthISO));
+            
+            const data = [
+                ...monthSales.map(s => ({'Tipo': 'Venda', 'Data': s.date.split('-').reverse().join('/'), 'Hora': s.time || '', 'Descrição': s.desc || '', 'Categoria': s.category || '', 'Pagamento': s.payment || '', 'Valor (R$)': s.value || 0})),
+                ...monthExpenses.map(e => ({'Tipo': 'Saída', 'Data': e.date.split('-').reverse().join('/'), 'Hora': e.time || '', 'Descrição': e.desc || '', 'Categoria': e.category || '', 'Pagamento': e.payment || '', 'Valor (R$)': -e.value || 0}))
+            ].sort((a, b) => {
+                const dateA = new Date(a.Data.split('/').reverse().join('-') + 'T' + a.Hora);
+                const dateB = new Date(b.Data.split('/').reverse().join('-') + 'T' + b.Hora);
+                return dateB - dateA;
+            });
+            
+            const totalSales = monthSales.reduce((sum, sale) => sum + sale.value, 0);
+            const totalExpenses = monthExpenses.reduce((sum, expense) => sum + expense.value, 0);
+            const netBalance = totalSales - totalExpenses;
+            
             data.push({
-                'Data': 'TOTAL',
+                'Tipo': 'RESUMO',
+                'Data': '',
                 'Hora': '',
-                'Produto': '',
+                'Descrição': '',
                 'Categoria': '',
                 'Pagamento': '',
-                'Valor (R$)': total
+                'Valor (R$)': ''
             });
+            
+            data.push({
+                'Tipo': 'TOTAL VENDAS',
+                'Data': '',
+                'Hora': '',
+                'Descrição': '',
+                'Categoria': '',
+                'Pagamento': '',
+                'Valor (R$)': totalSales
+            });
+            
+            data.push({
+                'Tipo': 'TOTAL SAÍDAS',
+                'Data': '',
+                'Hora': '',
+                'Descrição': '',
+                'Categoria': '',
+                'Pagamento': '',
+                'Valor (R$)': -totalExpenses
+            });
+            
+            data.push({
+                'Tipo': 'SALDO LÍQUIDO',
+                'Data': '',
+                'Hora': '',
+                'Descrição': '',
+                'Categoria': '',
+                'Pagamento': '',
+                'Valor (R$)': netBalance
+            });
+            
             const worksheet = XLSX.utils.json_to_sheet(data);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendas Mês');
@@ -1948,10 +2641,12 @@
             const backupData = {
                 timestamp: new Date().toISOString(),
                 sales: localSales,
+                expenses: localExpenses,
                 products: products,
                 settings: {
                     metaMensal: metaMensal,
-                    categories: categories
+                    categories: categories,
+                    expenseCategories: expenseCategories
                 }
             };
             const dataStr = JSON.stringify(backupData, null, 2);
@@ -1967,6 +2662,7 @@
         // --- Funções de Configurações ---
         function updateSettingsInfo() {
             document.getElementById('totalSalesCount').textContent = localSales.length;
+            document.getElementById('totalExpensesCount').textContent = localExpenses.length;
             document.getElementById('totalProductsCount').textContent = products.length;
             document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('pt-BR');
             const defaultGoal = parseFloat(localStorage.getItem('defaultMonthlyGoal')) || 5000;
@@ -1991,7 +2687,7 @@
                 return;
             }
             SENHA_LOJA = newPass;
-            localStorage.setItem('senhaAgro', newPass); // Armazena a nova senha
+            localStorage.setItem('senhaAgro', newPass);
             document.getElementById('currentPassword').value = newPass;
             closeModal('passwordModal');
             showNotification('Senha alterada com sucesso!', 'success');
@@ -2032,11 +2728,16 @@
         }
 
         // --- Melhor Formatação de Dados ---
-        // Formatação automática para campos de moeda
         document.getElementById('value').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
-            value = (parseFloat(value) / 100).toFixed(2); // Converte para float e divide por 100
-            e.target.value = value.replace('.', ','); // Substitui ponto por vírgula
+            let value = e.target.value.replace(/\D/g, '');
+            value = (parseFloat(value) / 100).toFixed(2);
+            e.target.value = value.replace('.', ',');
+        });
+
+        document.getElementById('expenseValue').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = (parseFloat(value) / 100).toFixed(2);
+            e.target.value = value.replace('.', ',');
         });
 
         document.getElementById('productPrice').addEventListener('input', function(e) {
@@ -2070,9 +2771,9 @@
 
             const matches = products
                 .filter(p => p.name.toLowerCase().includes(query))
-                .slice(0, 5); // Limita a 5 sugestões
+                .slice(0, 5);
 
-            if (matches.length > 0) {
+            if (matches.length > 0 && transactionType === 'sale') {
                 suggestionsDiv.innerHTML = matches.map(p => 
                     `<div class="search-suggestion-item" onclick="selectSuggestion('${p.name}', '${p.category}', ${p.price})">${p.name}</div>`
                 ).join('');
@@ -2083,7 +2784,6 @@
         });
 
         descInput.addEventListener('blur', function() {
-            // Adiciona um pequeno atraso para que o clique na sugestão seja processado
             setTimeout(() => {
                 suggestionsDiv.classList.add('hidden');
             }, 200);
@@ -2098,6 +2798,7 @@
         };
 
         window.quickAdd = (name, category, price) => {
+            setTransactionType('sale');
             document.getElementById('desc').value = name;
             document.getElementById('category').value = category;
             document.getElementById('value').value = price.toFixed(2).replace('.', ',');
@@ -2106,37 +2807,59 @@
         };
 
         // --- Inicialização e Sincronização com Firestore ---
-        const q = query(salesCollection, orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
+        const salesQuery = query(salesCollection, orderBy("timestamp", "desc"));
+        const expensesQuery = query(expensesCollection, orderBy("timestamp", "desc"));
+
+        onSnapshot(salesQuery, (snapshot) => {
             const updatedSales = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
-                value: parseFloat(doc.data().value) || 0
+                value: parseFloat(doc.data().value) || 0,
+                type: 'sale'
             }));
 
-            if (JSON.stringify(localSales) !== JSON.stringify(updatedSales)) {
-                localSales = updatedSales;
-                updateScreen();
-                if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) {
-                    updateSettingsInfo();
-                }
-                // Atualiza os relatórios se a aba estiver ativa
-                if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) {
-                    applyCustomFilter(); // Recalcula com os dados atualizados
-                }
+            localSales = updatedSales;
+            updateScreen();
+            if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) {
+                updateSettingsInfo();
+            }
+            if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) {
+                applyCustomFilter();
             }
         }, (error) => {
              console.error("Erro no listener de vendas:", error);
         });
 
+        onSnapshot(expensesQuery, (snapshot) => {
+            const updatedExpenses = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                value: parseFloat(doc.data().value) || 0,
+                type: 'expense'
+            }));
+
+            localExpenses = updatedExpenses;
+            updateScreen();
+            if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) {
+                updateSettingsInfo();
+            }
+            if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) {
+                applyCustomFilter();
+            }
+        }, (error) => {
+             console.error("Erro no listener de saídas:", error);
+        });
+
         // --- Eventos e Inicializações ---
         window.addEventListener('load', async () => {
             await loadProducts();
-            await loadMetaMensal(); // CARREGA A META DO FIRESTORE
+            await loadMetaMensal();
             updateCategorySelect();
-            updateCategorySelectForSales(); // ATUALIZA O SELECT DE VENDAS NA PÁGINA INICIAL
+            updateCategorySelectForSales();
             loadCategories();
-            loadFilterCategories(); // Para os filtros de relatórios e produtos
+            loadExpenseCategories();
+            loadFilterCategories();
+            loadExpenseCategoriesForReports();
 
             const now = new Date();
             const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
@@ -2144,6 +2867,8 @@
             document.getElementById('filterMonth').value = currentMonth;
             document.getElementById('filterMonth').max = currentMonth;
             document.getElementById('filterDate').max = today;
+            document.getElementById('expenseFilterMonth').value = currentMonth;
+            document.getElementById('expenseFilterMonth').max = currentMonth;
 
             // Define datas padrão para relatórios (últimos 30 dias)
             const thirtyDaysAgo = new Date(now);
@@ -2164,9 +2889,13 @@
                     document.getElementById('value').focus();
                 } else if (e.key === 'Enter' && document.activeElement === document.getElementById('value')) {
                     e.preventDefault();
-                    window.addSale();
+                    window.addTransaction();
                 }
             });
+            
+            // Inicializar a tela
+            updateScreen();
+            showTab('dashboard');
         });
     </script>
 </body>
