@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>AgroVida+ | Sistema de Gestão</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,20 +17,32 @@
 --secondary: #FFB800;
 --expense: #ef4444;
 --expense-dark: #dc2626;
+--primary-light: #00a840;
+}
+* {
+-webkit-tap-highlight-color: transparent;
 }
 body {
 background-color: #f3f4f6;
-font-family: 'Segoe UI', sans-serif;
+font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 overflow-x: hidden;
+touch-action: manipulation;
 }
 .bg-agro-green { background-color: var(--primary); }
 .text-agro-green { color: var(--primary); }
 .bg-agro-yellow { background-color: var(--secondary); }
 .bg-expense-red { background-color: var(--expense); }
 .text-expense-red { color: var(--expense); }
+
+/* Sidebar Otimizada */
 .sidebar {
 min-height: 100vh;
 background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+will-change: transform;
+}
+.sidebar.active {
+transform: translateX(0);
 }
 .logo-container {
 background: white;
@@ -45,106 +57,103 @@ height: auto;
 background-color: rgba(255, 255, 255, 0.15);
 border-right: 4px solid var(--secondary);
 }
-.fade-in { animation: fadeIn 0.3s ease; }
+.fade-in { 
+animation: fadeIn 0.3s ease; 
+}
 @keyframes fadeIn {
 from { opacity: 0; transform: translateY(10px); }
 to { opacity: 1; transform: translateY(0); }
 }
-.progress-bar { transition: width 1s ease-in-out; }
+.progress-bar { 
+transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); 
+}
 .card {
 background: white;
 border-radius: 12px;
 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 border: 1px solid #e5e7eb;
+transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Botões Otimizados para Touch */
+.btn-primary, .btn-expense, .btn-secondary, .btn-xml {
+padding: 14px 20px;
+border-radius: 10px;
+font-weight: 600;
+border: none;
+cursor: pointer;
+transition: all 0.2s;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+min-height: 48px;
 }
 .btn-primary {
 background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
 color: white;
-padding: 12px 20px;
-border-radius: 10px;
-font-weight: 600;
-border: none;
-cursor: pointer;
-transition: all 0.2s;
 }
-.btn-primary:hover {
-transform: translateY(-1px);
-box-shadow: 0 4px 12px rgba(0, 144, 54, 0.2);
+.btn-primary:active {
+transform: scale(0.98);
 }
 .btn-expense {
 background: linear-gradient(135deg, var(--expense) 0%, var(--expense-dark) 100%);
 color: white;
-padding: 12px 20px;
-border-radius: 10px;
-font-weight: 600;
-border: none;
-cursor: pointer;
-transition: all 0.2s;
 }
-.btn-expense:hover {
-transform: translateY(-1px);
-box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+.btn-expense:active {
+transform: scale(0.98);
 }
 .btn-secondary {
 background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
 color: white;
-padding: 10px 16px;
-border-radius: 8px;
-font-weight: 600;
-border: none;
-cursor: pointer;
-transition: all 0.2s;
-}
-.btn-secondary:hover {
-transform: translateY(-1px);
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .btn-xml {
 background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
 color: white;
-padding: 12px 20px;
-border-radius: 10px;
-font-weight: 600;
-border: none;
-cursor: pointer;
-transition: all 0.2s;
 }
-.btn-xml:hover {
-transform: translateY(-1px);
-box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
-}
+
+/* Inputs Otimizados */
 .input-field {
 border: 2px solid #e5e7eb;
 border-radius: 10px;
-padding: 12px;
-font-size: 14px;
+padding: 14px;
+font-size: 16px;
 transition: all 0.2s;
 width: 100%;
+min-height: 48px;
 }
 .input-field:focus {
 outline: none;
 border-color: var(--primary);
 box-shadow: 0 0 0 3px rgba(0, 144, 54, 0.1);
 }
+
+/* Tabelas Responsivas */
 .table-responsive {
 overflow-x: auto;
+-webkit-overflow-scrolling: touch;
 }
 .table-responsive table {
 min-width: 600px;
 }
-@media (max-width: 768px) {
-.sidebar {
-position: fixed;
-width: 280px;
-z-index: 1000;
-transform: translateX(-100%);
-transition: transform 0.3s ease;
+.table-responsive::-webkit-scrollbar {
+height: 6px;
 }
-.sidebar.active {
-transform: translateX(0);
+.table-responsive::-webkit-scrollbar-track {
+background: #f1f1f1;
+border-radius: 3px;
 }
+.table-responsive::-webkit-scrollbar-thumb {
+background: #888;
+border-radius: 3px;
+}
+
+/* Mobile Menu Button */
 .mobile-menu-btn {
-display: block;
+display: none;
 position: fixed;
 top: 16px;
 left: 16px;
@@ -153,15 +162,20 @@ background: var(--primary);
 color: white;
 border: none;
 border-radius: 50%;
-width: 44px;
-height: 44px;
-display: flex;
+width: 48px;
+height: 48px;
 align-items: center;
 justify-content: center;
 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+transition: transform 0.2s;
 }
+.mobile-menu-btn:active {
+transform: scale(0.95);
+}
+
+/* Mobile Bottom Navigation */
 .mobile-bottom-nav {
-display: flex;
+display: none;
 position: fixed;
 bottom: 0;
 left: 0;
@@ -170,6 +184,7 @@ background: white;
 border-top: 1px solid #e5e7eb;
 padding: 8px 0;
 z-index: 100;
+safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 .mobile-bottom-nav button {
 flex: 1;
@@ -182,25 +197,57 @@ border: none;
 color: #64748b;
 font-size: 10px;
 gap: 4px;
+min-height: 56px;
+}
+.mobile-bottom-nav button i {
+font-size: 18px;
 }
 .mobile-bottom-nav button.active {
 color: var(--primary);
 }
-main {
-padding-bottom: 70px !important;
+.mobile-bottom-nav button:active {
+background: #f3f4f6;
+border-radius: 8px;
 }
-}
-@media (min-width: 769px) {
-.mobile-menu-btn,
-.mobile-bottom-nav {
+
+/* Modal Otimizado */
+.modal-overlay {
 display: none;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0, 0, 0, 0.5);
+z-index: 1000;
+align-items: center;
+justify-content: center;
+backdrop-filter: blur(4px);
 }
+.modal-overlay.active {
+display: flex;
 }
+.modal-content {
+background: white;
+border-radius: 16px;
+padding: 24px;
+max-width: 600px;
+width: 90%;
+max-height: 90vh;
+overflow-y: auto;
+animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(30px) scale(0.95); }
+to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Notificações */
 .notification {
 position: fixed;
 top: 20px;
 right: 20px;
-padding: 12px 20px;
+padding: 14px 20px;
 border-radius: 10px;
 color: white;
 font-weight: 500;
@@ -210,6 +257,7 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 display: flex;
 align-items: center;
 gap: 10px;
+max-width: calc(100vw - 40px);
 }
 .notification.success {
 background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -231,10 +279,12 @@ to { transform: translateX(0); opacity: 1; }
 from { transform: translateX(0); opacity: 1; }
 to { transform: translateX(100%); opacity: 0; }
 }
+
+/* Loading Spinner */
 .loading-spinner {
-width: 20px;
-height: 20px;
-border: 2px solid var(--primary);
+width: 24px;
+height: 24px;
+border: 3px solid var(--primary);
 border-top-color: transparent;
 border-radius: 50%;
 animation: spin 1s linear infinite;
@@ -242,48 +292,8 @@ animation: spin 1s linear infinite;
 @keyframes spin {
 to { transform: rotate(360deg); }
 }
-.modal-overlay {
-display: none;
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: rgba(0, 0, 0, 0.5);
-z-index: 1000;
-align-items: center;
-justify-content: center;
-}
-.modal-overlay.active {
-display: flex;
-}
-.modal-content {
-background: white;
-border-radius: 16px;
-padding: 24px;
-max-width: 600px;
-width: 90%;
-max-height: 90vh;
-overflow-y: auto;
-animation: slideUp 0.3s ease;
-}
-@keyframes slideUp {
-from { opacity: 0; transform: translateY(30px); }
-to { opacity: 1; transform: translateY(0); }
-}
-.input-currency {
-text-align: right;
-}
-.connection-status {
-font-size: 0.75rem;
-padding: 0.25rem 0.5rem;
-border-radius: 0.5rem;
-}
-.chart-container {
-position: relative;
-height: 400px;
-margin-top: 20px;
-}
+
+/* Search Suggestions */
 .search-suggestions {
 position: absolute;
 background: white;
@@ -294,12 +304,13 @@ max-height: 200px;
 overflow-y: auto;
 z-index: 10;
 width: 100%;
-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 .search-suggestion-item {
-padding: 10px 12px;
+padding: 12px 14px;
 cursor: pointer;
 border-bottom: 1px solid #f3f4f6;
+transition: background 0.2s;
 }
 .search-suggestion-item:hover {
 background-color: #f9fafb;
@@ -308,38 +319,8 @@ background-color: #f9fafb;
 border-bottom: none;
 border-radius: 0 0 10px 10px;
 }
-.balance-positive {
-color: #059669;
-}
-.balance-negative {
-color: #dc2626;
-}
-.expense-row {
-background-color: #fef2f2;
-}
-.expense-row:hover {
-background-color: #fee2e2;
-}
-.type-filter-btn {
-padding: 8px 16px;
-border-radius: 8px;
-border: 2px solid #e5e7eb;
-background: white;
-cursor: pointer;
-font-weight: 500;
-transition: all 0.2s;
-}
-.type-filter-btn.active {
-border-color: var(--primary);
-background: #f0fdf4;
-color: var(--primary);
-}
-.type-filter-btn.expense.active {
-border-color: var(--expense);
-background: #fef2f2;
-color: var(--expense);
-}
-/* XML Import Styles */
+
+/* XML Drop Zone */
 .xml-drop-zone {
 border: 2px dashed #7c3aed;
 border-radius: 12px;
@@ -358,6 +339,8 @@ background: #ddd6fe;
 border-color: #7c3aed;
 transform: scale(1.02);
 }
+
+/* Import Summary */
 .import-summary {
 background: #f0fdf4;
 border: 1px solid #86efac;
@@ -373,13 +356,210 @@ border-color: #fcd34d;
 background: #dbeafe;
 border-color: #93c5fd;
 }
+
+/* Type Filter Buttons */
+.type-filter-btn {
+padding: 10px 18px;
+border-radius: 8px;
+border: 2px solid #e5e7eb;
+background: white;
+cursor: pointer;
+font-weight: 500;
+transition: all 0.2s;
+min-height: 44px;
+}
+.type-filter-btn.active {
+border-color: var(--primary);
+background: #f0fdf4;
+color: var(--primary);
+}
+.type-filter-btn.expense.active {
+border-color: var(--expense);
+background: #fef2f2;
+color: var(--expense);
+}
+
+/* Connection Status */
+.connection-status {
+font-size: 0.75rem;
+padding: 0.25rem 0.5rem;
+border-radius: 0.5rem;
+}
+
+/* Chart Container */
+.chart-container {
+position: relative;
+height: 300px;
+margin-top: 20px;
+}
+
+/* Balance Colors */
+.balance-positive {
+color: #059669;
+}
+.balance-negative {
+color: #dc2626;
+}
+
+/* Expense Row */
+.expense-row {
+background-color: #fef2f2;
+}
+.expense-row:hover {
+background-color: #fee2e2;
+}
+
+/* Input Currency */
+.input-currency {
+text-align: right;
+}
+
+/* Product Card */
+.product-card {
+transition: transform 0.2s, box-shadow 0.2s;
+}
+.product-card:active {
+transform: scale(0.98);
+}
+
+/* Finalize Button */
+.btn-finalize {
+background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+color: white;
+padding: 14px 20px;
+border-radius: 10px;
+font-weight: 600;
+border: none;
+cursor: pointer;
+transition: all 0.2s;
+width: 100%;
+margin-top: 10px;
+min-height: 48px;
+}
+.btn-finalize:active {
+transform: scale(0.98);
+}
+.btn-finalize:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+}
+
+/* Mobile Overlay */
+.mobile-overlay {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0, 0, 0, 0.5);
+z-index: 999;
+opacity: 0;
+transition: opacity 0.3s;
+}
+.mobile-overlay.active {
+display: block;
+opacity: 1;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+.mobile-menu-btn {
+display: flex;
+}
+.mobile-bottom-nav {
+display: flex;
+}
+.sidebar {
+position: fixed;
+width: 280px;
+z-index: 1000;
+transform: translateX(-100%);
+left: 0;
+top: 0;
+}
+main {
+padding-bottom: 80px !important;
+padding-top: 70px !important;
+}
+.card {
+margin-bottom: 16px;
+}
+.grid {
+gap: 12px;
+}
+.input-field {
+font-size: 16px; /* Prevents zoom on iOS */
+}
+.btn-primary, .btn-expense, .btn-secondary {
+width: 100%;
+}
+.modal-content {
+width: 95%;
+max-height: 85vh;
+padding: 20px;
+}
+.notification {
+left: 10px;
+right: 10px;
+top: 70px;
+}
+.chart-container {
+height: 250px;
+}
+}
+
+@media (min-width: 769px) {
+.mobile-menu-btn,
+.mobile-bottom-nav,
+.mobile-overlay {
+display: none !important;
+}
+main {
+padding-top: 0 !important;
+}
+}
+
+/* Print Styles */
+@media print {
+.sidebar, .mobile-menu-btn, .mobile-bottom-nav, .btn-primary, .btn-expense, .btn-secondary {
+display: none !important;
+}
+main {
+padding: 0 !important;
+}
+.card {
+box-shadow: none;
+border: 1px solid #ddd;
+}
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+*, *::before, *::after {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+transition-duration: 0.01ms !important;
+}
+}
+
+/* Dark Mode Support (Future) */
+@media (prefers-color-scheme: dark) {
+/* Can be expanded later */
+}
 </style>
 </head>
 <body class="flex flex-col md:flex-row">
-<button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()">
+<!-- Mobile Overlay -->
+<div id="mobileOverlay" class="mobile-overlay" onclick="toggleSidebar()"></div>
+
+<!-- Mobile Menu Button -->
+<button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menu">
 <i class="fas fa-bars text-lg"></i>
 </button>
-<aside class="sidebar text-white w-full md:w-64 flex-shrink-0 md:h-screen flex flex-col">
+
+<!-- Sidebar -->
+<aside class="sidebar text-white w-full md:w-64 flex-shrink-0 md:h-screen flex flex-col" id="sidebar">
 <div class="logo-container">
 <img src="logo.png" alt="AgroVida+" class="logo-img mx-auto"
 onerror="this.style.display='none'; document.getElementById('altLogo').style.display='block'">
@@ -388,7 +568,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div id="connectionStatus" class="p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-green-500 text-white">
 <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Online
 </div>
-<nav class="mt-4 flex-1">
+<nav class="mt-4 flex-1 overflow-y-auto">
 <button onclick="showTab('dashboard')" id="btn-dashboard" class="w-full text-left p-4 hover:bg-white/10 transition active-tab flex items-center gap-3">
 <i class="fas fa-cash-register text-xl w-6"></i>
 <div>
@@ -432,13 +612,18 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </button>
 </nav>
-<div class="p-4 text-center text-xs text-white/60">v5.4.0</div>
+<div class="p-4 text-center text-xs text-white/60">v5.5.0</div>
 </aside>
-<main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
+
+<!-- Main Content -->
+<main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative" id="mainContent">
+<!-- Loading Indicator -->
 <div id="loadingIndicator" class="hidden fixed top-4 right-4 card z-50 p-3 items-center gap-2">
 <div class="loading-spinner"></div>
 <span class="text-sm font-medium">Processando...</span>
 </div>
+
+<!-- Dashboard Tab -->
 <div id="tab-dashboard" class="fade-in">
 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
 <div class="card p-4">
@@ -462,12 +647,15 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalMonth">R$ 0,00</h3>
 </div>
 </div>
+
 <div class="card p-4 mb-6">
 <div class="flex justify-between items-end mb-2">
 <div>
 <h4 class="font-bold text-gray-700 flex items-center gap-2">
 <i class="fas fa-trophy text-yellow-500"></i> Meta Mensal
-<button onclick="editMeta()" class="text-gray-400 hover:text-blue-500 text-xs ml-2 flex items-center gap-1"><i class="fas fa-edit"></i> Editar</button>
+<button onclick="editMeta()" class="text-gray-400 hover:text-blue-500 text-xs ml-2 flex items-center gap-1">
+<i class="fas fa-edit"></i> Editar
+</button>
 </h4>
 <p class="text-xs text-gray-500" id="metaStatusText">0% atingido</p>
 </div>
@@ -479,10 +667,13 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div id="progressBar" class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full progress-bar" style="width: 0%"></div>
 </div>
 </div>
+
 <div class="card mb-6">
 <div class="p-4 border-b">
-<h2 class="font-bold text-gray-700"><i class="fas fa-exchange-alt text-agro-green mr-2"></i> Nova Transação</h2>
-<div class="flex gap-4 mt-2">
+<h2 class="font-bold text-gray-700">
+<i class="fas fa-exchange-alt text-agro-green mr-2"></i> Nova Transação
+</h2>
+<div class="flex gap-4 mt-2 flex-wrap">
 <button id="transactionTypeSale" class="type-filter-btn active" onclick="setTransactionType('sale')">
 <i class="fas fa-plus-circle mr-2"></i> Venda
 </button>
@@ -496,7 +687,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="md:col-span-4">
 <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="transactionLabel">Produto</label>
 <div class="relative">
-<input type="text" id="desc" class="input-field" placeholder="Ex: Ração..." required>
+<input type="text" id="desc" class="input-field" placeholder="Ex: Ração..." required autocomplete="off">
 <div id="descSuggestions" class="search-suggestions hidden"></div>
 </div>
 </div>
@@ -506,7 +697,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 <div class="md:col-span-2">
 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
-<input type="text" id="value" class="input-field input-currency" placeholder="0,00" required>
+<input type="text" id="value" class="input-field input-currency" placeholder="0,00" required inputmode="decimal">
 </div>
 <div class="md:col-span-2">
 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pagamento</label>
@@ -519,15 +710,18 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </select>
 </div>
 <div class="md:col-span-2">
-<button onclick="handleTransactionAction()" id="addTransactionBtn" class="btn-primary w-full h-[46px] flex items-center justify-center">
+<button onclick="handleTransactionAction()" id="addTransactionBtn" class="btn-primary w-full">
 <i class="fas fa-cart-plus mr-2"></i> Adicionar Item
 </button>
 </div>
 </div>
+
 <div id="saleCartSection" class="mt-6 hidden">
 <div class="border-t pt-4">
 <div class="flex justify-between items-center mb-2">
-<h3 class="font-bold text-gray-700 text-sm"><i class="fas fa-shopping-cart mr-2"></i>Itens da Venda Atual</h3>
+<h3 class="font-bold text-gray-700 text-sm">
+<i class="fas fa-shopping-cart mr-2"></i>Itens da Venda Atual
+</h3>
 <span class="text-sm font-bold text-agro-green" id="cartTotalDisplay">Total: R$ 0,00</span>
 </div>
 <div class="table-responsive bg-gray-50 rounded-lg border">
@@ -543,13 +737,14 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <tbody id="cartTableBody"></tbody>
 </table>
 </div>
-<button onclick="finalizeSale()" id="finalizeSaleBtn" class="btn-finalize flex items-center justify-center mt-4">
+<button onclick="finalizeSale()" id="finalizeSaleBtn" class="btn-finalize flex items-center justify-center mt-4" disabled>
 <i class="fas fa-check-circle mr-2"></i> Finalizar Venda (<span id="finalizeCount">0</span> itens)
 </button>
 </div>
 </div>
 </div>
 </div>
+
 <div class="card">
 <div class="p-4 border-b flex flex-col md:flex-row justify-between md:items-center gap-4">
 <h2 class="font-bold text-gray-700">Movimentação do Dia</h2>
@@ -583,6 +778,8 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+
+<!-- Reports Tab -->
 <div id="tab-reports" class="hidden fade-in">
 <h2 class="text-xl font-bold text-gray-800 mb-6">Relatórios Avançados</h2>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -668,12 +865,14 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+
+<!-- History Tab -->
 <div id="tab-history" class="hidden fade-in">
 <div class="flex justify-between items-center mb-4">
 <h2 class="text-xl font-bold text-gray-800">Histórico Completo</h2>
 <div class="flex gap-2">
 <button onclick="exportHistoryExcel()" class="btn-secondary flex items-center gap-2">
-<i class="fas fa-file-excel"></i> Exportar Excel
+<i class="fas fa-file-excel"></i> <span class="hidden md:inline">Exportar Excel</span>
 </button>
 </div>
 </div>
@@ -723,12 +922,14 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+
+<!-- Expenses Tab -->
 <div id="tab-expenses" class="hidden fade-in">
-<div class="flex justify-between items-center mb-4">
+<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
 <h2 class="text-xl font-bold text-gray-800">Gestão de Saídas</h2>
-<div class="flex gap-2">
+<div class="flex gap-2 flex-wrap">
 <button onclick="exportExpensesExcel()" class="btn-secondary flex items-center gap-2">
-<i class="fas fa-file-excel"></i> Exportar Excel
+<i class="fas fa-file-excel"></i> <span class="hidden md:inline">Exportar</span>
 </button>
 <button onclick="showAddExpenseModal()" class="btn-expense">
 <i class="fas fa-plus mr-2"></i> Nova Saída
@@ -792,16 +993,17 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+
+<!-- Products Tab -->
 <div id="tab-products" class="hidden fade-in">
-<div class="flex justify-between items-center mb-4">
+<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
 <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
-<div class="flex gap-2">
-<!-- NOVO BOTÃO DE IMPORTAÇÃO XML -->
+<div class="flex gap-2 flex-wrap">
 <button onclick="showXMLImportModal()" class="btn-xml flex items-center gap-2">
-<i class="fas fa-file-import"></i> Importar XML
+<i class="fas fa-file-import"></i> <span class="hidden md:inline">Importar XML</span>
 </button>
 <button onclick="exportCatalogPDF()" class="btn-secondary flex items-center gap-2">
-<i class="fas fa-file-pdf"></i> Exportar PDF
+<i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span>
 </button>
 <button onclick="showAddProductModal()" class="btn-primary">
 <i class="fas fa-plus mr-2"></i> Novo Produto
@@ -812,7 +1014,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
 <div class="md:col-span-8">
 <div class="relative">
-<input type="text" id="productSearch" class="input-field pr-10" placeholder="Buscar produto por nome, SKU ou categoria..." onkeyup="searchProducts()">
+<input type="text" id="productSearch" class="input-field pr-10" placeholder="Buscar produto..." onkeyup="searchProducts()" autocomplete="off">
 <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
 </div>
 </div>
@@ -858,6 +1060,8 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="productsGrid"></div>
 </div>
+
+<!-- Settings Tab -->
 <div id="tab-settings" class="hidden fade-in">
 <h2 class="text-xl font-bold text-gray-800 mb-6">Configurações do Sistema</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -877,7 +1081,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Margem de Lucro Padrão (%)</label>
 <input type="number" step="1" id="defaultProfitMargin" class="input-field" value="30">
-<p class="text-xs text-gray-500 mt-1">Usada na importação XML para calcular preço de venda</p>
+<p class="text-xs text-gray-500 mt-1">Usada na importação XML</p>
 </div>
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso</label>
@@ -897,13 +1101,13 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <label class="block text-sm font-medium text-gray-700 mb-2">Exportar Histórico</label>
 <div class="flex flex-wrap gap-2">
 <button onclick="exportHistoryExcel()" class="btn-secondary flex-1 min-w-[150px]">
-<i class="fas fa-file-excel mr-2"></i> Excel Completo
+<i class="fas fa-file-excel mr-2"></i> Excel
 </button>
 <button onclick="exportCurrentMonthExcel()" class="btn-secondary flex-1 min-w-[150px]">
-<i class="fas fa-calendar-alt mr-2"></i> Mês Atual
+<i class="fas fa-calendar-alt mr-2"></i> Mês
 </button>
 <button onclick="exportExpensesExcel()" class="btn-expense flex-1 min-w-[150px]">
-<i class="fas fa-file-excel mr-2"></i> Saídas Excel
+<i class="fas fa-file-excel mr-2"></i> Saídas
 </button>
 </div>
 </div>
@@ -911,19 +1115,19 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <label class="block text-sm font-medium text-gray-700 mb-2">Exportar Catálogo</label>
 <div class="flex flex-wrap gap-2">
 <button onclick="exportCatalogPDF()" class="btn-secondary flex-1 min-w-[150px]">
-<i class="fas fa-file-pdf mr-2"></i> Catálogo PDF
+<i class="fas fa-file-pdf mr-2"></i> PDF
 </button>
 <button onclick="exportCatalogExcel()" class="btn-secondary flex-1 min-w-[150px]">
-<i class="fas fa-file-excel mr-2"></i> Catálogo Excel
+<i class="fas fa-file-excel mr-2"></i> Excel
 </button>
 </div>
 </div>
 <div class="pt-4 border-t">
 <label class="block text-sm font-medium text-gray-700 mb-2">Backup Completo</label>
 <button onclick="createFullBackup()" class="btn-primary w-full">
-<i class="fas fa-save mr-2"></i> Criar Backup Completo
+<i class="fas fa-save mr-2"></i> Criar Backup
 </button>
-<p class="text-xs text-gray-500 mt-2">Salva todos os dados em um arquivo JSON</p>
+<p class="text-xs text-gray-500 mt-2">Salva todos os dados em JSON</p>
 </div>
 </div>
 </div>
@@ -946,7 +1150,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="space-y-3">
 <div class="flex justify-between">
 <span class="text-gray-600">Versão</span>
-<span class="font-medium">5.4.0</span>
+<span class="font-medium">5.5.0</span>
 </div>
 <div class="flex justify-between">
 <span class="text-gray-600">Total de Vendas</span>
@@ -979,6 +1183,8 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </main>
+
+<!-- Mobile Bottom Navigation -->
 <nav class="mobile-bottom-nav">
 <button onclick="showTab('dashboard')" id="mobile-btn-dashboard" class="active">
 <i class="fas fa-cash-register"></i>
@@ -1002,9 +1208,10 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </button>
 <button onclick="showTab('settings')" id="mobile-btn-settings">
 <i class="fas fa-cog"></i>
-<span>Configurações</span>
+<span>Config</span>
 </button>
 </nav>
+
 <!-- Product Modal -->
 <div id="productModal" class="modal-overlay">
 <div class="modal-content">
@@ -1017,21 +1224,21 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="grid grid-cols-2 gap-4">
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Preço de Venda (R$) *</label>
-<input type="text" id="productPrice" class="input-field input-currency" required>
+<input type="text" id="productPrice" class="input-field input-currency" required inputmode="decimal">
 </div>
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Preço de Custo (R$)</label>
-<input type="text" id="productCost" class="input-field input-currency">
+<input type="text" id="productCost" class="input-field input-currency" inputmode="decimal">
 </div>
 </div>
 <div class="grid grid-cols-2 gap-4">
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Preço com Desconto (R$)</label>
-<input type="text" id="productDiscountPrice" class="input-field input-currency" placeholder="Opcional">
+<input type="text" id="productDiscountPrice" class="input-field input-currency" placeholder="Opcional" inputmode="decimal">
 </div>
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade em Estoque</label>
-<input type="number" id="productStock" class="input-field" placeholder="0">
+<input type="number" id="productStock" class="input-field" placeholder="0" inputmode="numeric">
 </div>
 </div>
 <div class="grid grid-cols-2 gap-4">
@@ -1060,6 +1267,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+
 <!-- XML Import Modal -->
 <div id="xmlImportModal" class="modal-overlay">
 <div class="modal-content">
@@ -1078,10 +1286,10 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <i class="fas fa-info-circle mr-1"></i> Como funciona:
 </h4>
 <ul class="text-xs text-purple-700 space-y-1">
-<li>✅ Produtos existentes serão <strong>atualizados</strong> (preço e estoque)</li>
-<li>✅ Produtos novos serão <strong>cadastrados automaticamente</strong></li>
+<li>✅ Produtos existentes serão <strong>atualizados</strong></li>
+<li>✅ Produtos novos serão <strong>cadastrados</strong></li>
 <li>✅ Preço de custo extraído do XML</li>
-<li>✅ Preço de venda calculado com margem configurada</li>
+<li>✅ Preço de venda calculado com margem</li>
 </ul>
 </div>
 <div>
@@ -1094,11 +1302,12 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="mt-6 flex justify-end gap-3">
 <button onclick="closeModal('xmlImportModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
 <button onclick="processXMLImport()" id="processXMLBtn" class="btn-primary px-4 py-2" disabled>
-<i class="fas fa-check mr-2"></i> Processar Importação
+<i class="fas fa-check mr-2"></i> Processar
 </button>
 </div>
 </div>
 </div>
+
 <!-- Expense Modal -->
 <div id="expenseModal" class="modal-overlay">
 <div class="modal-content">
@@ -1106,7 +1315,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="space-y-4">
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
-<input type="text" id="expenseDesc" class="input-field" placeholder="Ex: Pagamento de contas, compra de suprimentos..." required>
+<input type="text" id="expenseDesc" class="input-field" placeholder="Ex: Pagamento de contas..." required>
 </div>
 <div class="grid grid-cols-2 gap-4">
 <div>
@@ -1115,7 +1324,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Valor (R$) *</label>
-<input type="text" id="expenseValue" class="input-field input-currency" placeholder="0,00" required>
+<input type="text" id="expenseValue" class="input-field input-currency" placeholder="0,00" required inputmode="decimal">
 </div>
 </div>
 <div class="grid grid-cols-2 gap-4">
@@ -1136,7 +1345,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 <div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Observações (Opcional)</label>
-<textarea id="expenseNotes" class="input-field" rows="3" placeholder="Detalhes adicionais sobre esta despesa..."></textarea>
+<textarea id="expenseNotes" class="input-field" rows="3" placeholder="Detalhes adicionais..."></textarea>
 </div>
 </div>
 <div class="mt-6 flex justify-end gap-3">
@@ -1145,6 +1354,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+
 <!-- Password Modal -->
 <div id="passwordModal" class="modal-overlay">
 <div class="modal-content">
@@ -1165,21 +1375,24 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
-<script type="module">
-const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
-window.formatMoney = (val) => { if (typeof val !== 'number') val = parseFloat(val) || 0; return formatter.format(val); };
 
+<script type="module">
+// === OTIMIZAÇÃO: Variáveis Globais ===
+const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
+window.formatMoney = (val) => formatter.format(parseFloat(val) || 0);
+
+// === Conexão ===
 function updateConnectionStatus(isOnline) {
-const statusElement = document.getElementById('connectionStatus');
-const statusTextElement = document.getElementById('connectionStatusText');
+const statusEl = document.getElementById('connectionStatus');
+const statusTextEl = document.getElementById('connectionStatusText');
 if (isOnline) {
-statusElement.className = 'p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-green-500 text-white';
-statusElement.innerHTML = '<span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Online';
-if (statusTextElement) statusTextElement.textContent = 'Online';
+statusEl.className = 'p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-green-500 text-white';
+statusEl.innerHTML = '<span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Online';
+if (statusTextEl) statusTextEl.textContent = 'Online';
 } else {
-statusElement.className = 'p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-red-500 text-white';
-statusElement.innerHTML = '<span class="w-2 h-2 bg-white rounded-full"></span> Offline';
-if (statusTextElement) statusTextElement.textContent = 'Offline';
+statusEl.className = 'p-3 text-center text-xs flex justify-center items-center gap-2 connection-status bg-red-500 text-white';
+statusEl.innerHTML = '<span class="w-2 h-2 bg-white rounded-full"></span> Offline';
+if (statusTextEl) statusTextEl.textContent = 'Offline';
 showNotification('Modo Offline Ativado', 'warning');
 }
 }
@@ -1187,6 +1400,7 @@ updateConnectionStatus(navigator.onLine);
 window.addEventListener('online', () => updateConnectionStatus(true));
 window.addEventListener('offline', () => updateConnectionStatus(false));
 
+// === Autenticação ===
 let SENHA_LOJA = localStorage.getItem('senhaAgro') || "1234";
 const tentativa = prompt("🔐 AgroVida Mais\nDigite a senha de acesso:");
 if (tentativa !== SENHA_LOJA) {
@@ -1194,6 +1408,7 @@ document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px'>Acesso 
 throw new Error("Senha Incorreta");
 }
 
+// === Firebase ===
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -1212,6 +1427,7 @@ const expensesCollection = collection(db, "saidas_agrovida");
 const productsCollection = collection(db, "produtos_agrovida");
 const settingsCollection = collection(db, "configuracoes_agrovida");
 
+// === Estado Local ===
 let localSales = [];
 let localExpenses = [];
 let products = [];
@@ -1220,23 +1436,42 @@ let categories = JSON.parse(localStorage.getItem('agroCategories')) || ['Ração
 let expenseCategories = JSON.parse(localStorage.getItem('agroExpenseCategories')) || ['Aluguel', 'Salários', 'Contas (Água/Luz)', 'Internet/Telefone', 'Manutenção', 'Transporte', 'Suprimentos', 'Marketing', 'Outros'];
 let currentProductSort = 'name_asc';
 let editingProductId = null;
-let editingExpenseId = null;
 let transactionType = 'sale';
 let saleCart = [];
 let cashFlowChart = null;
 let categoryChart = null;
 let xmlImportData = null;
 
-function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('active'); }
+// === Navegação Mobile Otimizada ===
+function toggleSidebar() {
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('mobileOverlay');
+if (window.innerWidth <= 768) {
+sidebar.classList.toggle('active');
+overlay.classList.toggle('active');
+document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+}
+}
 
 window.showTab = (tab) => {
+// Fecha menu mobile se aberto
+if (window.innerWidth <= 768) {
+document.getElementById('sidebar').classList.remove('active');
+document.getElementById('mobileOverlay').classList.remove('active');
+document.body.style.overflow = '';
+}
+
+// Esconde todas as tabs
 document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
 document.querySelectorAll('[id^="btn-"]').forEach(el => el.classList.remove('active-tab'));
 document.querySelectorAll('.mobile-bottom-nav button').forEach(el => el.classList.remove('active'));
+
+// Mostra tab selecionada
 document.getElementById(`tab-${tab}`).classList.remove('hidden');
 document.getElementById(`btn-${tab}`)?.classList.add('active-tab');
 document.getElementById(`mobile-btn-${tab}`)?.classList.add('active');
-if (window.innerWidth <= 768) toggleSidebar();
+
+// Carrega dados específicos da tab
 if (tab === 'history') window.filterHistory();
 if (tab === 'expenses') { filterExpenses(); updateExpenseSummary(); loadExpenseCategories(); }
 if (tab === 'products') { loadProducts(); searchProducts(); loadFilterCategories(); }
@@ -1244,6 +1479,9 @@ if (tab === 'reports') { loadFilterCategories(); loadExpenseCategoriesForReports
 if (tab === 'settings') { updateSettingsInfo(); loadCategories(); }
 if (tab === 'dashboard') { updateCategorySelectForSales(); setTransactionType('sale'); updateScreen(); }
 if (tab !== 'dashboard') { saleCart = []; renderCart(); }
+
+// Scroll para topo
+document.getElementById('mainContent').scrollTop = 0;
 };
 
 window.setTransactionType = (type) => {
@@ -1252,11 +1490,12 @@ const saleBtn = document.getElementById('transactionTypeSale');
 const expenseBtn = document.getElementById('transactionTypeExpense');
 const addBtn = document.getElementById('addTransactionBtn');
 const cartSection = document.getElementById('saleCartSection');
+
 if (type === 'sale') {
 saleBtn.classList.add('active');
 expenseBtn.classList.remove('active');
 addBtn.innerHTML = '<i class="fas fa-cart-plus mr-2"></i> Adicionar Item';
-addBtn.className = 'btn-primary w-full h-[46px] flex items-center justify-center';
+addBtn.className = 'btn-primary w-full';
 document.getElementById('transactionLabel').textContent = 'Produto';
 document.getElementById('desc').placeholder = 'Ex: Ração...';
 document.getElementById('category').innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
@@ -1265,7 +1504,7 @@ cartSection.classList.remove('hidden');
 saleBtn.classList.remove('active');
 expenseBtn.classList.add('active', 'expense');
 addBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Adicionar Saída';
-addBtn.className = 'btn-expense w-full h-[46px] flex items-center justify-center';
+addBtn.className = 'btn-expense w-full';
 document.getElementById('transactionLabel').textContent = 'Descrição';
 document.getElementById('desc').placeholder = 'Ex: Pagamento de contas...';
 document.getElementById('category').innerHTML = expenseCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
@@ -1273,10 +1512,17 @@ cartSection.classList.add('hidden');
 }
 };
 
-window.showModal = (modalId) => { document.getElementById(modalId).classList.add('active'); };
-window.closeModal = (modalId) => { document.getElementById(modalId).classList.remove('active'); };
+// === Modais ===
+window.showModal = (modalId) => { 
+document.getElementById(modalId).classList.add('active'); 
+document.body.style.overflow = 'hidden';
+};
+window.closeModal = (modalId) => { 
+document.getElementById(modalId).classList.remove('active'); 
+document.body.style.overflow = '';
+};
 
-// ✅ NOVA FUNÇÃO: Modal de Importação XML
+// === XML Import ===
 window.showXMLImportModal = () => {
 xmlImportData = null;
 document.getElementById('xmlImportSummary').innerHTML = '';
@@ -1287,7 +1533,6 @@ document.getElementById('xmlProfitMargin').value = defaultMargin;
 window.showModal('xmlImportModal');
 };
 
-// ✅ NOVA FUNÇÃO: Handle XML File
 window.handleXMLFile = (file) => {
 if (!file) return;
 const reader = new FileReader();
@@ -1298,16 +1543,15 @@ const parsedData = parseNFeXML(xmlContent);
 xmlImportData = parsedData;
 displayXMLImportSummary(parsedData);
 document.getElementById('processXMLBtn').disabled = false;
-showNotification(`${parsedData.products.length} produtos encontrados no XML`, 'success');
+showNotification(`${parsedData.products.length} produtos encontrados`, 'success');
 } catch (error) {
 console.error('Erro ao parsear XML:', error);
-showNotification('Erro ao ler arquivo XML. Verifique o formato.', 'error');
+showNotification('Erro ao ler arquivo XML', 'error');
 }
 };
 reader.readAsText(file);
 };
 
-// ✅ NOVA FUNÇÃO: Parse NFe XML
 function parseNFeXML(xmlContent) {
 const parser = new DOMParser();
 const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
@@ -1320,24 +1564,20 @@ if (!prod) continue;
 const xProd = prod.getElementsByTagName('xProd')[0]?.textContent || '';
 const cProd = prod.getElementsByTagName('cProd')[0]?.textContent || '';
 const vUnCom = prod.getElementsByTagName('vUnCom')[0]?.textContent || '0';
-const vProd = prod.getElementsByTagName('vProd')[0]?.textContent || '0';
 const qCom = prod.getElementsByTagName('qCom')[0]?.textContent || '1';
 const uCom = prod.getElementsByTagName('uCom')[0]?.textContent || 'Un';
-const costPrice = parseFloat(vUnCom.replace(',', '.')) || 0;
-const quantity = parseFloat(qCom.replace(',', '.')) || 1;
 products.push({
 name: xProd,
 sku: cProd,
-cost: costPrice,
-quantity: quantity,
+cost: parseFloat(vUnCom.replace(',', '.')) || 0,
+quantity: parseFloat(qCom.replace(',', '.')) || 1,
 unit: uCom,
 category: 'Importado'
 });
 }
-return { products, fileName: xmlDoc.getElementsByTagName('infNFe')[0]?.getAttribute('Id') || '' };
+return { products };
 }
 
-// ✅ NOVA FUNÇÃO: Display XML Import Summary
 function displayXMLImportSummary(data) {
 const summaryDiv = document.getElementById('xmlImportSummary');
 const existingProducts = products.map(p => p.sku || p.name.toLowerCase());
@@ -1345,80 +1585,46 @@ const updated = data.products.filter(p => existingProducts.includes(p.sku) || ex
 const created = data.products.filter(p => !existingProducts.includes(p.sku) && !existingProducts.includes(p.name.toLowerCase()));
 summaryDiv.innerHTML = `
 <div class="import-summary">
-<h4 class="font-bold text-gray-800 mb-2">
-<i class="fas fa-list-check mr-2"></i>Resumo da Importação
-</h4>
+<h4 class="font-bold text-gray-800 mb-2"><i class="fas fa-list-check mr-2"></i>Resumo</h4>
 <div class="grid grid-cols-2 gap-4 text-sm">
-<div class="updated">
-<p class="font-bold text-yellow-800">📝 Atualizar:</p>
-<p class="text-yellow-700">${updated.length} produtos</p>
-</div>
-<div class="created">
-<p class="font-bold text-blue-800">➕ Criar:</p>
-<p class="text-blue-700">${created.length} produtos</p>
-</div>
+<div class="updated"><p class="font-bold text-yellow-800">📝 Atualizar:</p><p class="text-yellow-700">${updated.length} produtos</p></div>
+<div class="created"><p class="font-bold text-blue-800">➕ Criar:</p><p class="text-blue-700">${created.length} produtos</p></div>
 </div>
 </div>
 <div class="mt-4 max-h-60 overflow-y-auto">
 <table class="w-full text-xs">
 <thead class="bg-gray-100">
-<tr>
-<th class="p-2 text-left">Produto</th>
-<th class="p-2 text-right">Custo</th>
-<th class="p-2 text-right">Qtd</th>
-<th class="p-2 text-center">Status</th>
-</tr>
+<tr><th class="p-2 text-left">Produto</th><th class="p-2 text-right">Custo</th><th class="p-2 text-center">Status</th></tr>
 </thead>
 <tbody>
 ${data.products.map(p => {
 const isUpdate = existingProducts.includes(p.sku) || existingProducts.includes(p.name.toLowerCase());
-return `
-<tr class="border-b">
+return `<tr class="border-b">
 <td class="p-2">${p.name}</td>
 <td class="p-2 text-right">${window.formatMoney(p.cost)}</td>
-<td class="p-2 text-right">${p.quantity}</td>
-<td class="p-2 text-center">
-<span class="px-2 py-1 rounded text-xs ${isUpdate ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}">
-${isUpdate ? 'Atualizar' : 'Novo'}
-</span>
-</td>
-</tr>
-`;
+<td class="p-2 text-center"><span class="px-2 py-1 rounded text-xs ${isUpdate ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}">${isUpdate ? 'Atualizar' : 'Novo'}</span></td>
+</tr>`;
 }).join('')}
 </tbody>
 </table>
-</div>
-`;
+</div>`;
 summaryDiv.classList.remove('hidden');
 }
 
-// ✅ NOVA FUNÇÃO: Process XML Import
 window.processXMLImport = async () => {
-if (!xmlImportData || !xmlImportData.products.length) {
-showNotification('Nenhum produto para importar', 'error');
-return;
-}
+if (!xmlImportData?.products.length) { showNotification('Nenhum produto para importar', 'error'); return; }
 const margin = parseFloat(document.getElementById('xmlProfitMargin').value) || 30;
 const loading = document.getElementById('loadingIndicator');
 loading.classList.remove('hidden');
-let updatedCount = 0;
-let createdCount = 0;
-let errorCount = 0;
+let updatedCount = 0, createdCount = 0;
 try {
 for (const xmlProduct of xmlImportData.products) {
-const existingProduct = products.find(p => 
-p.sku === xmlProduct.sku || p.name.toLowerCase() === xmlProduct.name.toLowerCase()
-);
+const existingProduct = products.find(p => p.sku === xmlProduct.sku || p.name.toLowerCase() === xmlProduct.name.toLowerCase());
 const salePrice = xmlProduct.cost * (1 + margin / 100);
 const productData = {
-name: xmlProduct.name,
-sku: xmlProduct.sku,
-cost: xmlProduct.cost,
-price: salePrice,
-stock: (existingProduct?.stock || 0) + xmlProduct.quantity,
-unit: xmlProduct.unit,
-category: xmlProduct.category,
-updatedAt: serverTimestamp()
+name: xmlProduct.name, sku: xmlProduct.sku, cost: xmlProduct.cost, price: salePrice,
+stock: (existingProduct?.stock || 0) + xmlProduct.quantity, unit: xmlProduct.unit,
+category: xmlProduct.category, updatedAt: serverTimestamp()
 };
 try {
 if (existingProduct) {
@@ -1430,18 +1636,14 @@ productData.salesCount = 0;
 await addDoc(productsCollection, productData);
 createdCount++;
 }
-} catch (err) {
-console.error('Erro ao salvar produto:', xmlProduct.name, err);
-errorCount++;
-}
+} catch (err) { console.error('Erro ao salvar:', err); }
 }
 localStorage.setItem('defaultProfitMargin', margin);
-showNotification(`Importação concluída! ${updatedCount} atualizados, ${createdCount} criados`, 'success');
+showNotification(`Importação: ${updatedCount} atualizados, ${createdCount} criados`, 'success');
 closeModal('xmlImportModal');
 await loadProducts();
 } catch (error) {
-console.error('Erro na importação:', error);
-showNotification('Erro ao processar importação', 'error');
+showNotification('Erro na importação', 'error');
 } finally {
 loading.classList.add('hidden');
 xmlImportData = null;
@@ -1451,37 +1653,16 @@ xmlImportData = null;
 // Drop zone events
 const dropZone = document.getElementById('xmlDropZone');
 if (dropZone) {
-dropZone.addEventListener('dragover', (e) => {
-e.preventDefault();
-dropZone.classList.add('dragover');
-});
-dropZone.addEventListener('dragleave', () => {
-dropZone.classList.remove('dragover');
-});
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop', (e) => {
 e.preventDefault();
 dropZone.classList.remove('dragover');
-const files = e.dataTransfer.files;
-if (files.length > 0) {
-handleXMLFile(files[0]);
-}
+if (e.dataTransfer.files.length > 0) handleXMLFile(e.dataTransfer.files[0]);
 });
 }
 
-window.showAddExpenseModal = () => {
-editingExpenseId = null;
-document.getElementById('expenseModalTitle').textContent = 'Nova Saída/Despesa';
-document.getElementById('saveExpenseBtn').textContent = 'Salvar Saída';
-document.getElementById('expenseDesc').value = '';
-document.getElementById('expenseValue').value = '';
-document.getElementById('expenseNotes').value = '';
-document.getElementById('expensePayment').value = 'Dinheiro';
-document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
-const categorySelect = document.getElementById('expenseCategory');
-categorySelect.innerHTML = expenseCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-window.showModal('expenseModal');
-};
-
+// === Produtos ===
 window.showAddProductModal = () => {
 editingProductId = null;
 document.getElementById('productModalTitle').textContent = 'Adicionar Produto';
@@ -1499,10 +1680,7 @@ window.showModal('productModal');
 
 window.showEditProductModal = async (productId) => {
 const product = products.find(p => p.id === productId);
-if (!product) {
-showNotification('Produto não encontrado', 'error');
-return;
-}
+if (!product) { showNotification('Produto não encontrado', 'error'); return; }
 editingProductId = productId;
 document.getElementById('productModalTitle').textContent = 'Editar Produto';
 document.getElementById('saveProductBtn').textContent = 'Atualizar Produto';
@@ -1517,6 +1695,7 @@ document.getElementById('productUnit').value = product.unit || 'Un';
 window.showModal('productModal');
 };
 
+// === Categorias ===
 function updateCategorySelect() {
 const select = document.getElementById('productCategory');
 if (select) select.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
@@ -1525,56 +1704,45 @@ function updateCategorySelectForSales() {
 const select = document.getElementById('category');
 if (select) select.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
-
 function loadCategories() {
-const categoriesList = document.getElementById('categoriesList');
-if (categoriesList) {
-categoriesList.innerHTML = categories.map((cat, index) => `
-<div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+const list = document.getElementById('categoriesList');
+if (list) list.innerHTML = categories.map((cat, i) => 
+`<div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
 <span>${cat}</span>
-<button onclick="removeCategory(${index})" class="text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
+<button onclick="removeCategory(${i})" class="text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
 </div>`).join('');
 }
-}
 function loadExpenseCategories() {
-const expenseCategorySelect = document.getElementById('expenseFilterCategory');
-if (expenseCategorySelect) {
-expenseCategorySelect.innerHTML = '<option value="">Todas</option>' + expenseCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-}
+const select = document.getElementById('expenseFilterCategory');
+if (select) select.innerHTML = '<option value="">Todas</option>' + expenseCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
 function loadExpenseCategoriesForReports() {
-const customFilterCategory = document.getElementById('customFilterCategory');
-if (customFilterCategory) {
-const allCategories = [...new Set([...categories, ...expenseCategories])];
-customFilterCategory.innerHTML = '<option value="">Todas</option>' + allCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+const select = document.getElementById('customFilterCategory');
+if (select) {
+const all = [...new Set([...categories, ...expenseCategories])];
+select.innerHTML = '<option value="">Todas</option>' + all.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
 }
-
 window.addCategory = () => {
 const newCat = document.getElementById('newCategory').value.trim();
 if (newCat && !categories.includes(newCat)) {
 categories.push(newCat);
 localStorage.setItem('agroCategories', JSON.stringify(categories));
-loadCategories();
-updateCategorySelect();
-updateCategorySelectForSales();
-loadFilterCategories();
+loadCategories(); updateCategorySelect(); updateCategorySelectForSales(); loadFilterCategories();
 document.getElementById('newCategory').value = '';
 showNotification('Categoria adicionada!', 'success');
 }
 };
 window.removeCategory = (index) => {
-if (confirm(`Remover categoria "${categories[index]}"?`)) {
+if (confirm(`Remover "${categories[index]}"?`)) {
 categories.splice(index, 1);
 localStorage.setItem('agroCategories', JSON.stringify(categories));
-loadCategories();
-updateCategorySelect();
-updateCategorySelectForSales();
-loadFilterCategories();
+loadCategories(); updateCategorySelect(); updateCategorySelectForSales(); loadFilterCategories();
 showNotification('Categoria removida!', 'success');
 }
 };
 
+// === Transações ===
 window.handleTransactionAction = () => {
 if (transactionType === 'sale') addToCart();
 else addTransaction();
@@ -1584,16 +1752,14 @@ window.addToCart = () => {
 const desc = document.getElementById('desc').value.trim();
 const valueStr = document.getElementById('value').value;
 const price = parseFloat(valueStr.replace(',', '.'));
-if (!desc) { showNotification('Digite a descrição do produto', 'error'); return; }
-if (!valueStr || isNaN(price) || price <= 0) { showNotification('Digite um valor válido', 'error'); return; }
-const category = document.getElementById('category').value;
-const payment = document.getElementById('payment').value;
-saleCart.push({ desc, category, value: price, payment });
+if (!desc) { showNotification('Digite a descrição', 'error'); return; }
+if (!valueStr || isNaN(price) || price <= 0) { showNotification('Valor inválido', 'error'); return; }
+saleCart.push({ desc, category: document.getElementById('category').value, value: price, payment: document.getElementById('payment').value });
 document.getElementById('desc').value = '';
 document.getElementById('value').value = '';
 document.getElementById('desc').focus();
 renderCart();
-showNotification('Item adicionado ao carrinho', 'success');
+showNotification('Item adicionado', 'success');
 };
 
 window.renderCart = () => {
@@ -1602,55 +1768,45 @@ const totalDisplay = document.getElementById('cartTotalDisplay');
 const finalizeBtn = document.getElementById('finalizeSaleBtn');
 const finalizeCount = document.getElementById('finalizeCount');
 if (!tbody) return;
+
 if (saleCart.length === 0) {
-tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum item adicionado</td></tr>`;
+tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum item</td></tr>';
 totalDisplay.textContent = 'Total: R$ 0,00';
 finalizeBtn.disabled = true;
-finalizeBtn.classList.add('opacity-50', 'cursor-not-allowed');
 finalizeCount.textContent = '0';
 } else {
 let total = 0;
-tbody.innerHTML = saleCart.map((item, index) => {
+tbody.innerHTML = saleCart.map((item, i) => {
 total += item.value;
 return `<tr class="border-b hover:bg-gray-50">
-<td class="p-2 font-medium text-gray-700">${item.desc}</td>
+<td class="p-2 font-medium">${item.desc}</td>
 <td class="p-2 text-xs text-gray-500">${item.category}</td>
 <td class="p-2 text-right font-bold text-agro-green">${window.formatMoney(item.value)}</td>
-<td class="p-2 text-center"><button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
+<td class="p-2 text-center"><button onclick="removeFromCart(${i})" class="text-red-500"><i class="fas fa-trash"></i></button></td>
 </tr>`;
 }).join('');
 totalDisplay.textContent = `Total: ${window.formatMoney(total)}`;
 finalizeBtn.disabled = false;
-finalizeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 finalizeCount.textContent = saleCart.length;
 }
 };
 
-window.removeFromCart = (index) => { saleCart.splice(index, 1); renderCart(); };
+window.removeFromCart = (i) => { saleCart.splice(i, 1); renderCart(); };
 
 window.finalizeSale = async () => {
-if (saleCart.length === 0) { showNotification('Carrinho vazio', 'warning'); return; }
+if (!saleCart.length) { showNotification('Carrinho vazio', 'warning'); return; }
 const loading = document.getElementById('loadingIndicator');
-const finalizeBtn = document.getElementById('finalizeSaleBtn');
-finalizeBtn.disabled = true;
+const btn = document.getElementById('finalizeSaleBtn');
+btn.disabled = true;
 loading.classList.remove('hidden');
 const now = new Date();
-const localDateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+const dateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 const timeStr = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 try {
 const batch = writeBatch(db);
 saleCart.forEach(item => {
-const newDocRef = doc(salesCollection);
-batch.set(newDocRef, {
-date: localDateISO,
-timestamp: now.toISOString(),
-time: timeStr,
-desc: item.desc,
-category: item.category,
-value: item.value,
-payment: item.payment,
-type: 'sale'
-});
+const ref = doc(salesCollection);
+batch.set(ref, { date: dateISO, timestamp: now.toISOString(), time: timeStr, desc: item.desc, category: item.category, value: item.value, payment: item.payment, type: 'sale' });
 });
 await batch.commit();
 showNotification(`Venda de ${saleCart.length} itens salva!`, 'success');
@@ -1660,10 +1816,9 @@ document.getElementById('desc').value = '';
 document.getElementById('value').value = '';
 document.getElementById('desc').focus();
 } catch(e) {
-console.error("Erro ao salvar venda:", e);
-showNotification("Erro ao salvar venda no servidor", 'error');
+showNotification('Erro ao salvar venda', 'error');
 } finally {
-finalizeBtn.disabled = false;
+btn.disabled = false;
 loading.classList.add('hidden');
 }
 };
@@ -1673,57 +1828,30 @@ const desc = document.getElementById('desc').value.trim();
 const valueStr = document.getElementById('value').value;
 const price = parseFloat(valueStr.replace(',', '.'));
 if (!desc) { showNotification('Digite a descrição', 'error'); return; }
-if (!valueStr || isNaN(price) || price <= 0) { showNotification('Digite um valor válido', 'error'); return; }
+if (!valueStr || isNaN(price) || price <= 0) { showNotification('Valor inválido', 'error'); return; }
 const loading = document.getElementById('loadingIndicator');
-const addButton = document.getElementById('addTransactionBtn');
-addButton.disabled = true;
+const btn = document.getElementById('addTransactionBtn');
+btn.disabled = true;
 loading.classList.remove('hidden');
 const now = new Date();
-const localDateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-if (transactionType === 'sale') {
-const saleData = {
-date: localDateISO,
-timestamp: now.toISOString(),
-time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-desc: desc,
-category: document.getElementById('category').value,
-value: price,
-payment: document.getElementById('payment').value,
-type: 'sale'
+const dateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+const timeStr = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+const data = {
+date: dateISO, timestamp: now.toISOString(), time: timeStr, desc, 
+category: document.getElementById('category').value, value: price, 
+payment: document.getElementById('payment').value, 
+type: transactionType === 'sale' ? 'sale' : 'expense'
 };
 try {
-await addDoc(salesCollection, saleData);
-showNotification('Venda salva com sucesso!', 'success');
+await addDoc(transactionType === 'sale' ? salesCollection : expensesCollection, data);
+showNotification(transactionType === 'sale' ? 'Venda salva!' : 'Saída salva!', 'success');
 document.getElementById('desc').value = '';
 document.getElementById('value').value = '';
 document.getElementById('desc').focus();
 } catch(e) {
-console.error("Erro ao salvar venda:", e);
-showNotification("Erro ao salvar venda no servidor", 'error');
+showNotification('Erro ao salvar', 'error');
 }
-} else {
-const expenseData = {
-date: localDateISO,
-timestamp: now.toISOString(),
-time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-desc: desc,
-category: document.getElementById('category').value,
-value: price,
-payment: document.getElementById('payment').value,
-type: 'expense'
-};
-try {
-await addDoc(expensesCollection, expenseData);
-showNotification('Saída salva com sucesso!', 'success');
-document.getElementById('desc').value = '';
-document.getElementById('value').value = '';
-document.getElementById('desc').focus();
-} catch(e) {
-console.error("Erro ao salvar saída:", e);
-showNotification("Erro ao salvar saída no servidor", 'error');
-}
-}
-addButton.disabled = false;
+btn.disabled = false;
 loading.classList.add('hidden');
 };
 
@@ -1736,42 +1864,41 @@ const payment = document.getElementById('expensePayment').value;
 const notes = document.getElementById('expenseNotes').value;
 let date = document.getElementById('expenseDate').value;
 if (!desc) { showNotification('Digite a descrição', 'error'); return; }
-if (!valueStr || isNaN(price) || price <= 0) { showNotification('Digite um valor válido', 'error'); return; }
-if (!category) { showNotification('Selecione uma categoria', 'error'); return; }
+if (!valueStr || isNaN(price) || price <= 0) { showNotification('Valor inválido', 'error'); return; }
+if (!category) { showNotification('Selecione categoria', 'error'); return; }
 const now = new Date();
 if (!date) date = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 const loading = document.getElementById('loadingIndicator');
-const saveBtn = document.getElementById('saveExpenseBtn');
-saveBtn.disabled = true;
+const btn = document.getElementById('saveExpenseBtn');
+btn.disabled = true;
 loading.classList.remove('hidden');
 const expenseData = { date, timestamp: now.toISOString(), time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), desc, category, value: price, payment, type: 'expense', notes };
 try {
 await addDoc(expensesCollection, expenseData);
-showNotification('Saída salva com sucesso!', 'success');
+showNotification('Saída salva!', 'success');
 closeModal('expenseModal');
 } catch(e) {
-console.error("Erro ao salvar saída:", e);
-showNotification("Erro ao salvar saída no servidor", 'error');
+showNotification('Erro ao salvar', 'error');
 } finally {
-saveBtn.disabled = false;
+btn.disabled = false;
 loading.classList.add('hidden');
 }
 };
 
-window.deleteTransaction = async (type, id, timestamp) => {
-if(confirm("Excluir esta transação?")) {
+window.deleteTransaction = async (type, id) => {
+if(!confirm('Excluir esta transação?')) return;
 try {
-if (type === 'sale') { await deleteDoc(doc(db, "vendas_agrovida", id)); localSales = localSales.filter(s => s.id !== id); }
-else { await deleteDoc(doc(db, "saidas_agrovida", id)); localExpenses = localExpenses.filter(e => e.id !== id); }
+await deleteDoc(doc(db, type === 'sale' ? "vendas_agrovida" : "saidas_agrovida", id));
+if (type === 'sale') localSales = localSales.filter(s => s.id !== id);
+else localExpenses = localExpenses.filter(e => e.id !== id);
 updateScreen();
 showNotification('Transação excluída!', 'success');
 } catch (error) {
-console.error("Erro ao excluir:", error);
-showNotification('Erro ao excluir transação', 'error');
-}
+showNotification('Erro ao excluir', 'error');
 }
 };
 
+// === Meta ===
 async function loadMetaMensal() {
 try {
 const metaDoc = doc(settingsCollection, "metaMensal");
@@ -1780,52 +1907,40 @@ if (metaSnapshot.exists()) metaMensal = metaSnapshot.data().valor || 5000;
 else await setDoc(metaDoc, { valor: 5000 });
 updateMetaDisplay();
 } catch (error) {
-console.error("Erro ao carregar meta do Firestore:", error);
 metaMensal = parseFloat(localStorage.getItem('metaAgro')) || 5000;
 updateMetaDisplay();
 }
 }
 async function saveMetaMensal(novoValor) {
 try {
-const metaDoc = doc(settingsCollection, "metaMensal");
-await setDoc(metaDoc, { valor: novoValor });
+await setDoc(doc(settingsCollection, "metaMensal"), { valor: novoValor });
 metaMensal = novoValor;
 localStorage.setItem('metaAgro', novoValor);
 updateMetaDisplay();
-showNotification('Meta atualizada globalmente!', 'success');
-return true;
+showNotification('Meta atualizada!', 'success');
 } catch (error) {
-console.error("Erro ao salvar meta no Firestore:", error);
 metaMensal = novoValor;
 localStorage.setItem('metaAgro', novoValor);
 updateMetaDisplay();
 showNotification('Meta atualizada localmente', 'warning');
-return false;
 }
 }
 function updateMetaDisplay() {
 document.getElementById('metaValueDisplay').textContent = `Meta: ${window.formatMoney(metaMensal)}`;
 const now = new Date();
 const todayISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-const currentMonthISO = todayISO.substring(0, 7);
-const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
+const monthSales = localSales.filter(s => s.date.startsWith(todayISO.substring(0, 7)));
 const totalMonth = monthSales.reduce((acc, c) => acc + c.value, 0);
 const percent = metaMensal > 0 ? Math.min((totalMonth / metaMensal) * 100, 100) : 0;
 document.getElementById('progressBar').style.width = `${percent}%`;
 document.getElementById('metaStatusText').textContent = `${percent.toFixed(1)}% atingido`;
-if(percent >= 100) {
-document.getElementById('progressBar').classList.replace('from-green-400', 'from-yellow-400');
-document.getElementById('progressBar').classList.replace('to-green-600', 'to-yellow-600');
-} else {
-document.getElementById('progressBar').classList.replace('from-yellow-400', 'from-green-400');
-document.getElementById('progressBar').classList.replace('to-yellow-600', 'to-green-600');
-}
 }
 window.editMeta = async () => {
 const nova = prompt("Nova Meta (R$):", metaMensal);
 if(nova && !isNaN(nova)) await saveMetaMensal(parseFloat(nova));
 };
 
+// === Tela Principal ===
 function updateScreen() {
 try {
 const now = new Date();
@@ -1839,6 +1954,7 @@ const totalToday = sum(todaySales);
 const totalExpensesToday = sum(todayExpenses);
 const totalMonth = sum(monthSales);
 const balanceToday = totalToday - totalExpensesToday;
+
 document.getElementById('dashTotalToday').textContent = window.formatMoney(totalToday);
 document.getElementById('dashExpensesToday').textContent = window.formatMoney(totalExpensesToday);
 document.getElementById('dashBalanceToday').textContent = window.formatMoney(balanceToday);
@@ -1847,26 +1963,27 @@ document.getElementById('dashTotalMonth').textContent = window.formatMoney(total
 document.getElementById('sumSales').textContent = window.formatMoney(totalToday);
 document.getElementById('sumExpenses').textContent = window.formatMoney(totalExpensesToday);
 document.getElementById('sumBalance').textContent = window.formatMoney(balanceToday);
-const avgTicket = todaySales.length > 0 ? totalToday / todaySales.length : 0;
-document.getElementById('averageTicket').textContent = window.formatMoney(avgTicket);
+document.getElementById('averageTicket').textContent = window.formatMoney(todaySales.length > 0 ? totalToday / todaySales.length : 0);
+
 updateMetaDisplay();
+
 const tbody = document.getElementById('todayTableBody');
 if (tbody) {
 tbody.innerHTML = '';
 const allTransactions = [...todaySales.map(s => ({...s, transactionType: 'sale'})), ...todayExpenses.map(e => ({...e, transactionType: 'expense'}))].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-if (allTransactions.length === 0) {
-tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-500"><i class="fas fa-search text-3xl text-gray-300 mb-3"></i><p class="font-medium">Nenhuma transação hoje</p><p class="text-sm mt-1">Adicione sua primeira transação</p></td></tr>`;
+if (!allTransactions.length) {
+tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-gray-500"><i class="fas fa-search text-3xl text-gray-300 mb-3"></i><p class="font-medium">Nenhuma transação hoje</p></td></tr>';
 } else {
 allTransactions.forEach(t => {
 const isExpense = t.transactionType === 'expense';
 tbody.innerHTML += `<tr class="border-b hover:bg-gray-50 ${isExpense ? 'expense-row' : ''}">
 <td class="p-3"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${isExpense ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${isExpense ? '📉 Saída' : '📈 Venda'}</span></td>
 <td class="p-3 text-xs text-gray-500">${t.time}</td>
-<td class="p-3 font-bold text-gray-700">${t.desc}</td>
+<td class="p-3 font-bold">${t.desc}</td>
 <td class="p-3"><span class="bg-gray-100 px-2 py-1 rounded text-gray-600 text-xs">${t.category || '-'}</span></td>
 <td class="p-3 text-xs text-gray-500">${t.payment}</td>
 <td class="p-3 text-right font-bold ${isExpense ? 'text-red-700' : 'text-green-700'}">${isExpense ? '-' : ''}${window.formatMoney(t.value)}</td>
-<td class="p-3 text-center"><button onclick="window.deleteTransaction('${t.transactionType}', '${t.id}', '${t.timestamp}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
+<td class="p-3 text-center"><button onclick="window.deleteTransaction('${t.transactionType}', '${t.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
 </tr>`;
 });
 }
@@ -1876,6 +1993,7 @@ if(!document.getElementById('tab-expenses').classList.contains('hidden')) { filt
 } catch (error) { console.error("Erro em updateScreen:", error); }
 }
 
+// === Histórico ===
 window.filterHistory = () => {
 const m = document.getElementById('filterMonth').value;
 const d = document.getElementById('filterDate').value;
@@ -1897,7 +2015,7 @@ renderHistoryTable(allTransactions);
 function renderHistoryTable(transactions) {
 const tbody = document.getElementById('historyTableBody');
 if (!tbody) return;
-if (transactions.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-500"><i class="fas fa-search text-3xl text-gray-300 mb-3"></i><p class="font-medium">Nenhuma transação encontrada</p><p class="text-sm mt-1">Tente ajustar os filtros</p></td></tr>`; return; }
+if (!transactions.length) { tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-gray-500">Nenhuma transação encontrada</td></tr>'; return; }
 tbody.innerHTML = transactions.map(trans => {
 const dateBR = trans.date.split('-').reverse().join('/');
 const isExpense = trans.transactionType === 'expense';
@@ -1908,39 +2026,40 @@ return `<tr class="border-b hover:bg-gray-50 ${isExpense ? 'expense-row' : ''}">
 <td class="p-3 text-xs text-gray-500">${trans.category || '-'}</td>
 <td class="p-3 text-xs text-gray-500">${trans.payment}</td>
 <td class="p-3 text-right font-bold ${isExpense ? 'text-red-700' : 'text-gray-700'}">${isExpense ? '-' : ''}${window.formatMoney(trans.value)}</td>
-<td class="p-3 text-center"><button onclick="window.deleteTransaction('${trans.transactionType}', '${trans.id}', '${trans.timestamp}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
+<td class="p-3 text-center"><button onclick="window.deleteTransaction('${trans.transactionType}', '${trans.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
 </tr>`;
 }).join('');
 }
 window.clearFilters = () => { document.getElementById('filterMonth').value = ''; document.getElementById('filterDate').value = ''; document.getElementById('filterType').value = 'all'; window.filterHistory(); };
 
+// === Despesas ===
 window.filterExpenses = () => {
 const m = document.getElementById('expenseFilterMonth').value;
 const category = document.getElementById('expenseFilterCategory').value;
 const min = parseFloat(document.getElementById('expenseFilterMin').value) || 0;
 const max = parseFloat(document.getElementById('expenseFilterMax').value) || Infinity;
-let filteredExpenses = localExpenses;
-if (m) filteredExpenses = filteredExpenses.filter(e => e.date.startsWith(m));
-if (category) filteredExpenses = filteredExpenses.filter(e => e.category === category);
-filteredExpenses = filteredExpenses.filter(e => e.value >= min && e.value <= max);
-filteredExpenses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-renderExpensesTable(filteredExpenses);
+let filtered = localExpenses;
+if (m) filtered = filtered.filter(e => e.date.startsWith(m));
+if (category) filtered = filtered.filter(e => e.category === category);
+filtered = filtered.filter(e => e.value >= min && e.value <= max);
+filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+renderExpensesTable(filtered);
 };
 
 function renderExpensesTable(expenses) {
 const tbody = document.getElementById('expensesTableBody');
 if (!tbody) return;
 tbody.innerHTML = '';
-if (expenses.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500"><i class="fas fa-search text-3xl text-gray-300 mb-3"></i><p class="font-medium">Nenhuma despesa encontrada</p><p class="text-sm mt-1">Tente ajustar os filtros</p></td></tr>`; return; }
-expenses.forEach(expense => {
-const dateBR = expense.date.split('-').reverse().join('/');
+if (!expenses.length) { tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">Nenhuma despesa encontrada</td></tr>'; return; }
+expenses.forEach(e => {
+const dateBR = e.date.split('-').reverse().join('/');
 tbody.innerHTML += `<tr class="border-b expense-row hover:bg-red-50">
 <td class="p-3 text-xs text-gray-500">${dateBR}</td>
-<td class="p-3 font-bold text-gray-700">${expense.desc}</td>
-<td class="p-3"><span class="bg-red-100 px-2 py-1 rounded text-red-600 text-xs">${expense.category || '-'}</span></td>
-<td class="p-3 text-xs text-gray-500">${expense.payment}</td>
-<td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(expense.value)}</td>
-<td class="p-3 text-center"><button onclick="window.deleteTransaction('expense', '${expense.id}', '${expense.timestamp}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
+<td class="p-3 font-bold">${e.desc}</td>
+<td class="p-3"><span class="bg-red-100 px-2 py-1 rounded text-red-600 text-xs">${e.category || '-'}</span></td>
+<td class="p-3 text-xs text-gray-500">${e.payment}</td>
+<td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(e.value)}</td>
+<td class="p-3 text-center"><button onclick="window.deleteTransaction('expense', '${e.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
 </tr>`;
 });
 }
@@ -1949,36 +2068,30 @@ function updateExpenseSummary() {
 const now = new Date();
 const currentMonthISO = now.toISOString().substring(0, 7);
 const monthExpenses = localExpenses.filter(e => e.date.startsWith(currentMonthISO));
-const totalMonthExpenses = monthExpenses.reduce((sum, e) => sum + e.value, 0);
-const highestExpense = monthExpenses.length > 0 ? Math.max(...monthExpenses.map(e => e.value)) : 0;
+const totalMonth = monthExpenses.reduce((sum, e) => sum + e.value, 0);
+const highest = monthExpenses.length > 0 ? Math.max(...monthExpenses.map(e => e.value)) : 0;
 const categoryTotals = {};
 monthExpenses.forEach(e => { categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.value; });
-let topCategory = '-';
-let topCategoryValue = 0;
-Object.entries(categoryTotals).forEach(([category, total]) => { if (total > topCategoryValue) { topCategory = category; topCategoryValue = total; } });
-document.getElementById('expensesMonth').textContent = window.formatMoney(totalMonthExpenses);
-document.getElementById('highestExpense').textContent = window.formatMoney(highestExpense);
+let topCategory = '-', topValue = 0;
+Object.entries(categoryTotals).forEach(([cat, total]) => { if (total > topValue) { topCategory = cat; topValue = total; } });
+document.getElementById('expensesMonth').textContent = window.formatMoney(totalMonth);
+document.getElementById('highestExpense').textContent = window.formatMoney(highest);
 document.getElementById('topExpenseCategory').textContent = topCategory;
 }
 
+// === Relatórios ===
 function updateReports(startDateISO, endDateISO, typeFilter = 'all', categoryFilter = '') {
 let filteredSales = localSales.filter(sale => {
 const saleDate = new Date(sale.date + 'T00:00:00');
 const start = new Date(startDateISO + 'T00:00:00');
 const end = new Date(endDateISO + 'T23:59:59');
-const matchesDate = saleDate >= start && saleDate <= end;
-const matchesCategory = !categoryFilter || sale.category === categoryFilter;
-const matchesType = typeFilter === 'all' || typeFilter === 'sale';
-return matchesDate && matchesCategory && matchesType;
+return saleDate >= start && saleDate <= end && (!categoryFilter || sale.category === categoryFilter) && (typeFilter === 'all' || typeFilter === 'sale');
 });
 let filteredExpenses = localExpenses.filter(expense => {
 const expenseDate = new Date(expense.date + 'T00:00:00');
 const start = new Date(startDateISO + 'T00:00:00');
 const end = new Date(endDateISO + 'T23:59:59');
-const matchesDate = expenseDate >= start && expenseDate <= end;
-const matchesCategory = !categoryFilter || expense.category === categoryFilter;
-const matchesType = typeFilter === 'all' || typeFilter === 'expense';
-return matchesDate && matchesCategory && matchesType;
+return expenseDate >= start && expenseDate <= end && (!categoryFilter || expense.category === categoryFilter) && (typeFilter === 'all' || typeFilter === 'expense');
 });
 const totalSales = filteredSales.reduce((sum, s) => sum + s.value, 0);
 const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.value, 0);
@@ -1986,7 +2099,7 @@ const netBalance = totalSales - totalExpenses;
 let totalProfit = 0;
 filteredSales.forEach(sale => {
 const product = products.find(p => p.name === sale.desc);
-if (product && product.cost) { const profitPerItem = sale.value - product.cost; totalProfit += profitPerItem; }
+if (product && product.cost) totalProfit += sale.value - product.cost;
 });
 totalProfit -= totalExpenses;
 document.getElementById('customTotalSales').textContent = window.formatMoney(totalSales);
@@ -2000,15 +2113,13 @@ updateTopExpensesTable(filteredExpenses);
 }
 
 function updateCashFlowChart(sales, expenses, startDate, endDate) {
-const ctx = document.getElementById('cashFlowChart').getContext('2d');
+const ctx = document.getElementById('cashFlowChart')?.getContext('2d');
 if (!ctx) return;
 const dates = [];
 let currentDate = new Date(startDate);
 const endDateObj = new Date(endDate);
 while (currentDate <= endDateObj) { dates.push(new Date(currentDate).toISOString().split('T')[0]); currentDate.setDate(currentDate.getDate() + 1); }
-const salesByDay = {};
-const expensesByDay = {};
-const balanceByDay = {};
+const salesByDay = {}, expensesByDay = {}, balanceByDay = {};
 dates.forEach(date => { salesByDay[date] = 0; expensesByDay[date] = 0; balanceByDay[date] = 0; });
 sales.forEach(sale => { if (salesByDay[sale.date] !== undefined) salesByDay[sale.date] += sale.value; });
 expenses.forEach(expense => { if (expensesByDay[expense.date] !== undefined) expensesByDay[expense.date] += expense.value; });
@@ -2022,43 +2133,41 @@ data: { labels: formattedDates, datasets: [
 { label: 'Saídas', data: dates.map(date => expensesByDay[date]), backgroundColor: 'rgba(239, 68, 68, 0.5)', borderColor: 'rgb(239, 68, 68)', borderWidth: 1 },
 { label: 'Saldo', data: dates.map(date => balanceByDay[date]), type: 'line', borderColor: 'rgb(59, 130, 246)', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 2, tension: 0.1, fill: true }
 ]},
-options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Fluxo de Caixa Diário' } }, scales: { y: { beginAtZero: true, ticks: { callback: function(value) { return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2}); } } } } }
+options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Fluxo de Caixa Diário' } }, scales: { y: { beginAtZero: true } } }
 });
 }
 
 function updateCategoryChart(sales, expenses) {
-const ctx = document.getElementById('categoryChart').getContext('2d');
+const ctx = document.getElementById('categoryChart')?.getContext('2d');
 if (!ctx) return;
 const categoryData = {};
 sales.forEach(sale => { if (!categoryData[sale.category]) categoryData[sale.category] = { sales: 0, expenses: 0 }; categoryData[sale.category].sales += sale.value; });
 expenses.forEach(expense => { if (!categoryData[expense.category]) categoryData[expense.category] = { sales: 0, expenses: 0 }; categoryData[expense.category].expenses += expense.value; });
-const categories = Object.keys(categoryData);
-const salesData = categories.map(cat => categoryData[cat].sales);
-const expensesData = categories.map(cat => categoryData[cat].expenses);
+const cats = Object.keys(categoryData);
 if (categoryChart) categoryChart.destroy();
 categoryChart = new Chart(ctx, {
 type: 'bar',
-data: { labels: categories, datasets: [
-{ label: 'Vendas', data: salesData, backgroundColor: 'rgba(34, 197, 94, 0.7)', borderColor: 'rgb(34, 197, 94)', borderWidth: 1 },
-{ label: 'Saídas', data: expensesData, backgroundColor: 'rgba(239, 68, 68, 0.7)', borderColor: 'rgb(239, 68, 68)', borderWidth: 1 }
+data: { labels: cats, datasets: [
+{ label: 'Vendas', data: cats.map(cat => categoryData[cat].sales), backgroundColor: 'rgba(34, 197, 94, 0.7)', borderColor: 'rgb(34, 197, 94)', borderWidth: 1 },
+{ label: 'Saídas', data: cats.map(cat => categoryData[cat].expenses), backgroundColor: 'rgba(239, 68, 68, 0.7)', borderColor: 'rgb(239, 68, 68)', borderWidth: 1 }
 ]},
-options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Distribuição por Categoria' } }, scales: { y: { beginAtZero: true, ticks: { callback: function(value) { return 'R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2}); } } } } }
+options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Distribuição por Categoria' } }, scales: { y: { beginAtZero: true } } }
 });
 }
 
 function updateTopExpensesTable(expenses) {
-const sortedExpenses = [...expenses].sort((a, b) => b.value - a.value).slice(0, 10);
+const sorted = [...expenses].sort((a, b) => b.value - a.value).slice(0, 10);
 const tbody = document.getElementById('topExpensesTableBody');
 if (!tbody) return;
 tbody.innerHTML = '';
-sortedExpenses.forEach(expense => {
-const dateBR = expense.date.split('-').reverse().join('/');
+sorted.forEach(e => {
+const dateBR = e.date.split('-').reverse().join('/');
 tbody.innerHTML += `<tr class="border-b expense-row hover:bg-red-50">
-<td class="p-3 font-bold">${expense.desc}</td>
-<td class="p-3"><span class="bg-red-100 px-2 py-1 rounded text-red-600 text-xs">${expense.category || '-'}</span></td>
+<td class="p-3 font-bold">${e.desc}</td>
+<td class="p-3"><span class="bg-red-100 px-2 py-1 rounded text-red-600 text-xs">${e.category || '-'}</span></td>
 <td class="p-3 text-center text-xs text-gray-500">${dateBR}</td>
-<td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(expense.value)}</td>
-<td class="p-3 text-center text-xs text-gray-500">${expense.payment}</td>
+<td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(e.value)}</td>
+<td class="p-3 text-center text-xs text-gray-500">${e.payment}</td>
 </tr>`;
 });
 }
@@ -2068,21 +2177,20 @@ const start = document.getElementById('customFilterStart').value;
 const end = document.getElementById('customFilterEnd').value;
 const type = document.getElementById('customFilterType').value;
 const category = document.getElementById('customFilterCategory').value;
-if (!start || !end) { showNotification('Selecione as datas inicial e final', 'error'); return; }
-if (new Date(start) > new Date(end)) { showNotification('Data inicial não pode ser maior que a final', 'error'); return; }
+if (!start || !end) { showNotification('Selecione as datas', 'error'); return; }
+if (new Date(start) > new Date(end)) { showNotification('Data inicial maior que final', 'error'); return; }
 updateReports(start, end, type, category);
 };
 
+// === Produtos ===
 async function loadProducts() {
 try {
 const q = query(productsCollection, orderBy("createdAt", "desc"));
 const snapshot = await getDocs(q);
-products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, cost: parseFloat(doc.data().cost) || 0, discountPrice: parseFloat(doc.data().discountPrice) || 0, minQuantityForDiscount: parseInt(doc.data().minQuantityForDiscount) || 0, salesCount: parseInt(doc.data().salesCount) || 0, stock: parseInt(doc.data().stock) || 0 }));
+products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, cost: parseFloat(doc.data().cost) || 0, discountPrice: parseFloat(doc.data().discountPrice) || 0, stock: parseInt(doc.data().stock) || 0 }));
 sortProducts();
 } catch (error) {
 console.error("Erro ao carregar produtos:", error);
-const storedProducts = localStorage.getItem('localProducts');
-if (storedProducts) { products = JSON.parse(storedProducts); sortProducts(); }
 }
 }
 
@@ -2091,11 +2199,10 @@ const sortValue = document.getElementById('productSort').value;
 currentProductSort = sortValue;
 const [field, order] = sortValue.split('_');
 products.sort((a, b) => {
-let aVal = a[field];
-let bVal = b[field];
-if (field === 'name') { aVal = aVal || ''; bVal = bVal || ''; return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal); }
-if (field === 'price') { aVal = parseFloat(aVal) || 0; bVal = parseFloat(bVal) || 0; return order === 'asc' ? aVal - bVal : bVal - aVal; }
-if (field === 'category') { aVal = aVal || ''; bVal = bVal || ''; return order === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal); }
+let aVal = a[field], bVal = b[field];
+if (field === 'name') return order === 'asc' ? (aVal||'').localeCompare(bVal||'') : (bVal||'').localeCompare(aVal||'');
+if (field === 'price') return order === 'asc' ? (parseFloat(aVal)||0) - (parseFloat(bVal)||0) : (parseFloat(bVal)||0) - (parseFloat(aVal)||0);
+if (field === 'category') return order === 'asc' ? (aVal||'').localeCompare(bVal||'') : (bVal||'').localeCompare(aVal||'');
 return 0;
 });
 updateProductsDisplay();
@@ -2110,13 +2217,13 @@ const stock = parseInt(document.getElementById('productStock').value) || 0;
 const category = document.getElementById('productCategory').value;
 const unit = document.getElementById('productUnit').value;
 const sku = document.getElementById('productSKU').value.trim();
-if (!name) { showNotification('Digite o nome do produto', 'error'); return; }
+if (!name) { showNotification('Digite o nome', 'error'); return; }
 const price = parseFloat(priceStr.replace(',', '.'));
 const cost = parseFloat(costStr.replace(',', '.')) || 0;
 const discountPrice = discountPriceStr ? parseFloat(discountPriceStr.replace(',', '.')) : 0;
-if (isNaN(price) || price <= 0) { showNotification('Digite um preço de venda válido', 'error'); return; }
+if (isNaN(price) || price <= 0) { showNotification('Preço inválido', 'error'); return; }
 const loading = document.getElementById('loadingIndicator');
-if (loading) loading.classList.remove('hidden');
+loading?.classList.remove('hidden');
 try {
 const productData = { name, price, cost, discountPrice, stock, category, unit, sku, updatedAt: serverTimestamp(), salesCount: 0 };
 if (editingProductId) { await updateDoc(doc(productsCollection, editingProductId), productData); showNotification('Produto atualizado!', 'success'); }
@@ -2124,15 +2231,18 @@ else { productData.createdAt = serverTimestamp(); await addDoc(productsCollectio
 closeModal('productModal');
 await loadProducts();
 } catch (error) {
-console.error("Erro ao salvar produto:", error);
 showNotification('Erro ao salvar produto', 'error');
-} finally { if (loading) loading.classList.add('hidden'); }
+} finally { loading?.classList.add('hidden'); }
 };
 
 window.deleteProduct = async (productId) => {
-if (confirm("Excluir este produto?")) {
-try { await deleteDoc(doc(productsCollection, productId)); showNotification('Produto excluído!', 'success'); await loadProducts(); }
-catch (error) { console.error("Erro ao excluir produto:", error); showNotification('Erro ao excluir produto', 'error'); }
+if (!confirm("Excluir este produto?")) return;
+try { 
+await deleteDoc(doc(productsCollection, productId)); 
+showNotification('Produto excluído!', 'success'); 
+await loadProducts(); 
+} catch (error) { 
+showNotification('Erro ao excluir', 'error'); 
 }
 };
 
@@ -2144,73 +2254,66 @@ const filterCat = document.getElementById('filterCategory').value;
 const filterUnit = document.getElementById('filterUnit').value;
 const filterMin = parseFloat(document.getElementById('filterPriceMin').value) || 0;
 const filterMax = parseFloat(document.getElementById('filterPriceMax').value) || Infinity;
-let filteredProducts = products.filter(product => {
-const matchesSearch = !searchTerm || product.name.toLowerCase().includes(searchTerm) || (product.sku && product.sku.toLowerCase().includes(searchTerm)) || (product.category && product.category.toLowerCase().includes(searchTerm));
-const matchesCat = !filterCat || product.category === filterCat;
-const matchesUnit = !filterUnit || product.unit === filterUnit;
-const matchesPrice = product.price >= filterMin && product.price <= filterMax;
+let filtered = products.filter(p => {
+const matchesSearch = !searchTerm || p.name.toLowerCase().includes(searchTerm) || (p.sku && p.sku.toLowerCase().includes(searchTerm)) || (p.category && p.category.toLowerCase().includes(searchTerm));
+const matchesCat = !filterCat || p.category === filterCat;
+const matchesUnit = !filterUnit || p.unit === filterUnit;
+const matchesPrice = p.price >= filterMin && p.price <= filterMax;
 return matchesSearch && matchesCat && matchesUnit && matchesPrice;
 });
-if (filteredProducts.length === 0) {
-grid.innerHTML = `<div class="col-span-full text-center p-8 text-gray-500"><i class="fas fa-box-open text-3xl text-gray-300 mb-3"></i><p class="font-medium">Nenhum produto encontrado</p><p class="text-sm mt-1">Adicione seu primeiro produto</p></div>`;
+if (!filtered.length) {
+grid.innerHTML = '<div class="col-span-full text-center p-8 text-gray-500"><i class="fas fa-box-open text-3xl text-gray-300 mb-3"></i><p class="font-medium">Nenhum produto encontrado</p></div>';
 return;
 }
-grid.innerHTML = filteredProducts.map(product => `
-<div class="card hover:shadow-lg transition-shadow">
-<div class="p-4">
+grid.innerHTML = filtered.map(p => `
+<div class="card product-card p-4">
 <div class="flex justify-between items-start mb-2">
-<h3 class="font-bold text-gray-800 truncate">${product.name}</h3>
-<div class="flex gap-2">
-<button onclick="window.showEditProductModal('${product.id}')" class="text-blue-500 hover:text-blue-700 flex-shrink-0"><i class="fas fa-edit"></i></button>
-<button onclick="deleteProduct('${product.id}')" class="text-red-500 hover:text-red-700 flex-shrink-0"><i class="fas fa-trash"></i></button>
+<h3 class="font-bold text-gray-800 truncate flex-1">${p.name}</h3>
+<div class="flex gap-2 flex-shrink-0">
+<button onclick="window.showEditProductModal('${p.id}')" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+<button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
 </div>
 </div>
-<div class="flex items-center gap-2 mb-3">
-<span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">${product.category || 'Sem categoria'}</span>
-<span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">${product.unit || 'Un'}</span>
-${product.sku ? `<span class="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">SKU: ${product.sku}</span>` : ''}
+<div class="flex items-center gap-2 mb-3 flex-wrap">
+<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">${p.category || 'Sem categoria'}</span>
+<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">${p.unit || 'Un'}</span>
+${p.sku ? `<span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">SKU: ${p.sku}</span>` : ''}
 </div>
 <div class="space-y-2 mb-3">
-<div class="text-lg font-bold text-agro-green">${window.formatMoney(product.price)}</div>
-${product.cost > 0 ? `<div class="text-xs text-gray-500">Custo: ${window.formatMoney(product.cost)}</div>` : ''}
-${product.stock !== undefined ? `<div class="text-xs ${product.stock > 10 ? 'text-green-600' : product.stock > 0 ? 'text-yellow-600' : 'text-red-600'}"><i class="fas fa-box mr-1"></i>Estoque: ${product.stock} ${product.unit}</div>` : ''}
-${product.discountPrice > 0 ? `<div class="text-sm font-bold text-green-600"><i class="fas fa-tag mr-1"></i> Com desconto: ${window.formatMoney(product.discountPrice)}</div>` : ''}
+<div class="text-lg font-bold text-agro-green">${window.formatMoney(p.price)}</div>
+${p.cost > 0 ? `<div class="text-xs text-gray-500">Custo: ${window.formatMoney(p.cost)}</div>` : ''}
+${p.stock !== undefined ? `<div class="text-xs ${p.stock > 10 ? 'text-green-600' : p.stock > 0 ? 'text-yellow-600' : 'text-red-600'}"><i class="fas fa-box mr-1"></i>Estoque: ${p.stock} ${p.unit}</div>` : ''}
+${p.discountPrice > 0 ? `<div class="text-sm font-bold text-green-600"><i class="fas fa-tag mr-1"></i> Desconto: ${window.formatMoney(p.discountPrice)}</div>` : ''}
 </div>
-<button onclick="quickAdd('${product.name}', '${product.category || 'Outros'}', ${product.price})" class="btn-primary w-full"><i class="fas fa-cart-plus mr-2"></i> Usar na Venda</button>
-</div>
+<button onclick="quickAdd('${p.name}', '${p.category || 'Outros'}', ${p.price})" class="btn-primary w-full"><i class="fas fa-cart-plus mr-2"></i> Usar na Venda</button>
 </div>`).join('');
 }
 
-window.searchProducts = () => { updateProductsDisplay(); };
+window.searchProducts = () => updateProductsDisplay();
 
 function loadFilterCategories() {
-const selectCat = document.getElementById('filterCategory');
-if (selectCat) selectCat.innerHTML = '<option value="">Todas</option>' + categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+const select = document.getElementById('filterCategory');
+if (select) select.innerHTML = '<option value="">Todas</option>' + categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
+
+// === Exportação ===
+window.exportHistoryExcel = () => {
+const all = [...localSales.map(s => ({...s, type: 'Venda'})), ...localExpenses.map(e => ({...e, type: 'Saída'}))].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+const data = all.map(t => ({ 'Tipo': t.type, 'Data': t.date.split('-').reverse().join('/'), 'Hora': t.time || '', 'Descrição': t.desc || '', 'Categoria': t.category || '', 'Pagamento': t.payment || '', 'Valor (R$)': t.type === 'Saída' ? -t.value : t.value }));
+const ws = XLSX.utils.json_to_sheet(data);
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, 'Histórico');
+XLSX.writeFile(wb, `historico-${new Date().toISOString().slice(0,10)}.xlsx`);
+showNotification('Exportado!', 'success');
+};
 
 window.exportExpensesExcel = () => {
 const data = localExpenses.map(e => ({ 'Data': e.date.split('-').reverse().join('/'), 'Hora': e.time || '', 'Descrição': e.desc || '', 'Categoria': e.category || '', 'Pagamento': e.payment || '', 'Valor (R$)': e.value || 0 }));
-const total = localExpenses.reduce((sum, expense) => sum + expense.value, 0);
-data.push({ 'Data': 'TOTAL', 'Hora': '', 'Descrição': '', 'Categoria': '', 'Pagamento': '', 'Valor (R$)': total });
-const worksheet = XLSX.utils.json_to_sheet(data);
-const workbook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(workbook, worksheet, 'Saídas');
-const wscols = [{ wch: 12 }, { wch: 10 }, { wch: 30 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
-worksheet['!cols'] = wscols;
-XLSX.writeFile(workbook, `saidas-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
-showNotification('Saídas exportadas em Excel!', 'success');
-};
-
-window.exportHistoryExcel = () => {
-const allTransactions = [...localSales.map(s => ({...s, type: 'Venda'})), ...localExpenses.map(e => ({...e, type: 'Saída'}))].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-const data = allTransactions.map(t => ({ 'Tipo': t.type, 'Data': t.date.split('-').reverse().join('/'), 'Hora': t.time || '', 'Descrição': t.desc || '', 'Categoria': t.category || '', 'Pagamento': t.payment || '', 'Valor (R$)': t.type === 'Saída' ? -t.value : t.value }));
-const worksheet = XLSX.utils.json_to_sheet(data);
-const workbook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(workbook, worksheet, 'Histórico');
-const wscols = [{ wch: 10 }, { wch: 12 }, { wch: 10 }, { wch: 30 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
-worksheet['!cols'] = wscols;
-XLSX.writeFile(workbook, `historico-completo-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
-showNotification('Histórico exportado em Excel!', 'success');
+const ws = XLSX.utils.json_to_sheet(data);
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, 'Saídas');
+XLSX.writeFile(wb, `saidas-${new Date().toISOString().slice(0,10)}.xlsx`);
+showNotification('Exportado!', 'success');
 };
 
 window.exportCatalogPDF = () => {
@@ -2218,115 +2321,109 @@ const { jsPDF } = window.jspdf;
 const doc = new jsPDF();
 doc.setFontSize(20);
 doc.setTextColor(0, 144, 54);
-doc.text('Catálogo de Produtos - AgroVida+', 105, 15, null, null, 'center');
+doc.text('Catálogo - AgroVida+', 105, 15, null, null, 'center');
 doc.setFontSize(12);
 doc.setTextColor(100, 100, 100);
 doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 105, 25, null, null, 'center');
 const tableData = products.map(p => [p.name || '', p.category || '', p.unit || 'Un', p.sku || '-', window.formatMoney(p.price || 0).replace('R$ ', ''), window.formatMoney(p.cost || 0).replace('R$ ', ''), p.stock || 0]);
-doc.autoTable({ head: [['Produto', 'Categoria', 'Unidade', 'SKU', 'Preço (R$)', 'Custo (R$)', 'Estoque']], body: tableData, startY: 35, theme: 'grid', headStyles: { fillColor: [0, 144, 54], textColor: [255, 255, 255] }, styles: { fontSize: 9 }, columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } } });
-const finalY = doc.lastAutoTable.finalY + 10;
-doc.setFontSize(10);
-doc.setTextColor(150, 150, 150);
-doc.text(`Total de produtos: ${products.length}`, 105, finalY, null, null, 'center');
-doc.save(`catalogo-agrovida-${new Date().toISOString().slice(0,10)}.pdf`);
-showNotification('Catálogo exportado em PDF!', 'success');
+doc.autoTable({ head: [['Produto', 'Categoria', 'Unidade', 'SKU', 'Preço', 'Custo', 'Estoque']], body: tableData, startY: 35, theme: 'grid', headStyles: { fillColor: [0, 144, 54], textColor: [255, 255, 255] } });
+doc.save(`catalogo-${new Date().toISOString().slice(0,10)}.pdf`);
+showNotification('PDF exportado!', 'success');
 };
 
 window.exportCatalogExcel = () => {
-const data = products.map(p => ({ 'Produto': p.name || '', 'Categoria': p.category || '', 'Unidade': p.unit || 'Un', 'SKU': p.sku || '', 'Preço (R$)': p.price || 0, 'Custo (R$)': p.cost || 0, 'Estoque': p.stock || 0, 'Data Cadastro': p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-' }));
-const worksheet = XLSX.utils.json_to_sheet(data);
-const workbook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo');
-const wscols = [{ wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 10 }, { wch: 15 }];
-worksheet['!cols'] = wscols;
-XLSX.writeFile(workbook, `catalogo-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
-showNotification('Catálogo exportado em Excel!', 'success');
+const data = products.map(p => ({ 'Produto': p.name || '', 'Categoria': p.category || '', 'Unidade': p.unit || 'Un', 'SKU': p.sku || '', 'Preço': p.price || 0, 'Custo': p.cost || 0, 'Estoque': p.stock || 0 }));
+const ws = XLSX.utils.json_to_sheet(data);
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, 'Catálogo');
+XLSX.writeFile(wb, `catalogo-${new Date().toISOString().slice(0,10)}.xlsx`);
+showNotification('Excel exportado!', 'success');
 };
 
 window.exportCurrentMonthExcel = () => {
 const currentMonthISO = new Date().toISOString().slice(0,7);
 const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
 const monthExpenses = localExpenses.filter(e => e.date.startsWith(currentMonthISO));
-const data = [...monthSales.map(s => ({'Tipo': 'Venda', 'Data': s.date.split('-').reverse().join('/'), 'Hora': s.time || '', 'Descrição': s.desc || '', 'Categoria': s.category || '', 'Pagamento': s.payment || '', 'Valor (R$)': s.value || 0})), ...monthExpenses.map(e => ({'Tipo': 'Saída', 'Data': e.date.split('-').reverse().join('/'), 'Hora': e.time || '', 'Descrição': e.desc || '', 'Categoria': e.category || '', 'Pagamento': e.payment || '', 'Valor (R$)': -e.value || 0}))].sort((a, b) => { const dateA = new Date(a.Data.split('/').reverse().join('-') + 'T' + a.Hora); const dateB = new Date(b.Data.split('/').reverse().join('-') + 'T' + b.Hora); return dateB - dateA; });
-const totalSales = monthSales.reduce((sum, sale) => sum + sale.value, 0);
-const totalExpenses = monthExpenses.reduce((sum, expense) => sum + expense.value, 0);
-const netBalance = totalSales - totalExpenses;
-data.push({'Tipo': 'RESUMO', 'Data': '', 'Hora': '', 'Descrição': '', 'Categoria': '', 'Pagamento': '', 'Valor (R$)': ''});
-data.push({'Tipo': 'TOTAL VENDAS', 'Data': '', 'Hora': '', 'Descrição': '', 'Categoria': '', 'Pagamento': '', 'Valor (R$)': totalSales});
-data.push({'Tipo': 'TOTAL SAÍDAS', 'Data': '', 'Hora': '', 'Descrição': '', 'Categoria': '', 'Pagamento': '', 'Valor (R$)': -totalExpenses});
-data.push({'Tipo': 'SALDO LÍQUIDO', 'Data': '', 'Hora': '', 'Descrição': '', 'Categoria': '', 'Pagamento': '', 'Valor (R$)': netBalance});
-const worksheet = XLSX.utils.json_to_sheet(data);
-const workbook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendas Mês');
-XLSX.writeFile(workbook, `vendas-mes-${currentMonthISO}.xlsx`);
-showNotification('Vendas do mês exportadas em Excel!', 'success');
+const data = [...monthSales.map(s => ({'Tipo': 'Venda', 'Data': s.date.split('-').reverse().join('/'), 'Descrição': s.desc || '', 'Valor': s.value || 0})), ...monthExpenses.map(e => ({'Tipo': 'Saída', 'Data': e.date.split('-').reverse().join('/'), 'Descrição': e.desc || '', 'Valor': -e.value || 0}))];
+const ws = XLSX.utils.json_to_sheet(data);
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, 'Vendas Mês');
+XLSX.writeFile(wb, `vendas-mes-${currentMonthISO}.xlsx`);
+showNotification('Exportado!', 'success');
 };
 
 window.createFullBackup = () => {
-const backupData = { timestamp: new Date().toISOString(), sales: localSales, expenses: localExpenses, products: products, settings: { metaMensal: metaMensal, categories: categories, expenseCategories: expenseCategories } };
+const backupData = { timestamp: new Date().toISOString(), sales: localSales, expenses: localExpenses, products: products, settings: { metaMensal, categories, expenseCategories } };
 const dataStr = JSON.stringify(backupData, null, 2);
 const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-const exportFileDefaultName = `backup-agrovida-${new Date().toISOString().slice(0,10)}.json`;
-const linkElement = document.createElement('a');
-linkElement.setAttribute('href', dataUri);
-linkElement.setAttribute('download', exportFileDefaultName);
-linkElement.click();
-showNotification('Backup criado com sucesso!', 'success');
+const link = document.createElement('a');
+link.setAttribute('href', dataUri);
+link.setAttribute('download', `backup-${new Date().toISOString().slice(0,10)}.json`);
+link.click();
+showNotification('Backup criado!', 'success');
 };
 
+// === Configurações ===
 function updateSettingsInfo() {
 document.getElementById('totalSalesCount').textContent = localSales.length;
 document.getElementById('totalExpensesCount').textContent = localExpenses.length;
 document.getElementById('totalProductsCount').textContent = products.length;
 document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('pt-BR');
-const defaultGoal = parseFloat(localStorage.getItem('defaultMonthlyGoal')) || 5000;
-document.getElementById('defaultMonthlyGoal').value = defaultGoal;
-const defaultMargin = parseFloat(localStorage.getItem('defaultProfitMargin')) || 30;
-document.getElementById('defaultProfitMargin').value = defaultMargin;
-const storeName = localStorage.getItem('storeName') || 'AgroVida+';
-document.getElementById('storeName').value = storeName;
+document.getElementById('defaultMonthlyGoal').value = parseFloat(localStorage.getItem('defaultMonthlyGoal')) || 5000;
+document.getElementById('defaultProfitMargin').value = parseFloat(localStorage.getItem('defaultProfitMargin')) || 30;
+document.getElementById('storeName').value = localStorage.getItem('storeName') || 'AgroVida+';
 }
 
-window.changePassword = () => { showModal('passwordModal'); };
+window.changePassword = () => showModal('passwordModal');
 
 window.confirmPasswordChange = () => {
 const newPass = document.getElementById('newPassword').value;
 const confirmPass = document.getElementById('confirmPassword').value;
-if (!newPass || !confirmPass) { showNotification('Preencha ambos os campos', 'error'); return; }
-if (newPass !== confirmPass) { showNotification('As senhas não coincidem', 'error'); return; }
+if (!newPass || !confirmPass) { showNotification('Preencha ambos', 'error'); return; }
+if (newPass !== confirmPass) { showNotification('Senhas diferentes', 'error'); return; }
 SENHA_LOJA = newPass;
 localStorage.setItem('senhaAgro', newPass);
 document.getElementById('currentPassword').value = newPass;
 closeModal('passwordModal');
-showNotification('Senha alterada com sucesso!', 'success');
+showNotification('Senha alterada!', 'success');
 };
 
-document.getElementById('defaultMonthlyGoal').addEventListener('change', (e) => { localStorage.setItem('defaultMonthlyGoal', e.target.value); showNotification('Meta padrão salva!', 'success'); });
-document.getElementById('defaultProfitMargin').addEventListener('change', (e) => { localStorage.setItem('defaultProfitMargin', e.target.value); showNotification('Margem de lucro salva!', 'success'); });
-document.getElementById('storeName').addEventListener('change', (e) => { localStorage.setItem('storeName', e.target.value); showNotification('Nome da loja atualizado!', 'success'); });
+document.getElementById('defaultMonthlyGoal').addEventListener('change', (e) => { localStorage.setItem('defaultMonthlyGoal', e.target.value); showNotification('Meta salva!', 'success'); });
+document.getElementById('defaultProfitMargin').addEventListener('change', (e) => { localStorage.setItem('defaultProfitMargin', e.target.value); showNotification('Margem salva!', 'success'); });
+document.getElementById('storeName').addEventListener('change', (e) => { localStorage.setItem('storeName', e.target.value); showNotification('Nome atualizado!', 'success'); });
 
 window.clearAllData = () => {
-if (confirm('⚠️ ATENÇÃO: Isso irá apagar TODOS os dados do sistema. Esta ação não pode ser desfeita.\nDigite "CONFIRMAR" para continuar:') === 'CONFIRMAR') {
-if (confirm('ÚLTIMA CONFIRMAÇÃO: Tem certeza que deseja apagar TODOS os dados?')) { localStorage.clear(); window.location.reload(); }
+if (confirm('⚠️ ATENÇÃO: Isso apagará TODOS os dados!\nDigite "CONFIRMAR" para continuar:') === 'CONFIRMAR') {
+if (confirm('ÚLTIMA CONFIRMAÇÃO: Tem certeza?')) { localStorage.clear(); window.location.reload(); }
 }
 };
 
+// === Notificações ===
 function showNotification(message, type = 'success') {
 const notification = document.createElement('div');
 notification.className = `notification ${type}`;
 notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
 document.body.appendChild(notification);
-setTimeout(() => { notification.style.animation = 'slideOutRight 0.3s ease'; setTimeout(() => notification.remove(), 300); }, 3000);
+setTimeout(() => { 
+notification.style.animation = 'slideOutRight 0.3s ease'; 
+setTimeout(() => notification.remove(), 300); 
+}, 3000);
 }
 
-document.getElementById('value').addEventListener('input', function(e) { let value = e.target.value.replace(/\D/g, ''); value = (parseFloat(value) / 100).toFixed(2); e.target.value = value.replace('.', ','); });
-document.getElementById('expenseValue').addEventListener('input', function(e) { let value = e.target.value.replace(/\D/g, ''); value = (parseFloat(value) / 100).toFixed(2); e.target.value = value.replace('.', ','); });
-document.getElementById('productPrice').addEventListener('input', function(e) { let value = e.target.value.replace(/\D/g, ''); value = (parseFloat(value) / 100).toFixed(2); e.target.value = value.replace('.', ','); });
-document.getElementById('productCost').addEventListener('input', function(e) { let value = e.target.value.replace(/\D/g, ''); value = (parseFloat(value) / 100).toFixed(2); e.target.value = value.replace('.', ','); });
-document.getElementById('productDiscountPrice').addEventListener('input', function(e) { let value = e.target.value.replace(/\D/g, ''); value = (parseFloat(value) / 100).toFixed(2); e.target.value = value.replace('.', ','); });
+// === Formatação de Moeda ===
+['value', 'expenseValue', 'productPrice', 'productCost', 'productDiscountPrice'].forEach(id => {
+const el = document.getElementById(id);
+if (el) el.addEventListener('input', function(e) {
+let value = e.target.value.replace(/\D/g, '');
+value = (parseFloat(value) / 100).toFixed(2);
+e.target.value = value.replace('.', ',');
+});
+});
 
+// === Sugestões de Busca ===
 const descInput = document.getElementById('desc');
 const suggestionsDiv = document.getElementById('descSuggestions');
+if (descInput && suggestionsDiv) {
 descInput.addEventListener('input', function() {
 const query = this.value.toLowerCase();
 if (query.length < 2) { suggestionsDiv.classList.add('hidden'); return; }
@@ -2336,7 +2433,8 @@ suggestionsDiv.innerHTML = matches.map(p => `<div class="search-suggestion-item"
 suggestionsDiv.classList.remove('hidden');
 } else { suggestionsDiv.classList.add('hidden'); }
 });
-descInput.addEventListener('blur', function() { setTimeout(() => { suggestionsDiv.classList.add('hidden'); }, 200); });
+descInput.addEventListener('blur', () => setTimeout(() => suggestionsDiv.classList.add('hidden'), 200));
+}
 
 window.selectSuggestion = (name, category, price) => {
 descInput.value = name;
@@ -2352,27 +2450,27 @@ document.getElementById('desc').value = name;
 document.getElementById('category').value = category;
 document.getElementById('value').value = price.toFixed(2).replace('.', ',');
 document.getElementById('desc').focus();
-showNotification(`${name} adicionado ao formulário`, 'success');
+showNotification(`${name} adicionado`, 'success');
 };
 
+// === Firestore Listeners ===
 const salesQuery = query(salesCollection, orderBy("timestamp", "desc"));
 const expensesQuery = query(expensesCollection, orderBy("timestamp", "desc"));
 onSnapshot(salesQuery, (snapshot) => {
-const updatedSales = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), value: parseFloat(doc.data().value) || 0, type: 'sale' }));
-localSales = updatedSales;
+localSales = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), value: parseFloat(doc.data().value) || 0, type: 'sale' }));
 updateScreen();
 if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
 if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) applyCustomFilter();
-}, (error) => { console.error("Erro no listener de vendas:", error); });
+}, (error) => console.error("Erro vendas:", error));
 
 onSnapshot(expensesQuery, (snapshot) => {
-const updatedExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), value: parseFloat(doc.data().value) || 0, type: 'expense' }));
-localExpenses = updatedExpenses;
+localExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), value: parseFloat(doc.data().value) || 0, type: 'expense' }));
 updateScreen();
 if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
 if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) applyCustomFilter();
-}, (error) => { console.error("Erro no listener de saídas:", error); });
+}, (error) => console.error("Erro saídas:", error));
 
+// === Inicialização ===
 window.addEventListener('load', async () => {
 await loadProducts();
 await loadMetaMensal();
@@ -2393,11 +2491,25 @@ document.getElementById('expenseFilterMonth').value = currentMonth;
 document.getElementById('expenseFilterMonth').max = currentMonth;
 document.getElementById('customFilterStart').value = firstDayOfMonth;
 document.getElementById('customFilterEnd').value = today;
-document.addEventListener('click', (e) => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); });
-document.addEventListener('keydown', (e) => {
-if (e.key === 'Enter' && document.activeElement === document.getElementById('desc')) { e.preventDefault(); document.getElementById('value').focus(); }
-else if (e.key === 'Enter' && document.activeElement === document.getElementById('value')) { e.preventDefault(); handleTransactionAction(); }
+
+// Click outside modal
+document.addEventListener('click', (e) => { 
+if (e.target.classList.contains('modal-overlay')) {
+closeModal(e.target.id);
+}
 });
+
+// Enter key navigation
+document.addEventListener('keydown', (e) => {
+if (e.key === 'Enter' && document.activeElement === document.getElementById('desc')) { 
+e.preventDefault(); 
+document.getElementById('value').focus(); 
+} else if (e.key === 'Enter' && document.activeElement === document.getElementById('value')) { 
+e.preventDefault(); 
+handleTransactionAction(); 
+}
+});
+
 updateScreen();
 showTab('dashboard');
 });
