@@ -9,7 +9,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
@@ -100,6 +99,20 @@ transition: all 0.2s;
 transform: translateY(-1px);
 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.btn-xml {
+background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+color: white;
+padding: 12px 20px;
+border-radius: 10px;
+font-weight: 600;
+border: none;
+cursor: pointer;
+transition: all 0.2s;
+}
+.btn-xml:hover {
+transform: translateY(-1px);
+box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
 .input-field {
 border: 2px solid #e5e7eb;
 border-radius: 10px;
@@ -118,12 +131,6 @@ overflow-x: auto;
 }
 .table-responsive table {
 min-width: 600px;
-}
-.quick-sale-buttons {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-gap: 8px;
-margin-top: 16px;
 }
 @media (max-width: 768px) {
 .sidebar {
@@ -182,9 +189,6 @@ color: var(--primary);
 main {
 padding-bottom: 70px !important;
 }
-.quick-sale-buttons {
-grid-template-columns: repeat(2, 1fr);
-}
 }
 @media (min-width: 769px) {
 .mobile-menu-btn,
@@ -215,6 +219,9 @@ background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
 }
 .notification.warning {
 background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+.notification.info {
+background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
 }
 @keyframes slideInRight {
 from { transform: translateX(100%); opacity: 0; }
@@ -254,7 +261,7 @@ display: flex;
 background: white;
 border-radius: 16px;
 padding: 24px;
-max-width: 500px;
+max-width: 600px;
 width: 90%;
 max-height: 90vh;
 overflow-y: auto;
@@ -264,48 +271,13 @@ animation: slideUp 0.3s ease;
 from { opacity: 0; transform: translateY(30px); }
 to { opacity: 1; transform: translateY(0); }
 }
-.sortable {
-cursor: pointer;
-position: relative;
-padding-right: 20px !important;
-}
-.sortable:after {
-content: "⇅";
-position: absolute;
-right: 8px;
-top: 50%;
-transform: translateY(-50%);
-opacity: 0.3;
-font-size: 12px;
-}
-.sortable.asc:after {
-content: "↑";
-opacity: 1;
-}
-.sortable.desc:after {
-content: "↓";
-opacity: 1;
-}
 .input-currency {
 text-align: right;
-}
-.quick-sale-btn {
-transition: transform 0.1s ease;
-}
-.quick-sale-btn:hover {
-transform: scale(1.02);
 }
 .connection-status {
 font-size: 0.75rem;
 padding: 0.25rem 0.5rem;
 border-radius: 0.5rem;
-}
-.product-image-thumb {
-width: 40px;
-height: 40px;
-object-fit: cover;
-border-radius: 6px;
-border: 1px solid #e5e7eb;
 }
 .chart-container {
 position: relative;
@@ -348,11 +320,6 @@ background-color: #fef2f2;
 .expense-row:hover {
 background-color: #fee2e2;
 }
-.transaction-type-filter {
-display: flex;
-gap: 8px;
-margin-bottom: 16px;
-}
 .type-filter-btn {
 padding: 8px 16px;
 border-radius: 8px;
@@ -371,6 +338,40 @@ color: var(--primary);
 border-color: var(--expense);
 background: #fef2f2;
 color: var(--expense);
+}
+/* XML Import Styles */
+.xml-drop-zone {
+border: 2px dashed #7c3aed;
+border-radius: 12px;
+padding: 40px 20px;
+text-align: center;
+background: #f5f3ff;
+cursor: pointer;
+transition: all 0.3s;
+}
+.xml-drop-zone:hover {
+background: #ede9fe;
+border-color: #5b21b6;
+}
+.xml-drop-zone.dragover {
+background: #ddd6fe;
+border-color: #7c3aed;
+transform: scale(1.02);
+}
+.import-summary {
+background: #f0fdf4;
+border: 1px solid #86efac;
+border-radius: 8px;
+padding: 16px;
+margin-top: 16px;
+}
+.import-summary.updated {
+background: #fef3c7;
+border-color: #fcd34d;
+}
+.import-summary.created {
+background: #dbeafe;
+border-color: #93c5fd;
 }
 </style>
 </head>
@@ -431,12 +432,12 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </button>
 </nav>
-<div class="p-4 text-center text-xs text-white/60">v5.3.1</div>
+<div class="p-4 text-center text-xs text-white/60">v5.4.0</div>
 </aside>
 <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative">
 <div id="loadingIndicator" class="hidden fixed top-4 right-4 card z-50 p-3 items-center gap-2">
 <div class="loading-spinner"></div>
-<span class="text-sm font-medium">Salvando...</span>
+<span class="text-sm font-medium">Processando...</span>
 </div>
 <div id="tab-dashboard" class="fade-in">
 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
@@ -795,6 +796,10 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="flex justify-between items-center mb-4">
 <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
 <div class="flex gap-2">
+<!-- NOVO BOTÃO DE IMPORTAÇÃO XML -->
+<button onclick="showXMLImportModal()" class="btn-xml flex items-center gap-2">
+<i class="fas fa-file-import"></i> Importar XML
+</button>
 <button onclick="exportCatalogPDF()" class="btn-secondary flex items-center gap-2">
 <i class="fas fa-file-pdf"></i> Exportar PDF
 </button>
@@ -870,6 +875,11 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <input type="number" step="0.01" id="defaultMonthlyGoal" class="input-field" value="5000">
 </div>
 <div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Margem de Lucro Padrão (%)</label>
+<input type="number" step="1" id="defaultProfitMargin" class="input-field" value="30">
+<p class="text-xs text-gray-500 mt-1">Usada na importação XML para calcular preço de venda</p>
+</div>
+<div>
 <label class="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso</label>
 <div class="flex gap-2">
 <input type="password" id="currentPassword" class="input-field flex-1" placeholder="Senha atual" value="1234">
@@ -936,7 +946,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="space-y-3">
 <div class="flex justify-between">
 <span class="text-gray-600">Versão</span>
-<span class="font-medium">5.3.1</span>
+<span class="font-medium">5.4.0</span>
 </div>
 <div class="flex justify-between">
 <span class="text-gray-600">Total de Vendas</span>
@@ -995,6 +1005,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <span>Configurações</span>
 </button>
 </nav>
+<!-- Product Modal -->
 <div id="productModal" class="modal-overlay">
 <div class="modal-content">
 <h3 class="text-lg font-bold text-gray-800 mb-4" id="productModalTitle">Adicionar Produto</h3>
@@ -1019,8 +1030,8 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <input type="text" id="productDiscountPrice" class="input-field input-currency" placeholder="Opcional">
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-1">Valor Mínimo com Desconto</label>
-<input type="number" id="productMinQuantityForDiscount" class="input-field" placeholder="Quantidade mínima">
+<label class="block text-sm font-medium text-gray-700 mb-1">Quantidade em Estoque</label>
+<input type="number" id="productStock" class="input-field" placeholder="0">
 </div>
 </div>
 <div class="grid grid-cols-2 gap-4">
@@ -1049,6 +1060,46 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+<!-- XML Import Modal -->
+<div id="xmlImportModal" class="modal-overlay">
+<div class="modal-content">
+<h3 class="text-lg font-bold text-gray-800 mb-4">
+<i class="fas fa-file-import text-purple-600 mr-2"></i> Importar Produtos do XML
+</h3>
+<div class="space-y-4">
+<div class="xml-drop-zone" id="xmlDropZone" onclick="document.getElementById('xmlFileInput').click()">
+<i class="fas fa-cloud-upload-alt text-4xl text-purple-600 mb-3"></i>
+<p class="font-medium text-gray-700">Arraste o XML aqui ou clique para selecionar</p>
+<p class="text-xs text-gray-500 mt-2">Compatível com NFe (Nota Fiscal Eletrônica)</p>
+<input type="file" id="xmlFileInput" accept=".xml" class="hidden" onchange="handleXMLFile(this.files[0])">
+</div>
+<div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+<h4 class="font-bold text-purple-800 mb-2 text-sm">
+<i class="fas fa-info-circle mr-1"></i> Como funciona:
+</h4>
+<ul class="text-xs text-purple-700 space-y-1">
+<li>✅ Produtos existentes serão <strong>atualizados</strong> (preço e estoque)</li>
+<li>✅ Produtos novos serão <strong>cadastrados automaticamente</strong></li>
+<li>✅ Preço de custo extraído do XML</li>
+<li>✅ Preço de venda calculado com margem configurada</li>
+</ul>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Margem de Lucro (%)</label>
+<input type="number" id="xmlProfitMargin" class="input-field" value="30" placeholder="Ex: 30">
+<p class="text-xs text-gray-500 mt-1">Margem aplicada sobre o preço de custo</p>
+</div>
+<div id="xmlImportSummary" class="hidden"></div>
+</div>
+<div class="mt-6 flex justify-end gap-3">
+<button onclick="closeModal('xmlImportModal')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
+<button onclick="processXMLImport()" id="processXMLBtn" class="btn-primary px-4 py-2" disabled>
+<i class="fas fa-check mr-2"></i> Processar Importação
+</button>
+</div>
+</div>
+</div>
+<!-- Expense Modal -->
 <div id="expenseModal" class="modal-overlay">
 <div class="modal-content">
 <h3 class="text-lg font-bold text-gray-800 mb-4" id="expenseModalTitle">Nova Saída/Despesa</h3>
@@ -1094,6 +1145,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
+<!-- Password Modal -->
 <div id="passwordModal" class="modal-overlay">
 <div class="modal-content">
 <h3 class="text-lg font-bold text-gray-800 mb-4">Alterar Senha</h3>
@@ -1173,6 +1225,7 @@ let transactionType = 'sale';
 let saleCart = [];
 let cashFlowChart = null;
 let categoryChart = null;
+let xmlImportData = null;
 
 function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('active'); }
 
@@ -1223,6 +1276,198 @@ cartSection.classList.add('hidden');
 window.showModal = (modalId) => { document.getElementById(modalId).classList.add('active'); };
 window.closeModal = (modalId) => { document.getElementById(modalId).classList.remove('active'); };
 
+// ✅ NOVA FUNÇÃO: Modal de Importação XML
+window.showXMLImportModal = () => {
+xmlImportData = null;
+document.getElementById('xmlImportSummary').innerHTML = '';
+document.getElementById('xmlImportSummary').classList.add('hidden');
+document.getElementById('processXMLBtn').disabled = true;
+const defaultMargin = localStorage.getItem('defaultProfitMargin') || 30;
+document.getElementById('xmlProfitMargin').value = defaultMargin;
+window.showModal('xmlImportModal');
+};
+
+// ✅ NOVA FUNÇÃO: Handle XML File
+window.handleXMLFile = (file) => {
+if (!file) return;
+const reader = new FileReader();
+reader.onload = (e) => {
+try {
+const xmlContent = e.target.result;
+const parsedData = parseNFeXML(xmlContent);
+xmlImportData = parsedData;
+displayXMLImportSummary(parsedData);
+document.getElementById('processXMLBtn').disabled = false;
+showNotification(`${parsedData.products.length} produtos encontrados no XML`, 'success');
+} catch (error) {
+console.error('Erro ao parsear XML:', error);
+showNotification('Erro ao ler arquivo XML. Verifique o formato.', 'error');
+}
+};
+reader.readAsText(file);
+};
+
+// ✅ NOVA FUNÇÃO: Parse NFe XML
+function parseNFeXML(xmlContent) {
+const parser = new DOMParser();
+const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
+const products = [];
+const detElements = xmlDoc.getElementsByTagName('det');
+for (let i = 0; i < detElements.length; i++) {
+const det = detElements[i];
+const prod = det.getElementsByTagName('prod')[0];
+if (!prod) continue;
+const xProd = prod.getElementsByTagName('xProd')[0]?.textContent || '';
+const cProd = prod.getElementsByTagName('cProd')[0]?.textContent || '';
+const vUnCom = prod.getElementsByTagName('vUnCom')[0]?.textContent || '0';
+const vProd = prod.getElementsByTagName('vProd')[0]?.textContent || '0';
+const qCom = prod.getElementsByTagName('qCom')[0]?.textContent || '1';
+const uCom = prod.getElementsByTagName('uCom')[0]?.textContent || 'Un';
+const costPrice = parseFloat(vUnCom.replace(',', '.')) || 0;
+const quantity = parseFloat(qCom.replace(',', '.')) || 1;
+products.push({
+name: xProd,
+sku: cProd,
+cost: costPrice,
+quantity: quantity,
+unit: uCom,
+category: 'Importado'
+});
+}
+return { products, fileName: xmlDoc.getElementsByTagName('infNFe')[0]?.getAttribute('Id') || '' };
+}
+
+// ✅ NOVA FUNÇÃO: Display XML Import Summary
+function displayXMLImportSummary(data) {
+const summaryDiv = document.getElementById('xmlImportSummary');
+const existingProducts = products.map(p => p.sku || p.name.toLowerCase());
+const updated = data.products.filter(p => existingProducts.includes(p.sku) || existingProducts.includes(p.name.toLowerCase()));
+const created = data.products.filter(p => !existingProducts.includes(p.sku) && !existingProducts.includes(p.name.toLowerCase()));
+summaryDiv.innerHTML = `
+<div class="import-summary">
+<h4 class="font-bold text-gray-800 mb-2">
+<i class="fas fa-list-check mr-2"></i>Resumo da Importação
+</h4>
+<div class="grid grid-cols-2 gap-4 text-sm">
+<div class="updated">
+<p class="font-bold text-yellow-800">📝 Atualizar:</p>
+<p class="text-yellow-700">${updated.length} produtos</p>
+</div>
+<div class="created">
+<p class="font-bold text-blue-800">➕ Criar:</p>
+<p class="text-blue-700">${created.length} produtos</p>
+</div>
+</div>
+</div>
+<div class="mt-4 max-h-60 overflow-y-auto">
+<table class="w-full text-xs">
+<thead class="bg-gray-100">
+<tr>
+<th class="p-2 text-left">Produto</th>
+<th class="p-2 text-right">Custo</th>
+<th class="p-2 text-right">Qtd</th>
+<th class="p-2 text-center">Status</th>
+</tr>
+</thead>
+<tbody>
+${data.products.map(p => {
+const isUpdate = existingProducts.includes(p.sku) || existingProducts.includes(p.name.toLowerCase());
+return `
+<tr class="border-b">
+<td class="p-2">${p.name}</td>
+<td class="p-2 text-right">${window.formatMoney(p.cost)}</td>
+<td class="p-2 text-right">${p.quantity}</td>
+<td class="p-2 text-center">
+<span class="px-2 py-1 rounded text-xs ${isUpdate ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'}">
+${isUpdate ? 'Atualizar' : 'Novo'}
+</span>
+</td>
+</tr>
+`;
+}).join('')}
+</tbody>
+</table>
+</div>
+`;
+summaryDiv.classList.remove('hidden');
+}
+
+// ✅ NOVA FUNÇÃO: Process XML Import
+window.processXMLImport = async () => {
+if (!xmlImportData || !xmlImportData.products.length) {
+showNotification('Nenhum produto para importar', 'error');
+return;
+}
+const margin = parseFloat(document.getElementById('xmlProfitMargin').value) || 30;
+const loading = document.getElementById('loadingIndicator');
+loading.classList.remove('hidden');
+let updatedCount = 0;
+let createdCount = 0;
+let errorCount = 0;
+try {
+for (const xmlProduct of xmlImportData.products) {
+const existingProduct = products.find(p => 
+p.sku === xmlProduct.sku || p.name.toLowerCase() === xmlProduct.name.toLowerCase()
+);
+const salePrice = xmlProduct.cost * (1 + margin / 100);
+const productData = {
+name: xmlProduct.name,
+sku: xmlProduct.sku,
+cost: xmlProduct.cost,
+price: salePrice,
+stock: (existingProduct?.stock || 0) + xmlProduct.quantity,
+unit: xmlProduct.unit,
+category: xmlProduct.category,
+updatedAt: serverTimestamp()
+};
+try {
+if (existingProduct) {
+await updateDoc(doc(productsCollection, existingProduct.id), productData);
+updatedCount++;
+} else {
+productData.createdAt = serverTimestamp();
+productData.salesCount = 0;
+await addDoc(productsCollection, productData);
+createdCount++;
+}
+} catch (err) {
+console.error('Erro ao salvar produto:', xmlProduct.name, err);
+errorCount++;
+}
+}
+localStorage.setItem('defaultProfitMargin', margin);
+showNotification(`Importação concluída! ${updatedCount} atualizados, ${createdCount} criados`, 'success');
+closeModal('xmlImportModal');
+await loadProducts();
+} catch (error) {
+console.error('Erro na importação:', error);
+showNotification('Erro ao processar importação', 'error');
+} finally {
+loading.classList.add('hidden');
+xmlImportData = null;
+}
+};
+
+// Drop zone events
+const dropZone = document.getElementById('xmlDropZone');
+if (dropZone) {
+dropZone.addEventListener('dragover', (e) => {
+e.preventDefault();
+dropZone.classList.add('dragover');
+});
+dropZone.addEventListener('dragleave', () => {
+dropZone.classList.remove('dragover');
+});
+dropZone.addEventListener('drop', (e) => {
+e.preventDefault();
+dropZone.classList.remove('dragover');
+const files = e.dataTransfer.files;
+if (files.length > 0) {
+handleXMLFile(files[0]);
+}
+});
+}
+
 window.showAddExpenseModal = () => {
 editingExpenseId = null;
 document.getElementById('expenseModalTitle').textContent = 'Nova Saída/Despesa';
@@ -1245,14 +1490,13 @@ document.getElementById('productName').value = '';
 document.getElementById('productPrice').value = '';
 document.getElementById('productCost').value = '';
 document.getElementById('productDiscountPrice').value = '';
-document.getElementById('productMinQuantityForDiscount').value = '';
+document.getElementById('productStock').value = '';
 document.getElementById('productSKU').value = '';
 document.getElementById('productCategory').value = categories[0] || 'Outros';
 document.getElementById('productUnit').value = 'Un';
 window.showModal('productModal');
 };
 
-// ✅ CORREÇÃO: Função para editar produto (estava faltando)
 window.showEditProductModal = async (productId) => {
 const product = products.find(p => p.id === productId);
 if (!product) {
@@ -1266,7 +1510,7 @@ document.getElementById('productName').value = product.name || '';
 document.getElementById('productPrice').value = (product.price || 0).toFixed(2).replace('.', ',');
 document.getElementById('productCost').value = (product.cost || 0).toFixed(2).replace('.', ',');
 document.getElementById('productDiscountPrice').value = (product.discountPrice || 0).toFixed(2).replace('.', ',');
-document.getElementById('productMinQuantityForDiscount').value = product.minQuantityForDiscount || '';
+document.getElementById('productStock').value = product.stock || 0;
 document.getElementById('productSKU').value = product.sku || '';
 document.getElementById('productCategory').value = product.category || categories[0] || 'Outros';
 document.getElementById('productUnit').value = product.unit || 'Un';
@@ -1384,7 +1628,6 @@ finalizeCount.textContent = saleCart.length;
 
 window.removeFromCart = (index) => { saleCart.splice(index, 1); renderCart(); };
 
-// ✅ CORREÇÃO: Removida confirmação ao finalizar venda
 window.finalizeSale = async () => {
 if (saleCart.length === 0) { showNotification('Carrinho vazio', 'warning'); return; }
 const loading = document.getElementById('loadingIndicator');
@@ -1437,6 +1680,28 @@ addButton.disabled = true;
 loading.classList.remove('hidden');
 const now = new Date();
 const localDateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+if (transactionType === 'sale') {
+const saleData = {
+date: localDateISO,
+timestamp: now.toISOString(),
+time: now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+desc: desc,
+category: document.getElementById('category').value,
+value: price,
+payment: document.getElementById('payment').value,
+type: 'sale'
+};
+try {
+await addDoc(salesCollection, saleData);
+showNotification('Venda salva com sucesso!', 'success');
+document.getElementById('desc').value = '';
+document.getElementById('value').value = '';
+document.getElementById('desc').focus();
+} catch(e) {
+console.error("Erro ao salvar venda:", e);
+showNotification("Erro ao salvar venda no servidor", 'error');
+}
+} else {
 const expenseData = {
 date: localDateISO,
 timestamp: now.toISOString(),
@@ -1456,6 +1721,7 @@ document.getElementById('desc').focus();
 } catch(e) {
 console.error("Erro ao salvar saída:", e);
 showNotification("Erro ao salvar saída no servidor", 'error');
+}
 }
 addButton.disabled = false;
 loading.classList.add('hidden');
@@ -1811,7 +2077,7 @@ async function loadProducts() {
 try {
 const q = query(productsCollection, orderBy("createdAt", "desc"));
 const snapshot = await getDocs(q);
-products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, cost: parseFloat(doc.data().cost) || 0, discountPrice: parseFloat(doc.data().discountPrice) || 0, minQuantityForDiscount: parseInt(doc.data().minQuantityForDiscount) || 0, salesCount: parseInt(doc.data().salesCount) || 0 }));
+products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), price: parseFloat(doc.data().price) || 0, cost: parseFloat(doc.data().cost) || 0, discountPrice: parseFloat(doc.data().discountPrice) || 0, minQuantityForDiscount: parseInt(doc.data().minQuantityForDiscount) || 0, salesCount: parseInt(doc.data().salesCount) || 0, stock: parseInt(doc.data().stock) || 0 }));
 sortProducts();
 } catch (error) {
 console.error("Erro ao carregar produtos:", error);
@@ -1840,7 +2106,7 @@ const name = document.getElementById('productName').value.trim();
 const priceStr = document.getElementById('productPrice').value;
 const costStr = document.getElementById('productCost').value;
 const discountPriceStr = document.getElementById('productDiscountPrice').value;
-const minQuantityForDiscount = document.getElementById('productMinQuantityForDiscount').value;
+const stock = parseInt(document.getElementById('productStock').value) || 0;
 const category = document.getElementById('productCategory').value;
 const unit = document.getElementById('productUnit').value;
 const sku = document.getElementById('productSKU').value.trim();
@@ -1852,7 +2118,7 @@ if (isNaN(price) || price <= 0) { showNotification('Digite um preço de venda v�
 const loading = document.getElementById('loadingIndicator');
 if (loading) loading.classList.remove('hidden');
 try {
-const productData = { name, price, cost, discountPrice, minQuantityForDiscount: minQuantityForDiscount || 0, category, unit, sku, updatedAt: serverTimestamp(), salesCount: 0 };
+const productData = { name, price, cost, discountPrice, stock, category, unit, sku, updatedAt: serverTimestamp(), salesCount: 0 };
 if (editingProductId) { await updateDoc(doc(productsCollection, editingProductId), productData); showNotification('Produto atualizado!', 'success'); }
 else { productData.createdAt = serverTimestamp(); await addDoc(productsCollection, productData); showNotification('Produto cadastrado!', 'success'); }
 closeModal('productModal');
@@ -1906,8 +2172,9 @@ ${product.sku ? `<span class="inline-block px-2 py-1 bg-purple-100 text-purple-8
 </div>
 <div class="space-y-2 mb-3">
 <div class="text-lg font-bold text-agro-green">${window.formatMoney(product.price)}</div>
-${product.discountPrice > 0 ? `<div class="text-sm font-bold text-green-600"><i class="fas fa-tag mr-1"></i> Com desconto: ${window.formatMoney(product.discountPrice)}${product.minQuantityForDiscount > 0 ? `<span class="text-xs text-gray-500">(Mín. ${product.minQuantityForDiscount} un)</span>` : ''}</div>` : ''}
 ${product.cost > 0 ? `<div class="text-xs text-gray-500">Custo: ${window.formatMoney(product.cost)}</div>` : ''}
+${product.stock !== undefined ? `<div class="text-xs ${product.stock > 10 ? 'text-green-600' : product.stock > 0 ? 'text-yellow-600' : 'text-red-600'}"><i class="fas fa-box mr-1"></i>Estoque: ${product.stock} ${product.unit}</div>` : ''}
+${product.discountPrice > 0 ? `<div class="text-sm font-bold text-green-600"><i class="fas fa-tag mr-1"></i> Com desconto: ${window.formatMoney(product.discountPrice)}</div>` : ''}
 </div>
 <button onclick="quickAdd('${product.name}', '${product.category || 'Outros'}', ${product.price})" class="btn-primary w-full"><i class="fas fa-cart-plus mr-2"></i> Usar na Venda</button>
 </div>
@@ -1955,8 +2222,8 @@ doc.text('Catálogo de Produtos - AgroVida+', 105, 15, null, null, 'center');
 doc.setFontSize(12);
 doc.setTextColor(100, 100, 100);
 doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 105, 25, null, null, 'center');
-const tableData = products.map(p => [p.name || '', p.category || '', p.unit || 'Un', p.sku || '-', window.formatMoney(p.price || 0).replace('R$ ', ''), window.formatMoney(p.cost || 0).replace('R$ ', ''), p.discountPrice > 0 ? window.formatMoney(p.discountPrice).replace('R$ ', '') : '-', p.minQuantityForDiscount > 0 ? p.minQuantityForDiscount : '-', p.salesCount || 0]);
-doc.autoTable({ head: [['Produto', 'Categoria', 'Unidade', 'SKU', 'Preço (R$)', 'Custo (R$)', 'Desconto (R$)', 'Qtde Mín.', 'Vendas']], body: tableData, startY: 35, theme: 'grid', headStyles: { fillColor: [0, 144, 54], textColor: [255, 255, 255] }, styles: { fontSize: 9 }, columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right' } } });
+const tableData = products.map(p => [p.name || '', p.category || '', p.unit || 'Un', p.sku || '-', window.formatMoney(p.price || 0).replace('R$ ', ''), window.formatMoney(p.cost || 0).replace('R$ ', ''), p.stock || 0]);
+doc.autoTable({ head: [['Produto', 'Categoria', 'Unidade', 'SKU', 'Preço (R$)', 'Custo (R$)', 'Estoque']], body: tableData, startY: 35, theme: 'grid', headStyles: { fillColor: [0, 144, 54], textColor: [255, 255, 255] }, styles: { fontSize: 9 }, columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } } });
 const finalY = doc.lastAutoTable.finalY + 10;
 doc.setFontSize(10);
 doc.setTextColor(150, 150, 150);
@@ -1966,11 +2233,11 @@ showNotification('Catálogo exportado em PDF!', 'success');
 };
 
 window.exportCatalogExcel = () => {
-const data = products.map(p => ({ 'Produto': p.name || '', 'Categoria': p.category || '', 'Unidade': p.unit || 'Un', 'SKU': p.sku || '', 'Preço (R$)': p.price || 0, 'Custo (R$)': p.cost || 0, 'Preço c/ Desconto (R$)': p.discountPrice > 0 ? p.discountPrice : '', 'Qtde Mínima para Desconto': p.minQuantityForDiscount > 0 ? p.minQuantityForDiscount : '', 'Vendas': p.salesCount || 0, 'Data Cadastro': p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-' }));
+const data = products.map(p => ({ 'Produto': p.name || '', 'Categoria': p.category || '', 'Unidade': p.unit || 'Un', 'SKU': p.sku || '', 'Preço (R$)': p.price || 0, 'Custo (R$)': p.cost || 0, 'Estoque': p.stock || 0, 'Data Cadastro': p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '-' }));
 const worksheet = XLSX.utils.json_to_sheet(data);
 const workbook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo');
-const wscols = [{ wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 10 }, { wch: 10 }, { wch: 15 }];
+const wscols = [{ wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 10 }, { wch: 15 }];
 worksheet['!cols'] = wscols;
 XLSX.writeFile(workbook, `catalogo-agrovida-${new Date().toISOString().slice(0,10)}.xlsx`);
 showNotification('Catálogo exportado em Excel!', 'success');
@@ -2014,6 +2281,8 @@ document.getElementById('totalProductsCount').textContent = products.length;
 document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('pt-BR');
 const defaultGoal = parseFloat(localStorage.getItem('defaultMonthlyGoal')) || 5000;
 document.getElementById('defaultMonthlyGoal').value = defaultGoal;
+const defaultMargin = parseFloat(localStorage.getItem('defaultProfitMargin')) || 30;
+document.getElementById('defaultProfitMargin').value = defaultMargin;
 const storeName = localStorage.getItem('storeName') || 'AgroVida+';
 document.getElementById('storeName').value = storeName;
 }
@@ -2033,6 +2302,7 @@ showNotification('Senha alterada com sucesso!', 'success');
 };
 
 document.getElementById('defaultMonthlyGoal').addEventListener('change', (e) => { localStorage.setItem('defaultMonthlyGoal', e.target.value); showNotification('Meta padrão salva!', 'success'); });
+document.getElementById('defaultProfitMargin').addEventListener('change', (e) => { localStorage.setItem('defaultProfitMargin', e.target.value); showNotification('Margem de lucro salva!', 'success'); });
 document.getElementById('storeName').addEventListener('change', (e) => { localStorage.setItem('storeName', e.target.value); showNotification('Nome da loja atualizado!', 'success'); });
 
 window.clearAllData = () => {
@@ -2115,7 +2385,6 @@ loadExpenseCategoriesForReports();
 const now = new Date();
 const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 const currentMonth = today.substring(0, 7);
-// ✅ CORREÇÃO: Data inicial do relatório agora é dia 1 do mês atual
 const firstDayOfMonth = currentMonth + '-01';
 document.getElementById('filterMonth').value = currentMonth;
 document.getElementById('filterMonth').max = currentMonth;
