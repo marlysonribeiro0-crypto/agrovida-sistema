@@ -33,8 +33,6 @@ touch-action: manipulation;
 .bg-agro-yellow { background-color: var(--secondary); }
 .bg-expense-red { background-color: var(--expense); }
 .text-expense-red { color: var(--expense); }
-
-/* Sidebar Otimizada */
 .sidebar {
 min-height: 100vh;
 background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -57,16 +55,12 @@ height: auto;
 background-color: rgba(255, 255, 255, 0.15);
 border-right: 4px solid var(--secondary);
 }
-.fade-in { 
-animation: fadeIn 0.3s ease; 
-}
+.fade-in { animation: fadeIn 0.3s ease; }
 @keyframes fadeIn {
 from { opacity: 0; transform: translateY(10px); }
 to { opacity: 1; transform: translateY(0); }
 }
-.progress-bar { 
-transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); 
-}
+.progress-bar { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
 .card {
 background: white;
 border-radius: 12px;
@@ -77,8 +71,6 @@ transition: transform 0.2s, box-shadow 0.2s;
 .card:hover {
 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
-
-/* Botões Otimizados para Touch */
 .btn-primary, .btn-expense, .btn-secondary, .btn-xml {
 padding: 14px 20px;
 border-radius: 10px;
@@ -114,8 +106,6 @@ color: white;
 background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
 color: white;
 }
-
-/* Inputs Otimizados */
 .input-field {
 border: 2px solid #e5e7eb;
 border-radius: 10px;
@@ -130,8 +120,6 @@ outline: none;
 border-color: var(--primary);
 box-shadow: 0 0 0 3px rgba(0, 144, 54, 0.1);
 }
-
-/* Tabelas Responsivas */
 .table-responsive {
 overflow-x: auto;
 -webkit-overflow-scrolling: touch;
@@ -150,8 +138,6 @@ border-radius: 3px;
 background: #888;
 border-radius: 3px;
 }
-
-/* Mobile Menu Button */
 .mobile-menu-btn {
 display: none;
 position: fixed;
@@ -172,8 +158,6 @@ transition: transform 0.2s;
 .mobile-menu-btn:active {
 transform: scale(0.95);
 }
-
-/* Mobile Bottom Navigation */
 .mobile-bottom-nav {
 display: none;
 position: fixed;
@@ -209,8 +193,6 @@ color: var(--primary);
 background: #f3f4f6;
 border-radius: 8px;
 }
-
-/* Modal Otimizado */
 .modal-overlay {
 display: none;
 position: fixed;
@@ -241,8 +223,6 @@ animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 from { opacity: 0; transform: translateY(30px) scale(0.95); }
 to { opacity: 1; transform: translateY(0) scale(1); }
 }
-
-/* Notificações */
 .notification {
 position: fixed;
 top: 20px;
@@ -279,8 +259,6 @@ to { transform: translateX(0); opacity: 1; }
 from { transform: translateX(0); opacity: 1; }
 to { transform: translateX(100%); opacity: 0; }
 }
-
-/* Loading Spinner */
 .loading-spinner {
 width: 24px;
 height: 24px;
@@ -292,8 +270,6 @@ animation: spin 1s linear infinite;
 @keyframes spin {
 to { transform: rotate(360deg); }
 }
-
-/* Search Suggestions */
 .search-suggestions {
 position: absolute;
 background: white;
@@ -319,8 +295,6 @@ background-color: #f9fafb;
 border-bottom: none;
 border-radius: 0 0 10px 10px;
 }
-
-/* XML Drop Zone */
 .xml-drop-zone {
 border: 2px dashed #7c3aed;
 border-radius: 12px;
@@ -339,8 +313,6 @@ background: #ddd6fe;
 border-color: #7c3aed;
 transform: scale(1.02);
 }
-
-/* Import Summary */
 .import-summary {
 background: #f0fdf4;
 border: 1px solid #86efac;
@@ -356,8 +328,6 @@ border-color: #fcd34d;
 background: #dbeafe;
 border-color: #93c5fd;
 }
-
-/* Type Filter Buttons */
 .type-filter-btn {
 padding: 10px 18px;
 border-radius: 8px;
@@ -378,51 +348,37 @@ border-color: var(--expense);
 background: #fef2f2;
 color: var(--expense);
 }
-
-/* Connection Status */
 .connection-status {
 font-size: 0.75rem;
 padding: 0.25rem 0.5rem;
 border-radius: 0.5rem;
 }
-
-/* Chart Container */
 .chart-container {
 position: relative;
 height: 300px;
 margin-top: 20px;
 }
-
-/* Balance Colors */
 .balance-positive {
 color: #059669;
 }
 .balance-negative {
 color: #dc2626;
 }
-
-/* Expense Row */
 .expense-row {
 background-color: #fef2f2;
 }
 .expense-row:hover {
 background-color: #fee2e2;
 }
-
-/* Input Currency */
 .input-currency {
 text-align: right;
 }
-
-/* Product Card */
 .product-card {
 transition: transform 0.2s, box-shadow 0.2s;
 }
 .product-card:active {
 transform: scale(0.98);
 }
-
-/* Finalize Button */
 .btn-finalize {
 background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 color: white;
@@ -443,8 +399,6 @@ transform: scale(0.98);
 opacity: 0.5;
 cursor: not-allowed;
 }
-
-/* Mobile Overlay */
 .mobile-overlay {
 display: none;
 position: fixed;
@@ -461,8 +415,6 @@ transition: opacity 0.3s;
 display: block;
 opacity: 1;
 }
-
-/* Responsive Breakpoints */
 @media (max-width: 768px) {
 .mobile-menu-btn {
 display: flex;
@@ -489,7 +441,7 @@ margin-bottom: 16px;
 gap: 12px;
 }
 .input-field {
-font-size: 16px; /* Prevents zoom on iOS */
+font-size: 16px;
 }
 .btn-primary, .btn-expense, .btn-secondary {
 width: 100%;
@@ -508,7 +460,6 @@ top: 70px;
 height: 250px;
 }
 }
-
 @media (min-width: 769px) {
 .mobile-menu-btn,
 .mobile-bottom-nav,
@@ -519,8 +470,6 @@ main {
 padding-top: 0 !important;
 }
 }
-
-/* Print Styles */
 @media print {
 .sidebar, .mobile-menu-btn, .mobile-bottom-nav, .btn-primary, .btn-expense, .btn-secondary {
 display: none !important;
@@ -533,8 +482,6 @@ box-shadow: none;
 border: 1px solid #ddd;
 }
 }
-
-/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
 *, *::before, *::after {
 animation-duration: 0.01ms !important;
@@ -542,23 +489,13 @@ animation-iteration-count: 1 !important;
 transition-duration: 0.01ms !important;
 }
 }
-
-/* Dark Mode Support (Future) */
-@media (prefers-color-scheme: dark) {
-/* Can be expanded later */
-}
 </style>
 </head>
 <body class="flex flex-col md:flex-row">
-<!-- Mobile Overlay -->
 <div id="mobileOverlay" class="mobile-overlay" onclick="toggleSidebar()"></div>
-
-<!-- Mobile Menu Button -->
 <button id="mobileMenuBtn" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menu">
 <i class="fas fa-bars text-lg"></i>
 </button>
-
-<!-- Sidebar -->
 <aside class="sidebar text-white w-full md:w-64 flex-shrink-0 md:h-screen flex flex-col" id="sidebar">
 <div class="logo-container">
 <img src="logo.png" alt="AgroVida+" class="logo-img mx-auto"
@@ -612,18 +549,13 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </button>
 </nav>
-<div class="p-4 text-center text-xs text-white/60">v5.5.0</div>
+<div class="p-4 text-center text-xs text-white/60">v5.5.0 ⚡</div>
 </aside>
-
-<!-- Main Content -->
 <main class="flex-1 p-4 md:p-8 overflow-y-auto h-screen relative" id="mainContent">
-<!-- Loading Indicator -->
 <div id="loadingIndicator" class="hidden fixed top-4 right-4 card z-50 p-3 items-center gap-2">
 <div class="loading-spinner"></div>
 <span class="text-sm font-medium">Processando...</span>
 </div>
-
-<!-- Dashboard Tab -->
 <div id="tab-dashboard" class="fade-in">
 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
 <div class="card p-4">
@@ -647,7 +579,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <h3 class="text-xl font-bold text-gray-800 mt-1" id="dashTotalMonth">R$ 0,00</h3>
 </div>
 </div>
-
 <div class="card p-4 mb-6">
 <div class="flex justify-between items-end mb-2">
 <div>
@@ -667,7 +598,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div id="progressBar" class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full progress-bar" style="width: 0%"></div>
 </div>
 </div>
-
 <div class="card mb-6">
 <div class="p-4 border-b">
 <h2 class="font-bold text-gray-700">
@@ -715,7 +645,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </button>
 </div>
 </div>
-
 <div id="saleCartSection" class="mt-6 hidden">
 <div class="border-t pt-4">
 <div class="flex justify-between items-center mb-2">
@@ -744,7 +673,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
-
 <div class="card">
 <div class="p-4 border-b flex flex-col md:flex-row justify-between md:items-center gap-4">
 <h2 class="font-bold text-gray-700">Movimentação do Dia</h2>
@@ -778,8 +706,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
-
-<!-- Reports Tab -->
 <div id="tab-reports" class="hidden fade-in">
 <h2 class="text-xl font-bold text-gray-800 mb-6">Relatórios Avançados</h2>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -865,12 +791,10 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
-
-<!-- History Tab -->
 <div id="tab-history" class="hidden fade-in">
-<div class="flex justify-between items-center mb-4">
+<div class="flex justify-between items-center mb-4 flex-wrap gap-2">
 <h2 class="text-xl font-bold text-gray-800">Histórico Completo</h2>
-<div class="flex gap-2">
+<div class="flex gap-2 flex-wrap">
 <button onclick="exportHistoryExcel()" class="btn-secondary flex items-center gap-2">
 <i class="fas fa-file-excel"></i> <span class="hidden md:inline">Exportar Excel</span>
 </button>
@@ -922,8 +846,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
-
-<!-- Expenses Tab -->
 <div id="tab-expenses" class="hidden fade-in">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
 <h2 class="text-xl font-bold text-gray-800">Gestão de Saídas</h2>
@@ -993,8 +915,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </div>
-
-<!-- Products Tab -->
 <div id="tab-products" class="hidden fade-in">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
 <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
@@ -1060,8 +980,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="productsGrid"></div>
 </div>
-
-<!-- Settings Tab -->
 <div id="tab-settings" class="hidden fade-in">
 <h2 class="text-xl font-bold text-gray-800 mb-6">Configurações do Sistema</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1150,7 +1068,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 <div class="space-y-3">
 <div class="flex justify-between">
 <span class="text-gray-600">Versão</span>
-<span class="font-medium">5.5.0</span>
+<span class="font-medium">5.5.0 ⚡</span>
 </div>
 <div class="flex justify-between">
 <span class="text-gray-600">Total de Vendas</span>
@@ -1183,8 +1101,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 </main>
-
-<!-- Mobile Bottom Navigation -->
 <nav class="mobile-bottom-nav">
 <button onclick="showTab('dashboard')" id="mobile-btn-dashboard" class="active">
 <i class="fas fa-cash-register"></i>
@@ -1212,7 +1128,7 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </button>
 </nav>
 
-<!-- Product Modal -->
+<!-- Modals -->
 <div id="productModal" class="modal-overlay">
 <div class="modal-content">
 <h3 class="text-lg font-bold text-gray-800 mb-4" id="productModalTitle">Adicionar Produto</h3>
@@ -1268,7 +1184,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 
-<!-- XML Import Modal -->
 <div id="xmlImportModal" class="modal-overlay">
 <div class="modal-content">
 <h3 class="text-lg font-bold text-gray-800 mb-4">
@@ -1308,7 +1223,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 
-<!-- Expense Modal -->
 <div id="expenseModal" class="modal-overlay">
 <div class="modal-content">
 <h3 class="text-lg font-bold text-gray-800 mb-4" id="expenseModalTitle">Nova Saída/Despesa</h3>
@@ -1355,7 +1269,6 @@ onerror="this.style.display='none'; document.getElementById('altLogo').style.dis
 </div>
 </div>
 
-<!-- Password Modal -->
 <div id="passwordModal" class="modal-overlay">
 <div class="modal-content">
 <h3 class="text-lg font-bold text-gray-800 mb-4">Alterar Senha</h3>
@@ -1454,24 +1367,17 @@ document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' :
 }
 
 window.showTab = (tab) => {
-// Fecha menu mobile se aberto
 if (window.innerWidth <= 768) {
 document.getElementById('sidebar').classList.remove('active');
 document.getElementById('mobileOverlay').classList.remove('active');
 document.body.style.overflow = '';
 }
-
-// Esconde todas as tabs
 document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
 document.querySelectorAll('[id^="btn-"]').forEach(el => el.classList.remove('active-tab'));
 document.querySelectorAll('.mobile-bottom-nav button').forEach(el => el.classList.remove('active'));
-
-// Mostra tab selecionada
 document.getElementById(`tab-${tab}`).classList.remove('hidden');
 document.getElementById(`btn-${tab}`)?.classList.add('active-tab');
 document.getElementById(`mobile-btn-${tab}`)?.classList.add('active');
-
-// Carrega dados específicos da tab
 if (tab === 'history') window.filterHistory();
 if (tab === 'expenses') { filterExpenses(); updateExpenseSummary(); loadExpenseCategories(); }
 if (tab === 'products') { loadProducts(); searchProducts(); loadFilterCategories(); }
@@ -1479,8 +1385,6 @@ if (tab === 'reports') { loadFilterCategories(); loadExpenseCategoriesForReports
 if (tab === 'settings') { updateSettingsInfo(); loadCategories(); }
 if (tab === 'dashboard') { updateCategorySelectForSales(); setTransactionType('sale'); updateScreen(); }
 if (tab !== 'dashboard') { saleCart = []; renderCart(); }
-
-// Scroll para topo
 document.getElementById('mainContent').scrollTop = 0;
 };
 
@@ -1490,7 +1394,6 @@ const saleBtn = document.getElementById('transactionTypeSale');
 const expenseBtn = document.getElementById('transactionTypeExpense');
 const addBtn = document.getElementById('addTransactionBtn');
 const cartSection = document.getElementById('saleCartSection');
-
 if (type === 'sale') {
 saleBtn.classList.add('active');
 expenseBtn.classList.remove('active');
@@ -1512,15 +1415,8 @@ cartSection.classList.add('hidden');
 }
 };
 
-// === Modais ===
-window.showModal = (modalId) => { 
-document.getElementById(modalId).classList.add('active'); 
-document.body.style.overflow = 'hidden';
-};
-window.closeModal = (modalId) => { 
-document.getElementById(modalId).classList.remove('active'); 
-document.body.style.overflow = '';
-};
+window.showModal = (modalId) => { document.getElementById(modalId).classList.add('active'); document.body.style.overflow = 'hidden'; };
+window.closeModal = (modalId) => { document.getElementById(modalId).classList.remove('active'); document.body.style.overflow = ''; };
 
 // === XML Import ===
 window.showXMLImportModal = () => {
@@ -1650,7 +1546,6 @@ xmlImportData = null;
 }
 };
 
-// Drop zone events
 const dropZone = document.getElementById('xmlDropZone');
 if (dropZone) {
 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -1706,11 +1601,7 @@ if (select) select.innerHTML = categories.map(cat => `<option value="${cat}">${c
 }
 function loadCategories() {
 const list = document.getElementById('categoriesList');
-if (list) list.innerHTML = categories.map((cat, i) => 
-`<div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
-<span>${cat}</span>
-<button onclick="removeCategory(${i})" class="text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
-</div>`).join('');
+if (list) list.innerHTML = categories.map((cat, i) => `<div class="flex justify-between items-center p-2 bg-gray-50 rounded-lg"><span>${cat}</span><button onclick="removeCategory(${i})" class="text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button></div>`).join('');
 }
 function loadExpenseCategories() {
 const select = document.getElementById('expenseFilterCategory');
@@ -1768,7 +1659,6 @@ const totalDisplay = document.getElementById('cartTotalDisplay');
 const finalizeBtn = document.getElementById('finalizeSaleBtn');
 const finalizeCount = document.getElementById('finalizeCount');
 if (!tbody) return;
-
 if (saleCart.length === 0) {
 tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">Nenhum item</td></tr>';
 totalDisplay.textContent = 'Total: R$ 0,00';
@@ -1837,9 +1727,9 @@ const now = new Date();
 const dateISO = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 const timeStr = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 const data = {
-date: dateISO, timestamp: now.toISOString(), time: timeStr, desc, 
-category: document.getElementById('category').value, value: price, 
-payment: document.getElementById('payment').value, 
+date: dateISO, timestamp: now.toISOString(), time: timeStr, desc,
+category: document.getElementById('category').value, value: price,
+payment: document.getElementById('payment').value,
 type: transactionType === 'sale' ? 'sale' : 'expense'
 };
 try {
@@ -1949,11 +1839,13 @@ const currentMonthISO = todayISO.substring(0, 7);
 const todaySales = localSales.filter(s => s.date === todayISO);
 const todayExpenses = localExpenses.filter(e => e.date === todayISO);
 const monthSales = localSales.filter(s => s.date.startsWith(currentMonthISO));
-const sum = (arr) => arr.reduce((acc, c) => acc + c.value, 0);
+const sum = (arr) => arr.reduce((acc, c) => acc + (parseFloat(c.value) || 0), 0);
 const totalToday = sum(todaySales);
 const totalExpensesToday = sum(todayExpenses);
 const totalMonth = sum(monthSales);
 const balanceToday = totalToday - totalExpensesToday;
+
+console.log('[updateScreen] Vendas hoje:', todaySales.length, '| Vendas mês:', monthSales.length, '| Total mês:', totalMonth);
 
 document.getElementById('dashTotalToday').textContent = window.formatMoney(totalToday);
 document.getElementById('dashExpensesToday').textContent = window.formatMoney(totalExpensesToday);
@@ -1963,10 +1855,9 @@ document.getElementById('dashTotalMonth').textContent = window.formatMoney(total
 document.getElementById('sumSales').textContent = window.formatMoney(totalToday);
 document.getElementById('sumExpenses').textContent = window.formatMoney(totalExpensesToday);
 document.getElementById('sumBalance').textContent = window.formatMoney(balanceToday);
-document.getElementById('averageTicket').textContent = window.formatMoney(todaySales.length > 0 ? totalToday / todaySales.length : 0);
-
+const avgTicket = todaySales.length > 0 ? totalToday / todaySales.length : 0;
+document.getElementById('averageTicket').textContent = window.formatMoney(avgTicket);
 updateMetaDisplay();
-
 const tbody = document.getElementById('todayTableBody');
 if (tbody) {
 tbody.innerHTML = '';
@@ -2237,13 +2128,8 @@ showNotification('Erro ao salvar produto', 'error');
 
 window.deleteProduct = async (productId) => {
 if (!confirm("Excluir este produto?")) return;
-try { 
-await deleteDoc(doc(productsCollection, productId)); 
-showNotification('Produto excluído!', 'success'); 
-await loadProducts(); 
-} catch (error) { 
-showNotification('Erro ao excluir', 'error'); 
-}
+try { await deleteDoc(doc(productsCollection, productId)); showNotification('Produto excluído!', 'success'); await loadProducts(); }
+catch (error) { showNotification('Erro ao excluir', 'error'); }
 };
 
 function updateProductsDisplay() {
@@ -2355,7 +2241,7 @@ showNotification('Exportado!', 'success');
 window.createFullBackup = () => {
 const backupData = { timestamp: new Date().toISOString(), sales: localSales, expenses: localExpenses, products: products, settings: { metaMensal, categories, expenseCategories } };
 const dataStr = JSON.stringify(backupData, null, 2);
-const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+const dataUri = 'application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
 const link = document.createElement('a');
 link.setAttribute('href', dataUri);
 link.setAttribute('download', `backup-${new Date().toISOString().slice(0,10)}.json`);
@@ -2404,10 +2290,7 @@ const notification = document.createElement('div');
 notification.className = `notification ${type}`;
 notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
 document.body.appendChild(notification);
-setTimeout(() => { 
-notification.style.animation = 'slideOutRight 0.3s ease'; 
-setTimeout(() => notification.remove(), 300); 
-}, 3000);
+setTimeout(() => { notification.style.animation = 'slideOutRight 0.3s ease'; setTimeout(() => notification.remove(), 300); }, 3000);
 }
 
 // === Formatação de Moeda ===
@@ -2453,11 +2336,12 @@ document.getElementById('desc').focus();
 showNotification(`${name} adicionado`, 'success');
 };
 
-// === Firestore Listeners ===
+// === Firestore Listeners SEM LIMITE (para cálculos corretos) ===
 const salesQuery = query(salesCollection, orderBy("timestamp", "desc"));
 const expensesQuery = query(expensesCollection, orderBy("timestamp", "desc"));
 onSnapshot(salesQuery, (snapshot) => {
 localSales = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), value: parseFloat(doc.data().value) || 0, type: 'sale' }));
+console.log('[Listener] Vendas carregadas:', localSales.length);
 updateScreen();
 if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
 if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) applyCustomFilter();
@@ -2465,6 +2349,7 @@ if (document.getElementById('tab-reports') && !document.getElementById('tab-repo
 
 onSnapshot(expensesQuery, (snapshot) => {
 localExpenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), value: parseFloat(doc.data().value) || 0, type: 'expense' }));
+console.log('[Listener] Saídas carregadas:', localExpenses.length);
 updateScreen();
 if (document.getElementById('tab-settings') && !document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
 if (document.getElementById('tab-reports') && !document.getElementById('tab-reports').classList.contains('hidden')) applyCustomFilter();
@@ -2491,25 +2376,11 @@ document.getElementById('expenseFilterMonth').value = currentMonth;
 document.getElementById('expenseFilterMonth').max = currentMonth;
 document.getElementById('customFilterStart').value = firstDayOfMonth;
 document.getElementById('customFilterEnd').value = today;
-
-// Click outside modal
-document.addEventListener('click', (e) => { 
-if (e.target.classList.contains('modal-overlay')) {
-closeModal(e.target.id);
-}
-});
-
-// Enter key navigation
+document.addEventListener('click', (e) => { if (e.target.classList.contains('modal-overlay')) { closeModal(e.target.id); } });
 document.addEventListener('keydown', (e) => {
-if (e.key === 'Enter' && document.activeElement === document.getElementById('desc')) { 
-e.preventDefault(); 
-document.getElementById('value').focus(); 
-} else if (e.key === 'Enter' && document.activeElement === document.getElementById('value')) { 
-e.preventDefault(); 
-handleTransactionAction(); 
-}
+if (e.key === 'Enter' && document.activeElement === document.getElementById('desc')) { e.preventDefault(); document.getElementById('value').focus(); }
+else if (e.key === 'Enter' && document.activeElement === document.getElementById('value')) { e.preventDefault(); handleTransactionAction(); }
 });
-
 updateScreen();
 showTab('dashboard');
 });
