@@ -238,7 +238,7 @@ body {
   </div>
   <!-- Nav dinâmica — ordem controlada pelo usuário -->
   <nav class="mt-3 flex-1 overflow-y-auto" id="sidebarNav"></nav>
-  <div class="p-3 text-center text-xs text-white/50">v6.0.0 ⚡ AgroVida+</div>
+  <div class="p-3 text-center text-xs text-white/50">v6.1.0 ⚡ AgroVida+</div>
 </aside>
 
 <!-- MAIN -->
@@ -1154,25 +1154,14 @@ let cashFlowChart=null, categoryChart=null, profitBarChart=null, profitMarginCha
 let xmlImportData     = null;
 let lastProfitData    = [];
 let _pendingFiadoCallback = null;
+let _isFirstLoad = true; // flag para evitar duplicação na primeira carga
 
 // ══════════════════════════════════════════════════════════
 // CAMADA DE CACHE / OTIMIZAÇÃO FIREBASE (Spark Plan)
 // ══════════════════════════════════════════════════════════
-// Estratégia:
-//  1) Ao carregar a página, renderiza IMEDIATAMENTE com dados salvos em
-//     localStorage (cache), sem esperar o Firebase responder.
-//  2) O listener em tempo real (onSnapshot) de vendas/saídas fica LIMITADO
-//     aos últimos 60 dias — isso evita que o Firestore precise reler todo
-//     o histórico (que só cresce) toda vez que a aba é reaberta.
-//  3) Catálogo de produtos (que muda pouco) usa cache com validade de 10
-//     minutos e só é buscado de novo quando expira ou quando o usuário
-//     clica em "Atualizar".
-//  4) Consultas de períodos fora da janela de 60 dias (Relatórios/Histórico)
-//     são feitas sob demanda com getDocs() (1 leitura por documento, sem
-//     listener contínuo) e ficam guardadas em cache local por mês.
-const LIVE_WINDOW_DAYS   = 60;                 // janela "ao vivo" (onSnapshot)
-const PRODUCTS_CACHE_TTL = 10*60*1000;         // 10 minutos
-const DEFAULT_COST_RATIO = 0.80;               // produtos sem cadastro/custo: assume-se 80% de custo (20% de margem)
+const LIVE_WINDOW_DAYS   = 60;
+const PRODUCTS_CACHE_TTL = 10*60*1000;
+const DEFAULT_COST_RATIO = 0.80;
 const CACHE_KEYS = {
   sales:    'agro_cache_sales_live',
   expenses: 'agro_cache_expenses_live',
@@ -1215,7 +1204,6 @@ function getMenuItems() {
   if (!saved) return JSON.parse(JSON.stringify(MENU_ITEMS_DEFAULT));
   try {
     const parsed = JSON.parse(saved);
-    // Merge: garantir que novos itens do default apareçam
     const ids = parsed.map(x=>x.id);
     MENU_ITEMS_DEFAULT.forEach(d=>{ if (!ids.includes(d.id)) parsed.push({...d}); });
     return parsed;
@@ -1240,7 +1228,7 @@ function buildSidebarNav() {
 }
 
 function buildBottomNav() {
-  const items = getMenuItems().filter(x=>x.visible!==false).slice(0,7); // max 7 no bottom
+  const items = getMenuItems().filter(x=>x.visible!==false).slice(0,7);
   const nav   = document.getElementById('mobileBottomNav');
   if (!nav) return;
   nav.innerHTML = items.map(item => `
@@ -1269,7 +1257,6 @@ function buildMenuEditor(containerId) {
         <span class="text-xs text-gray-500">Visível</span>
       </label>
     `;
-    // Drag events
     div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',i); div.classList.add('dragging'); });
     div.addEventListener('dragend',   ()=>div.classList.remove('dragging'));
     div.addEventListener('dragover',  e=>{ e.preventDefault(); div.classList.add('drag-over'); });
@@ -1279,8 +1266,7 @@ function buildMenuEditor(containerId) {
       const from = parseInt(e.dataTransfer.getData('text/plain'));
       const to   = parseInt(div.dataset.index);
       if (from===to) return;
-      buildMenuEditor(containerId); // re-render com nova ordem
-      // Aplica reorder
+      buildMenuEditor(containerId);
       const saved = getMenuItems();
       const el = saved.splice(from,1)[0]; saved.splice(to,0,el);
       saveMenuItems(saved);
@@ -1297,7 +1283,6 @@ window.abrirMenuEditor = () => {
 };
 
 window.salvarOrdemMenu = (fecharModal=false) => {
-  // Lê ordem atual do editor (configurações)
   const containerId = fecharModal ? 'menuEditorListModal' : 'menuEditorList';
   const container   = document.getElementById(containerId);
   if (!container) return;
@@ -1342,7 +1327,7 @@ window.showTab = tab => {
   if (tab==='dashboard'){ updateCategorySelectForSales(); setTransactionType('sale'); updateScreen(); }
   if (tab==='profit')   { initProfitTab(); }
   if (tab==='fiado')    { Fiado.init(); }
-  if (tab!=='dashboard') { saleCart=[]; renderCart(); }
+  if (tab!=='dashboard'){ saleCart=[]; renderCart(); }
   document.getElementById('mainContent').scrollTop=0;
 };
 
@@ -1455,8 +1440,6 @@ window.finalizeSale = async () => {
   const timeStr = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const itensFiado   = saleCart.filter(i=>i.payment==='Fiado/Prazo');
   try {
-    // Escrita em lote: 1 chamada ao Firestore para todos os itens do carrinho,
-    // em vez de 1 escrita por item (reduz o consumo de "escritas/dia").
     const batch = writeBatch(db);
     const optimisticDocs = [];
     saleCart.forEach(item=>{
@@ -1471,10 +1454,10 @@ window.finalizeSale = async () => {
       optimisticDocs.push({id:ref.id, ...payload});
     });
     await batch.commit();
-    // Atualização otimista: injeta os itens localmente na hora, sem esperar
-    // o listener em tempo real (que só dispara depois de ler de volta do
-    // servidor). Isso evita 1 leitura extra por item recém-criado.
-    localSales = [...optimisticDocs, ...localSales];
+    // FIX: atualização otimista apenas se o documento não existir localmente
+    const existingIds = new Set(localSales.map(s => s.id));
+    const newDocs = optimisticDocs.filter(d => !existingIds.has(d.id));
+    localSales = [...newDocs, ...localSales];
     saveCache(CACHE_KEYS.sales, localSales);
     updateScreen();
     if (itensFiado.length>0) {
@@ -1549,13 +1532,20 @@ window.addTransaction = async () => {
       value:price, payment:document.getElementById('payment').value, type:'expense'
     };
     const ref = await addDoc(expensesCol,payload);
-    localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
+    // FIX: verifica se já existe localmente antes de adicionar
+    const existingIds = new Set(localExpenses.map(e => e.id));
+    if (!existingIds.has(ref.id)) {
+      localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
+    }
     saveCache(CACHE_KEYS.expenses, localExpenses);
     updateScreen();
     showNotification('Saída salva!','success');
     document.getElementById('desc').value=''; document.getElementById('value').value='';
     document.getElementById('desc').focus();
-  } catch { showNotification('Erro ao salvar','error'); }
+  } catch(e) {
+    console.error('addTransaction:',e);
+    showNotification('Erro ao salvar','error');
+  }
   btn.disabled=false; document.getElementById('loadingIndicator').classList.add('hidden');
 };
 
@@ -1576,11 +1566,17 @@ window.saveExpense = async () => {
       notes:document.getElementById('expenseNotes').value
     };
     const ref = await addDoc(expensesCol,payload);
-    localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
+    const existingIds = new Set(localExpenses.map(e => e.id));
+    if (!existingIds.has(ref.id)) {
+      localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
+    }
     saveCache(CACHE_KEYS.expenses, localExpenses);
     updateScreen();
     showNotification('Saída salva!','success'); closeModal('expenseModal');
-  } catch { showNotification('Erro ao salvar','error'); }
+  } catch(e) {
+    console.error('saveExpense:',e);
+    showNotification('Erro ao salvar','error');
+  }
   finally { btn.disabled=false; document.getElementById('loadingIndicator').classList.add('hidden'); }
 };
 
@@ -1588,12 +1584,14 @@ window.deleteTransaction = async (type, id) => {
   if (!confirm('Excluir esta transação?')) return;
   try {
     await deleteDoc(doc(db, type==='sale'?'vendas_agrovida':'saidas_agrovida', id));
-    // Remove otimisticamente da lista local + cache (sem esperar o listener)
     if (type==='sale') { localSales = localSales.filter(s=>s.id!==id); saveCache(CACHE_KEYS.sales, localSales); }
     else               { localExpenses = localExpenses.filter(e=>e.id!==id); saveCache(CACHE_KEYS.expenses, localExpenses); }
     updateScreen();
     showNotification('Excluída!','success');
-  } catch { showNotification('Erro ao excluir','error'); }
+  } catch(e) {
+    console.error('deleteTransaction:',e);
+    showNotification('Erro ao excluir','error');
+  }
 };
 
 window.showAddExpenseModal = () => {
@@ -1607,7 +1605,6 @@ window.showAddExpenseModal = () => {
 
 // ─── META ─────────────────────────────────
 async function loadMetaMensal() {
-  // Cache-first: usa o valor local imediatamente; confirma com o Firebase em 2º plano
   metaMensal = parseFloat(localStorage.getItem('metaAgro'))||metaMensal;
   updateMetaDisplay();
   try {
@@ -1698,15 +1695,11 @@ function updateDashboardFiadoKPIs() {
 }
 
 // ─── HISTÓRICO ────────────────────────────
-// Cache local por mês para consultas de períodos fora da janela "ao vivo"
-// (últimos 60 dias). Evita reler o Firestore toda vez que o usuário volta
-// a filtrar o mesmo mês antigo.
-const _historicoCacheMemoria = {}; // { 'YYYY-MM': {sales:[], expenses:[]} }
+const _historicoCacheMemoria = {};
 async function buscarHistoricoMes(mesISO) {
   if (_historicoCacheMemoria[mesISO]) return _historicoCacheMemoria[mesISO];
   const cacheKey = `agro_hist_${mesISO}`;
   const cached = readCache(cacheKey);
-  // Cache de mês fechado (mês diferente do atual) não expira — dados antigos não mudam mais.
   const isMesFechado = mesISO < localDateISO().substring(0,7);
   if (cached && isMesFechado) { _historicoCacheMemoria[mesISO]=cached.data; return cached.data; }
 
@@ -1738,7 +1731,6 @@ window.filterHistory = async () => {
   const foraDaJanela = alvoDate && alvoDate < cutoff;
 
   if (foraDaJanela) {
-    // Período mais antigo que a janela "ao vivo": busca sob demanda (com cache)
     const mesAlvo = (d||m).substring(0,7);
     document.getElementById('loadingIndicator').classList.remove('hidden');
     const hist = await buscarHistoricoMes(mesAlvo);
@@ -1861,12 +1853,6 @@ function loadFilterCategories() {
   if (s) s.innerHTML='<option value="">Todas</option>'+categories.map(c=>`<option value="${c}">${c}</option>`).join('');
 }
 
-// ─── SINCRONIZAÇÃO DE CATEGORIAS ENTRE DISPOSITIVOS ───────────────
-// As categorias (de produto/venda e de saída) agora ficam salvas em um
-// único documento no Firebase (configuracoes_agrovida/categorias) e são
-// escutadas em tempo real: mudar em um aparelho reflete em todos os outros
-// automaticamente. O localStorage continua sendo usado só como cache
-// (para a tela não ficar vazia enquanto o Firebase ainda não respondeu).
 const categoriasDocRef = doc(settingsCol,'categorias');
 function refreshAllCategoryUI() {
   loadCategories(); loadExpenseCategoriesList();
@@ -1879,7 +1865,7 @@ async function persistCategoriasFirestore() {
 }
 onSnapshot(categoriasDocRef, snap=>{
   trackReads(1);
-  if (!snap.exists()) { persistCategoriasFirestore(); return; } // primeira vez: envia o que já existe local
+  if (!snap.exists()) { persistCategoriasFirestore(); return; }
   const d = snap.data();
   let mudou=false;
   if (Array.isArray(d.categories) && JSON.stringify(d.categories)!==JSON.stringify(categories)) { categories=d.categories; mudou=true; }
@@ -1934,14 +1920,11 @@ function getFiadoPaymentsInRange(s,e) {
   return t;
 }
 async function getRangeData(startISO,endISO) {
-  // Junta dados "ao vivo" (localSales/localExpenses) com meses antigos buscados sob demanda
   const cutoff = cutoffDateISO();
   let sales = [...localSales], expenses = [...localExpenses];
   if (startISO < cutoff) {
-    // Busca os meses antigos necessários (com cache) e mescla, evitando duplicar
     const mesesNecessarios = new Set();
-    let cur = new Date(startISO+'-01T00:00:00'==startISO+'T00:00:00'?startISO+'T00:00:00':startISO+'T00:00:00');
-    cur = new Date(startISO+'T00:00:00');
+    let cur = new Date(startISO+'T00:00:00');
     const fim = new Date((endISO<cutoff?endISO:cutoff)+'T00:00:00');
     cur.setDate(1);
     while (cur<=fim) { mesesNecessarios.add(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}`); cur.setMonth(cur.getMonth()+1); }
@@ -1967,11 +1950,6 @@ async function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
     fiadoLancado=allSales.filter(s=>inRange(s.date,startISO,endISO)&&s.payment==='Fiado/Prazo').reduce((s,x)=>s+x.value,0);
   }
   const tS=fs.reduce((s,x)=>s+x.value,0), tE=fe.reduce((s,x)=>s+x.value,0);
-  // FIX: o custo do produto é POR UNIDADE — precisa multiplicar pela quantidade
-  // vendida na linha, senão o custo fica subestimado em vendas com qty > 1
-  // (ex: 5 unidades vendidas descontava o custo de apenas 1). Também passa a
-  // comparar o nome do produto sem diferenciar maiúsculas/minúsculas, igual
-  // já era feito na aba "Lucro por Produto".
   let profit=0;
   fs.forEach(sale=>{
     const p=products.find(x=>x.name.toLowerCase()===String(sale.desc||'').toLowerCase());
@@ -1997,7 +1975,6 @@ async function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
 
 // ─── ANÁLISES ESTRATÉGICAS / PROJEÇÕES ────────────
 async function renderAnalytics(startISO,endISO,fs,fe) {
-  // 1) Comparativo com o período anterior de mesma duração
   const startDate = new Date(startISO+'T00:00:00'), endDate = new Date(endISO+'T00:00:00');
   const diasPeriodo = Math.round((endDate-startDate)/86400000)+1;
   const prevEnd = new Date(startDate); prevEnd.setDate(prevEnd.getDate()-1);
@@ -2015,12 +1992,10 @@ async function renderAnalytics(startISO,endISO,fs,fe) {
   const elV=document.getElementById('analyticsCompVendas');
   if (elV) { elV.textContent = `${pctVendas>=0?'▲':'▼'} ${Math.abs(pctVendas).toFixed(1)}%`; elV.className=`text-lg font-bold ${pctVendas>=0?'text-green-600':'text-red-600'}`; }
   const elS=document.getElementById('analyticsCompSaidas');
-  // Para saídas, queda é positiva (verde) e alta é negativa (vermelho) — cor invertida
   if (elS) { elS.textContent = `${pctSaidas>=0?'▲':'▼'} ${Math.abs(pctSaidas).toFixed(1)}%`; elS.className=`text-lg font-bold ${pctSaidas<=0?'text-green-600':'text-red-600'}`; }
   const periodoEl = document.getElementById('analyticsCompPeriodo');
   if (periodoEl) periodoEl.textContent = `vs. ${prevStartISO.split('-').reverse().join('/')} – ${prevEndISO.split('-').reverse().join('/')} (${diasPeriodo} dia${diasPeriodo>1?'s':''})`;
 
-  // 2) Projeção de fechamento do mês — só quando o filtro é "do dia 1 até hoje" do mês atual
   const hojeISO = localDateISO(), mesAtual = hojeISO.substring(0,7);
   const projEl = document.getElementById('analyticsProjecaoMes'), projDetEl = document.getElementById('analyticsProjecaoDetalhe');
   if (startISO===mesAtual+'-01' && endISO===hojeISO) {
@@ -2035,10 +2010,7 @@ async function renderAnalytics(startISO,endISO,fs,fe) {
     if (projDetEl) projDetEl.textContent = 'Selecione o período "do dia 1 até hoje" para ver a projeção do mês atual';
   }
 
-  // 3) Tendência dos últimos 6 meses + projeção linear simples (mínimos quadrados)
   await renderTrendChart();
-
-  // 4) Desempenho por dia da semana no período filtrado
   renderWeekdayChart(fs);
 }
 
@@ -2094,13 +2066,11 @@ function renderWeekdayChart(fs) {
   });
 }
 
-// ─── FIX: Gráfico fluxo de caixa com data correta ────────────
 function updateCashFlowChart(sales,expenses,startDate,endDate) {
   const ctx=document.getElementById('cashFlowChart')?.getContext('2d');
   if (!ctx) return;
   const dates=[]; let cur=new Date(startDate+'T12:00:00'), end=new Date(endDate+'T12:00:00');
   while (cur<=end) {
-    // FIX: usa ano/mês/dia diretamente sem conversão de fuso
     const y=cur.getFullYear(), mo=String(cur.getMonth()+1).padStart(2,'0'), d=String(cur.getDate()).padStart(2,'0');
     dates.push(`${y}-${mo}-${d}`);
     cur.setDate(cur.getDate()+1);
@@ -2182,9 +2152,6 @@ window.renderProfitReport = async () => {
       (c.transactions||[]).filter(t=>t.type==='debit').forEach(t=>{
         const d=(t.date||'').substring(0,10);
         if (d>=start&&d<=end&&!mainFiadoKeys.has(t.desc+'|'+d)) {
-          // FIX: preserva a quantidade real do lançamento fiado (t.qtd) — antes
-          // esse campo não era passado adiante e o cálculo de custo assumia
-          // sempre qty=1, mesmo quando várias unidades foram vendidas.
           filtered.push({date:d,desc:t.desc,category:cat||(categories[0]||'Outros'),value:t.total,qty:t.qtd||1,payment:'Fiado/Prazo',type:'sale',_fromFiado:true});
         }
       });
@@ -2202,10 +2169,6 @@ window.renderProfitReport = async () => {
     if (sale.payment==='Fiado/Prazo'||sale._fromFiado) map[key].temFiado=true;
   });
   let data=Object.values(map).map(item=>{
-    // Produtos SEM cadastro/custo: assume-se que o custo foi de 80% da receita
-    // (margem de 20%), já que muitas vendas são só anotadas por descrição,
-    // sem produto cadastrado no Catálogo. Produtos com custo real cadastrado
-    // continuam usando o valor informado.
     const tc = item.hasCost ? item.unitCost*item.qty : item.revenue*DEFAULT_COST_RATIO;
     const profit=item.revenue-tc, margin=item.revenue>0?(profit/item.revenue)*100:0;
     return {...item,totalCost:tc,profit,margin,estimado:!item.hasCost};
@@ -2296,14 +2259,12 @@ async function loadProducts(forceRefresh=false) {
   const cacheAge = cached ? Date.now()-cached.ts : Infinity;
   const isFresh = cached && cacheAge < PRODUCTS_CACHE_TTL;
 
-  // 1) Mostra cache imediatamente (mesmo se estiver "velho") para não deixar tela vazia
   if (cached && !products.length) {
     products = cached.data;
     updateProductsDisplay();
   }
   updateProductsCacheInfo(cached?cacheAge:null);
 
-  // 2) Só busca no Firestore se: forçado pelo usuário, sem cache, ou cache expirado
   if (!forceRefresh && isFresh) return;
 
   try {
@@ -2371,7 +2332,6 @@ window.saveProduct = async () => {
     const pd={name,price,cost,discountPrice:document.getElementById('productDiscountPrice').value?parseFloat(document.getElementById('productDiscountPrice').value.replace(',','.'))||0:0,stock:parseInt(document.getElementById('productStock').value)||0,category:document.getElementById('productCategory').value,unit:document.getElementById('productUnit').value,sku:document.getElementById('productSKU').value.trim(),updatedAt:serverTimestamp()};
     if (editingProductId){
       await updateDoc(doc(productsCol,editingProductId),pd);
-      // Atualização otimista no array local + cache, sem reler a coleção inteira
       const idx=products.findIndex(p=>p.id===editingProductId);
       if (idx>-1) products[idx]={...products[idx],...pd,updatedAt:new Date().toISOString()};
       showNotification('Atualizado!','success');
@@ -2384,7 +2344,10 @@ window.saveProduct = async () => {
     saveCache(CACHE_KEYS.products, products);
     sortProducts();
     closeModal('productModal');
-  } catch { showNotification('Erro ao salvar','error'); }
+  } catch(e) {
+    console.error('saveProduct:',e);
+    showNotification('Erro ao salvar','error');
+  }
   finally { document.getElementById('loadingIndicator').classList.add('hidden'); }
 };
 window.deleteProduct = async id => {
@@ -2395,7 +2358,10 @@ window.deleteProduct = async id => {
     saveCache(CACHE_KEYS.products, products);
     updateProductsDisplay();
     showNotification('Excluído!','success');
-  } catch { showNotification('Erro','error'); }
+  } catch(e) {
+    console.error('deleteProduct:',e);
+    showNotification('Erro','error');
+  }
 };
 function updateProductsDisplay() {
   const grid=document.getElementById('productsGrid'); if(!grid) return;
@@ -2445,7 +2411,7 @@ window.handleXMLFile = file => {
   const r=new FileReader();
   r.onload=e=>{
     try { xmlImportData=parseNFeXML(e.target.result); displayXMLImportSummary(xmlImportData); document.getElementById('processXMLBtn').disabled=false; showNotification(`${xmlImportData.products.length} produtos encontrados`,'success'); }
-    catch { showNotification('Erro ao ler XML','error'); }
+    catch(e) { console.error('handleXMLFile:',e); showNotification('Erro ao ler XML','error'); }
   };
   r.readAsText(file);
 };
@@ -2455,12 +2421,8 @@ function parseNFeXML(xml) {
     const p=det.getElementsByTagName('prod')[0]; if(!p) continue;
     prods.push({name:p.getElementsByTagName('xProd')[0]?.textContent||'',sku:p.getElementsByTagName('cProd')[0]?.textContent||'',cost:parseFloat((p.getElementsByTagName('vUnCom')[0]?.textContent||'0').replace(',','.'))||0,quantity:parseFloat((p.getElementsByTagName('qCom')[0]?.textContent||'1').replace(',','.'))||1,unit:p.getElementsByTagName('uCom')[0]?.textContent||'Un',category:'Importado'});
   }
-  // ─── Dados do fornecedor e número da nota (para os boletos) ───
   const fornecedor = doc.getElementsByTagName('emit')[0]?.getElementsByTagName('xNome')[0]?.textContent || 'Fornecedor não identificado';
   const nNF = doc.getElementsByTagName('ide')[0]?.getElementsByTagName('nNF')[0]?.textContent || '';
-  // ─── Duplicatas/boletos (seção <cobr><dup> da NFe) — nem toda nota tem essa
-  // seção (ex: pagamento à vista). Quando existe, cada <dup> é uma parcela
-  // com vencimento e valor, que vira automaticamente uma conta a pagar.
   const boletos = [];
   const cobr = doc.getElementsByTagName('cobr')[0];
   if (cobr) {
@@ -2491,7 +2453,6 @@ window.processXMLImport = async () => {
   document.getElementById('loadingIndicator').classList.remove('hidden');
   let u=0,c=0;
   try {
-    // Escreve em lote (1 chamada ao Firestore) em vez de 1 escrita por produto do XML
     const batch = writeBatch(db);
     const atualizacoesLocais = [];
     for (const xp of xmlImportData.products) {
@@ -2500,7 +2461,6 @@ window.processXMLImport = async () => {
       if(ex){ batch.update(doc(productsCol,ex.id),pd); atualizacoesLocais.push({id:ex.id,...pd}); u++; }
       else{ const ref=doc(productsCol); pd.createdAt=new Date().toISOString(); pd.salesCount=0; batch.set(ref,pd); atualizacoesLocais.push({id:ref.id,...pd}); c++; }
     }
-    // Boletos/duplicatas detectados na nota (seção <cobr><dup>) entram no MESMO lote
     const boletosDetectados = xmlImportData.boletos || [];
     const novosBoletosLocais = [];
     boletosDetectados.forEach(b=>{
@@ -2523,7 +2483,10 @@ window.processXMLImport = async () => {
     localStorage.setItem('defaultProfitMargin',margin);
     showNotification(`${u} atualizados, ${c} criados${novosBoletosLocais.length?`, ${novosBoletosLocais.length} boleto(s) lançado(s)`:''}`,'success');
     closeModal('xmlImportModal'); sortProducts();
-  } catch { showNotification('Erro na importação','error'); }
+  } catch(e) {
+    console.error('processXMLImport:',e);
+    showNotification('Erro na importação','error');
+  }
   finally { document.getElementById('loadingIndicator').classList.add('hidden'); xmlImportData=null; }
 };
 const dz=document.getElementById('xmlDropZone');
@@ -2556,7 +2519,6 @@ window.exportCurrentMonthExcel = () => {
   const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Mês');XLSX.writeFile(wb,`vendas-${m}.xlsx`);showNotification('Exportado!','success');
 };
 
-// ─── FIX: Backup funcionando corretamente ─
 window.createFullBackup = () => {
   try {
     const data = {
@@ -2701,7 +2663,6 @@ function fGetOverdue(c) {
 function fSaldo(c) { return (c.transactions||[]).reduce((s,t)=>s+t.total,0); }
 window.fSaldo=fSaldo;
 
-// Cache-first: mostra clientes fiado salvos localmente antes do listener responder
 (function loadFiadoCache(){
   const cached = readCache(CACHE_KEYS.fiado);
   if (cached && cached.data && cached.data.length) {
@@ -2838,7 +2799,7 @@ window.Fiado={
   async deletarCliente(){
     if(!fCurrentClient||!confirm(`Excluir "${fCurrentClient.nome}"?`)) return;
     try{await deleteDoc2(doc2(fdb,'clients',fCurrentClient.id));showNotification('Excluído!');fCurrentClient=null;this.switchView('clientes');}
-    catch{showNotification('Erro','error');}
+    catch(e){console.error('deletarCliente:',e);showNotification('Erro','error');}
   },
   async addItem(){
     if(!fCurrentClient) return;
@@ -2855,7 +2816,7 @@ window.Fiado={
     if(nn!==fCurrentClient.activeNoteNumber) upd.activeNoteNumber=nn;
     setLoading(true);
     try{await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),upd);showNotification('Venda lançada!');['fAddDesc','fAddVal','fAddDesc2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});if(document.getElementById('fAddQtd'))document.getElementById('fAddQtd').value='1';setTimeout(()=>document.getElementById('fAddDesc')?.focus(),100);}
-    catch{showNotification('Erro ao lançar','error');}finally{setLoading(false);}
+    catch(e){console.error('addItem:',e);showNotification('Erro ao lançar','error');}finally{setLoading(false);}
   },
   async addPayment(){
     if(!fCurrentClient) return;
@@ -2866,12 +2827,12 @@ window.Fiado={
     const prr={id:Date.now()+1,date:new Date().toISOString(),desc:'PRORROGAÇÃO',qtd:1,unit:0,discount:0,total:0,type:'prorrogacao',dataProrrogacao:novaData.toISOString(),hidden:true};
     setLoading(true);
     try{await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),{transactions:[...(fCurrentClient.transactions||[]),tr,prr]});showNotification(`Pagamento de ${window.formatMoney(val)} registrado!`);if(document.getElementById('fPayVal'))document.getElementById('fPayVal').value='';}
-    catch{showNotification('Erro','error');}finally{setLoading(false);}
+    catch(e){console.error('addPayment:',e);showNotification('Erro','error');}finally{setLoading(false);}
   },
   async deletarTransacao(id){
     if(!fCurrentClient||!confirm('Excluir transação?')) return;
     try{const newTr=(fCurrentClient.transactions||[]).filter(t=>t.id!==id);await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),{transactions:newTr});showNotification('Excluída!');}
-    catch{showNotification('Erro','error');}
+    catch(e){console.error('deletarTransacao:',e);showNotification('Erro','error');}
   },
   async arquivarCiclo(){
     if(!fCurrentClient) return;
@@ -2881,7 +2842,7 @@ window.Fiado={
     const ciclo={id:Date.now(),dataArquivamento:new Date().toISOString(),noteNumber:fCurrentClient.activeNoteNumber||'-',itens:[...(fCurrentClient.transactions||[])]};
     setLoading(true);
     try{await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),{transactions:[],activeNoteNumber:null,history:[...(fCurrentClient.history||[]),ciclo]});showNotification('Ciclo arquivado!');}
-    catch{showNotification('Erro','error');}finally{setLoading(false);}
+    catch(e){console.error('arquivarCiclo:',e);showNotification('Erro','error');}finally{setLoading(false);}
   },
   filtrarPagamentos(){
     const data=document.getElementById('fPagamentoData')?.value||localDateISO();
@@ -2909,7 +2870,7 @@ window.Fiado={
   },
   async _getNextNoteNumber(){
     try{const ref=doc2(fdb,'config','metadata');const snap=await getDoc2(ref);const next=snap.exists()?(snap.data().lastNoteNumber||0)+1:1;await setDoc2(ref,{lastNoteNumber:next},{merge:true});return next;}
-    catch{return Date.now().toString().slice(-6);}
+    catch(e){console.error('_getNextNoteNumber:',e);return Date.now().toString().slice(-6);}
   },
   async lancarVendaNoFiado(itens,clienteId){
     if(!itens||!itens.length) return;
@@ -2922,14 +2883,13 @@ window.Fiado={
     if(nn!==cliente.activeNoteNumber) upd.activeNoteNumber=nn;
     setLoading(true);
     try{await updateDoc2(doc2(fdb,'clients',cliente.id),upd);showNotification(`${itens.length} item(s) lançado(s) no fiado de ${cliente.nome}!`,'success');}
-    catch{showNotification('Erro ao lançar no fiado','error');}
+    catch(e){console.error('lancarVendaNoFiado:',e);showNotification('Erro ao lançar no fiado','error');}
     finally{setLoading(false);}
   },
   mascaraCPF(input){let v=input.value.replace(/\D/g,'').slice(0,11);v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');input.value=v;},
   mascaraTel(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length<=10)v=v.replace(/^(\d{2})(\d)/,'($1) $2').replace(/(\d{4})(\d)/,'$1-$2');else v=v.replace(/^(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2');input.value=v;},
 };
 
-// Fechar busca ao clicar fora
 document.addEventListener('click',e=>{
   const c=document.getElementById('fiadoSearch')?.closest('.card');
   if(c&&!c.contains(e.target)) document.getElementById('fiadoSearchResults')?.classList.add('hidden');
@@ -2938,7 +2898,6 @@ document.addEventListener('click',e=>{
 // ════════════════════════════════════════════════
 // MÓDULO CONTAS A PAGAR (BOLETOS)
 // ════════════════════════════════════════════════
-// Cache-first: mostra boletos salvos localmente antes do Firebase responder
 (function loadBoletosCache(){
   const cached = readCache(CACHE_KEYS.boletos);
   if (cached && cached.data && cached.data.length) { boletos = cached.data; }
@@ -3095,7 +3054,7 @@ window.marcarBoletoPago = async id => {
     saveCache(CACHE_KEYS.boletos, boletos);
     renderBoletos();
     showNotification('Marcado como pago!','success');
-  } catch { showNotification('Erro','error'); }
+  } catch(e) { console.error('marcarBoletoPago:',e); showNotification('Erro','error'); }
 };
 window.deletarBoleto = async id => {
   if (!confirm('Excluir este boleto?')) return;
@@ -3105,10 +3064,10 @@ window.deletarBoleto = async id => {
     saveCache(CACHE_KEYS.boletos, boletos);
     renderBoletos();
     showNotification('Excluído!','success');
-  } catch { showNotification('Erro ao excluir','error'); }
+  } catch(e) { console.error('deletarBoleto:',e); showNotification('Erro ao excluir','error'); }
 };
 
-// ─── CACHE-FIRST: renderiza com dados salvos localmente antes do Firebase responder ───
+// ─── CACHE-FIRST: renderiza com dados salvos localmente ──
 (function loadSalesExpensesCache(){
   const cs = readCache(CACHE_KEYS.sales);
   const ce = readCache(CACHE_KEYS.expenses);
@@ -3118,12 +3077,25 @@ window.deletarBoleto = async id => {
 })();
 
 // ─── FIRESTORE LISTENERS (limitados aos últimos 60 dias) ──
-// Antes: onSnapshot ouvia a coleção INTEIRA para sempre (custo cresce com o tempo).
-// Agora: só monitora em tempo real os últimos 60 dias. Períodos mais antigos
-// são buscados sob demanda em Relatórios/Histórico (getDocs + cache local).
 onSnapshot(query(salesCol, where('date','>=',cutoffDateISO()), orderBy("date","desc")),snap=>{
   trackReads(snap.size);
-  localSales=snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'}));
+  // FIX: Sincroniza o array local sem duplicar IDs existentes
+  const newDocs = snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'}));
+  const existingIds = new Set(localSales.map(s => s.id));
+  // Substitui ou adiciona documentos do snapshot, mantendo a ordem
+  let updated = [...localSales];
+  newDocs.forEach(doc => {
+    const idx = updated.findIndex(s => s.id === doc.id);
+    if (idx >= 0) {
+      updated[idx] = doc;
+    } else {
+      updated.unshift(doc);
+    }
+  });
+  // Remove documentos que não estão mais no snapshot (foram excluídos)
+  const snapshotIds = new Set(newDocs.map(d => d.id));
+  updated = updated.filter(s => snapshotIds.has(s.id));
+  localSales = updated;
   saveCache(CACHE_KEYS.sales, localSales);
   updateScreen();
   if(!document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
@@ -3133,7 +3105,20 @@ onSnapshot(query(salesCol, where('date','>=',cutoffDateISO()), orderBy("date","d
 
 onSnapshot(query(expensesCol, where('date','>=',cutoffDateISO()), orderBy("date","desc")),snap=>{
   trackReads(snap.size);
-  localExpenses=snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'expense'}));
+  const newDocs = snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'expense'}));
+  const existingIds = new Set(localExpenses.map(e => e.id));
+  let updated = [...localExpenses];
+  newDocs.forEach(doc => {
+    const idx = updated.findIndex(e => e.id === doc.id);
+    if (idx >= 0) {
+      updated[idx] = doc;
+    } else {
+      updated.unshift(doc);
+    }
+  });
+  const snapshotIds = new Set(newDocs.map(d => d.id));
+  updated = updated.filter(e => snapshotIds.has(e.id));
+  localExpenses = updated;
   saveCache(CACHE_KEYS.expenses, localExpenses);
   updateScreen();
   if(!document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
@@ -3142,13 +3127,12 @@ onSnapshot(query(expensesCol, where('date','>=',cutoffDateISO()), orderBy("date"
 
 // ─── INICIALIZAÇÃO ────────────────────────
 window.addEventListener('load', async ()=>{
-  // Constrói sidebar e bottom nav com ordem personalizada
   buildSidebarNav();
   buildBottomNav();
   updateBoletosBadge();
 
-  await loadProducts();       // cache-first, TTL 10 min
-  await loadMetaMensal();     // cache-first
+  await loadProducts();
+  await loadMetaMensal();
   updateCategorySelect();
   updateCategorySelectForSales();
   loadCategories();
@@ -3163,10 +3147,8 @@ window.addEventListener('load', async ()=>{
   document.getElementById('customFilterStart').value=month+'-01';
   document.getElementById('customFilterEnd').value=today;
 
-  // Fechar modal ao clicar fora
   document.addEventListener('click',e=>{ if(e.target.classList.contains('modal-overlay')) closeModal(e.target.id); });
 
-  // Atalhos teclado
   document.addEventListener('keydown',e=>{
     if(e.key==='Enter'&&document.activeElement===document.getElementById('desc')){ e.preventDefault(); document.getElementById('value').focus(); }
     else if(e.key==='Enter'&&document.activeElement===document.getElementById('value')){ e.preventDefault(); handleTransactionAction(); }
