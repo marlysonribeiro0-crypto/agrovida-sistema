@@ -435,6 +435,31 @@ body {
       <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-3">Fluxo de Caixa (Diário)</h3><div class="chart-container"><canvas id="cashFlowChart"></canvas></div></div>
       <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-3">Distribuição por Categoria</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
     </div>
+
+    <!-- ── Análises Estratégicas / Projeções ── -->
+    <div class="flex items-center gap-2 mb-3 mt-2">
+      <i class="fas fa-chess text-agro-green"></i><h2 class="text-lg font-bold text-gray-800">Análises Estratégicas</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div class="card p-4">
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2"><i class="fas fa-balance-scale mr-1"></i>Comparativo com Período Anterior</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div><p class="text-xs text-gray-400">Vendas</p><p class="text-lg font-bold" id="analyticsCompVendas">-</p></div>
+          <div><p class="text-xs text-gray-400">Saídas</p><p class="text-lg font-bold" id="analyticsCompSaidas">-</p></div>
+        </div>
+        <p class="text-xs text-gray-400 mt-2" id="analyticsCompPeriodo">Selecione um período e clique em Aplicar Filtros</p>
+      </div>
+      <div class="card p-4">
+        <p class="text-xs font-bold text-gray-500 uppercase mb-2"><i class="fas fa-bullseye mr-1"></i>Projeção de Fechamento do Mês</p>
+        <p class="text-2xl font-bold text-agro-green" id="analyticsProjecaoMes">-</p>
+        <p class="text-xs text-gray-400 mt-1" id="analyticsProjecaoDetalhe">Baseado no ritmo de vendas até hoje</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+      <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-1">Tendência (últimos 6 meses + projeção)</h3><p class="text-xs text-gray-400 mb-3">Linha tracejada = projeção com base na tendência</p><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
+      <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-1">Desempenho por Dia da Semana</h3><p class="text-xs text-gray-400 mb-3">Média de vendas — ajuda a identificar os melhores dias</p><div class="chart-container"><canvas id="weekdayChart"></canvas></div></div>
+    </div>
+
     <div class="card p-4">
       <h3 class="font-bold text-lg text-gray-700 mb-4">Maiores Despesas</h3>
       <div class="table-responsive">
@@ -488,7 +513,7 @@ body {
     <div id="profitViewTable">
       <div class="card">
         <div class="p-4 border-b flex justify-between items-center flex-wrap gap-2">
-          <span class="text-xs text-gray-500">⚠️ sem custo = estimado &nbsp;·&nbsp; 🤝 = fiado</span>
+          <span class="text-xs text-gray-500">⚠️ sem custo = estimado em 80% da receita &nbsp;·&nbsp; 🤝 = fiado</span>
           <div class="flex gap-2 items-center">
             <label class="text-xs text-gray-500">Ordenar:</label>
             <select id="profitSort" class="input-field" style="min-height:34px;padding:5px 10px;font-size:12px;width:auto" onchange="renderProfitReport()">
@@ -523,7 +548,7 @@ body {
       </div>
     </div>
     <div id="profitNoCostWarning" class="hidden mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-      <p class="text-sm text-yellow-800"><i class="fas fa-info-circle mr-2"></i><strong id="profitNoCostCount">0</strong> produto(s) sem custo cadastrado. Cadastre no Catálogo para análise exata.</p>
+      <p class="text-sm text-yellow-800"><i class="fas fa-info-circle mr-2"></i><strong id="profitNoCostCount">0</strong> produto(s) sem custo cadastrado — usando estimativa padrão de <strong>80% de custo (20% de margem)</strong>. Cadastre o custo real no Catálogo para valores exatos.</p>
     </div>
   </div>
 
@@ -580,6 +605,18 @@ body {
         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor Máximo</label><input type="number" step="0.01" id="expenseFilterMax" class="input-field" placeholder="9999,99" onchange="filterExpenses()"></div>
       </div>
     </div>
+    <div class="card p-4 mb-4">
+      <h3 class="font-bold text-gray-700 mb-3"><i class="fas fa-chart-pie text-expense-red mr-2"></i>Saídas por Categoria</h3>
+      <p class="text-xs text-gray-400 mb-3">Reflete os filtros acima (mês/categoria/valor)</p>
+      <div class="table-responsive">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
+            <tr><th class="p-3 text-left">Categoria</th><th class="p-3 text-right">Total</th><th class="p-3 text-center">% do Total</th><th class="p-3 text-center">Qtd.</th><th class="p-3 min-w-[100px]">Proporção</th></tr>
+          </thead>
+          <tbody id="expensesByCategoryBody"></tbody>
+        </table>
+      </div>
+    </div>
     <div class="card">
       <div class="p-4 border-b"><h3 class="font-bold text-gray-700">Histórico de Saídas</h3></div>
       <div class="table-responsive">
@@ -594,12 +631,51 @@ body {
   </div>
 
   <!-- ══════════════════════════════════
+       CONTAS A PAGAR (BOLETOS)
+  ══════════════════════════════════ -->
+  <div id="tab-boletos" class="hidden fade-in">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">Contas a Pagar</h2>
+        <p class="text-sm text-gray-500 mt-1">Boletos manuais e capturados de XML (NFe)</p>
+      </div>
+      <button onclick="showAddBoletoModal()" class="btn-expense"><i class="fas fa-plus mr-2"></i> Novo Boleto</button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('hoje')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-calendar-day text-red-500"></i> Vence Hoje</p><h3 class="text-xl font-bold text-red-600 mt-1" id="boletoKpiHoje">R$ 0,00</h3></div>
+      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('semana')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-calendar-week text-yellow-500"></i> Próx. 7 Dias</p><h3 class="text-xl font-bold text-yellow-600 mt-1" id="boletoKpiSemana">R$ 0,00</h3></div>
+      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('aberto')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-file-invoice-dollar text-blue-500"></i> Total em Aberto</p><h3 class="text-xl font-bold text-blue-600 mt-1" id="boletoKpiAberto">R$ 0,00</h3></div>
+      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('atrasado')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-exclamation-triangle text-red-500"></i> Atrasados</p><h3 class="text-xl font-bold text-red-600 mt-1" id="boletoKpiAtrasados">0</h3></div>
+    </div>
+    <div class="card p-4 mb-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Status</label><select id="boletoFilterStatus" class="input-field" onchange="renderBoletos()"><option value="pendente">Pendentes</option><option value="pago">Pagos</option><option value="all">Todos</option></select></div>
+        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (mês)</label><input type="month" id="boletoFilterMonth" class="input-field" onchange="renderBoletos()"></div>
+        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fornecedor</label><input type="text" id="boletoFilterFornecedor" class="input-field" placeholder="Buscar..." oninput="renderBoletos()"></div>
+        <div class="flex items-end"><button onclick="limparFiltrosBoletos()" class="text-blue-600 text-sm hover:underline">Limpar Filtros</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
+            <tr><th class="p-3">Vencimento</th><th class="p-3">Fornecedor/Descrição</th><th class="p-3">Nota</th><th class="p-3">Origem</th><th class="p-3 text-right">Valor</th><th class="p-3 text-center">Status</th><th class="p-3 text-center">Ações</th></tr>
+          </thead>
+          <tbody id="boletosTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
        CATÁLOGO
   ══════════════════════════════════ -->
   <div id="tab-products" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
       <div class="flex gap-2 flex-wrap">
+        <span id="productsCacheInfo" class="text-xs text-gray-400 flex items-center px-2"></span>
+        <button onclick="loadProducts(true)" class="btn-secondary flex items-center gap-2" title="Recarregar do Firebase"><i class="fas fa-sync-alt"></i> <span class="hidden md:inline">Atualizar</span></button>
         <button onclick="showXMLImportModal()" class="btn-xml flex items-center gap-2"><i class="fas fa-file-import"></i> <span class="hidden md:inline">XML</span></button>
         <button onclick="exportCatalogPDF()"   class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span></button>
         <button onclick="showAddProductModal()" class="btn-primary"><i class="fas fa-plus mr-2"></i> Novo</button>
@@ -818,16 +894,25 @@ body {
         <button onclick="salvarOrdemMenu()" class="btn-primary w-full mt-4"><i class="fas fa-save mr-2"></i> Salvar Ordem</button>
       </div>
       <div class="card p-5">
-        <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-tags text-agro-green"></i> Categorias</h3>
+        <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-tags text-agro-green"></i> Categorias de Produto/Venda</h3>
+        <p class="text-xs text-gray-500 mb-3"><i class="fas fa-sync-alt mr-1"></i>Sincronizado entre dispositivos</p>
         <div class="space-y-3">
           <div id="categoriesList" class="max-h-48 overflow-y-auto space-y-1"></div>
           <div class="flex gap-2"><input type="text" id="newCategory" class="input-field" placeholder="Nova categoria"><button onclick="addCategory()" class="btn-primary whitespace-nowrap">Adicionar</button></div>
         </div>
       </div>
+      <div class="card p-5">
+        <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-tags text-expense-red"></i> Categorias de Saída</h3>
+        <p class="text-xs text-gray-500 mb-3"><i class="fas fa-sync-alt mr-1"></i>Sincronizado entre dispositivos — use para medir saídas por categoria</p>
+        <div class="space-y-3">
+          <div id="expenseCategoriesList" class="max-h-48 overflow-y-auto space-y-1"></div>
+          <div class="flex gap-2"><input type="text" id="newExpenseCategory" class="input-field" placeholder="Nova categoria de saída"><button onclick="addExpenseCategory()" class="btn-expense whitespace-nowrap">Adicionar</button></div>
+        </div>
+      </div>
       <div class="card p-5 md:col-span-2">
         <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-info-circle text-agro-green"></i> Informações do Sistema</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Versão</p><p class="font-bold text-sm">v6.0.0</p></div>
+          <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Versão</p><p class="font-bold text-sm">v6.1.0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Total Vendas</p><p class="font-bold text-agro-green" id="totalSalesCount">0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Total Saídas</p><p class="font-bold text-expense-red" id="totalExpensesCount">0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Produtos</p><p class="font-bold" id="totalProductsCount">0</p></div>
@@ -835,6 +920,15 @@ body {
           <div class="text-center bg-yellow-50 rounded-lg p-3"><p class="text-xs text-gray-500">A Receber Fiado</p><p class="font-bold text-yellow-600" id="settingsFiadoReceber">R$ 0,00</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Conexão</p><p class="font-bold" id="connectionStatusText">Online</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Atualizado</p><p class="font-bold text-xs" id="lastUpdate">-</p></div>
+        </div>
+        <div class="mt-5 pt-4 border-t">
+          <h4 class="font-bold text-sm text-gray-700 mb-2 flex items-center gap-2"><i class="fas fa-cloud text-agro-green"></i> Uso do Firebase (estimado)</h4>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-2">
+            <div class="text-center bg-blue-50 rounded-lg p-3"><p class="text-xs text-gray-500">Leituras hoje (aprox.)</p><p class="font-bold text-blue-700" id="statReadsToday">0</p></div>
+            <div class="text-center bg-blue-50 rounded-lg p-3"><p class="text-xs text-gray-500">Docs monitorados (live)</p><p class="font-bold text-blue-700" id="statLiveDocs">0</p></div>
+            <div class="text-center bg-blue-50 rounded-lg p-3"><p class="text-xs text-gray-500">Cache local ativo</p><p class="font-bold text-blue-700" id="statCacheAge">-</p></div>
+          </div>
+          <p class="text-xs text-gray-400">Vendas/Saídas em tempo real cobrem só os últimos 60 dias. Períodos mais antigos são buscados sob demanda e ficam salvos em cache local.</p>
         </div>
         <div class="mt-5 pt-4 border-t">
           <button onclick="clearAllData()" class="w-full py-3 rounded-lg font-semibold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition"><i class="fas fa-trash-alt mr-2"></i> Limpar Todos os Dados</button>
@@ -899,6 +993,29 @@ body {
     <div class="mt-5 flex justify-end gap-3">
       <button onclick="closeModal('xmlImportModal')" class="px-4 py-2 text-gray-600">Cancelar</button>
       <button onclick="processXMLImport()" id="processXMLBtn" class="btn-primary px-5" disabled><i class="fas fa-check mr-2"></i> Processar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Boleto (Conta a Pagar) -->
+<div id="boletoModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3 class="text-lg font-bold text-gray-800 mb-4" id="boletoModalTitle">Novo Boleto</h3>
+    <div class="space-y-3">
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">Fornecedor/Descrição *</label><input type="text" id="boletoDesc" class="input-field" placeholder="Ex: Distribuidora Agro Ltda"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Valor (R$) *</label><input type="text" id="boletoValor" class="input-field text-right" placeholder="0,00" inputmode="decimal"></div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Vencimento *</label><input type="date" id="boletoVencimento" class="input-field"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Nº Nota/Duplicata</label><input type="text" id="boletoNota" class="input-field" placeholder="Opcional"></div>
+        <div><label class="block text-sm font-medium text-gray-700 mb-1">Status</label><select id="boletoStatus" class="input-field"><option value="pendente">Pendente</option><option value="pago">Pago</option></select></div>
+      </div>
+      <div><label class="block text-sm font-medium text-gray-700 mb-1">Observações</label><textarea id="boletoObs" class="input-field" rows="2" placeholder="Detalhes adicionais…"></textarea></div>
+    </div>
+    <div class="mt-5 flex justify-end gap-3">
+      <button onclick="closeModal('boletoModal')" class="px-4 py-2 text-gray-600">Cancelar</button>
+      <button onclick="saveBoleto()" id="saveBoletoBtn" class="btn-expense px-5">Salvar</button>
     </div>
   </div>
 </div>
@@ -1005,7 +1122,7 @@ if (tentativa !== SENHA_LOJA) {
 
 // ─── Firebase (principal) ───────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, limit, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyBZvxMB2qmz5IMugV6fOqq4pLUbhD7mJRU",
@@ -1020,21 +1137,65 @@ const salesCol    = collection(db,"vendas_agrovida");
 const expensesCol = collection(db,"saidas_agrovida");
 const productsCol = collection(db,"produtos_agrovida");
 const settingsCol = collection(db,"configuracoes_agrovida");
+const boletosCol  = collection(db,"boletos_agrovida");
 
 // ─── Estado global ──────────────────────
 let localSales    = [];
 let localExpenses = [];
 let products      = [];
+let boletos       = [];
 let metaMensal    = parseFloat(localStorage.getItem('metaAgro'))||5000;
 let categories    = JSON.parse(localStorage.getItem('agroCategories'))||['Ração','Medicamento','Ferramentas','Sementes','Acessórios','Serviço/Vet','Outros'];
 let expenseCategories = JSON.parse(localStorage.getItem('agroExpenseCategories'))||['Aluguel','Salários','Contas (Água/Luz)','Internet/Telefone','Manutenção','Transporte','Suprimentos','Marketing','Outros'];
 let editingProductId  = null;
 let transactionType   = 'sale';
 let saleCart = [];
-let cashFlowChart=null, categoryChart=null, profitBarChart=null, profitMarginChart=null;
+let cashFlowChart=null, categoryChart=null, profitBarChart=null, profitMarginChart=null, trendChart=null, weekdayChart=null;
 let xmlImportData     = null;
 let lastProfitData    = [];
 let _pendingFiadoCallback = null;
+
+// ══════════════════════════════════════════════════════════
+// CAMADA DE CACHE / OTIMIZAÇÃO FIREBASE (Spark Plan)
+// ══════════════════════════════════════════════════════════
+// Estratégia:
+//  1) Ao carregar a página, renderiza IMEDIATAMENTE com dados salvos em
+//     localStorage (cache), sem esperar o Firebase responder.
+//  2) O listener em tempo real (onSnapshot) de vendas/saídas fica LIMITADO
+//     aos últimos 60 dias — isso evita que o Firestore precise reler todo
+//     o histórico (que só cresce) toda vez que a aba é reaberta.
+//  3) Catálogo de produtos (que muda pouco) usa cache com validade de 10
+//     minutos e só é buscado de novo quando expira ou quando o usuário
+//     clica em "Atualizar".
+//  4) Consultas de períodos fora da janela de 60 dias (Relatórios/Histórico)
+//     são feitas sob demanda com getDocs() (1 leitura por documento, sem
+//     listener contínuo) e ficam guardadas em cache local por mês.
+const LIVE_WINDOW_DAYS   = 60;                 // janela "ao vivo" (onSnapshot)
+const PRODUCTS_CACHE_TTL = 10*60*1000;         // 10 minutos
+const DEFAULT_COST_RATIO = 0.80;               // produtos sem cadastro/custo: assume-se 80% de custo (20% de margem)
+const CACHE_KEYS = {
+  sales:    'agro_cache_sales_live',
+  expenses: 'agro_cache_expenses_live',
+  products: 'agro_cache_products',
+  fiado:    'agro_cache_fiado_clients',
+  boletos:  'agro_cache_boletos'
+};
+let _estimatedReadsToday = parseInt(sessionStorage.getItem('agro_reads_today')||'0');
+function trackReads(n) {
+  _estimatedReadsToday += n;
+  sessionStorage.setItem('agro_reads_today', String(_estimatedReadsToday));
+  const el = document.getElementById('statReadsToday'); if (el) el.textContent = _estimatedReadsToday;
+}
+function cutoffDateISO() {
+  const d = new Date(); d.setDate(d.getDate()-LIVE_WINDOW_DAYS);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function saveCache(key, data) {
+  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch(e){ /* quota cheia: ignora */ }
+}
+function readCache(key) {
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch { return null; }
+}
 
 // ─── MENU PERSONALIZÁVEL ─────────────────────────────────────────
 const MENU_ITEMS_DEFAULT = [
@@ -1042,6 +1203,7 @@ const MENU_ITEMS_DEFAULT = [
   {id:'reports',   icon:'fas fa-chart-bar',     label:'Relatórios',sub:'Avançados',       visible:true},
   {id:'profit',    icon:'fas fa-dollar-sign',   label:'Lucro',     sub:'Por Produto',     visible:true},
   {id:'fiado',     icon:'fas fa-handshake',     label:'Fiado',     sub:'Clientes',        visible:true},
+  {id:'boletos',   icon:'fas fa-file-invoice-dollar', label:'Boletos', sub:'Contas a Pagar', visible:true},
   {id:'history',   icon:'fas fa-chart-line',    label:'Histórico', sub:'Vendas/Saídas',   visible:true},
   {id:'expenses',  icon:'fas fa-money-bill-wave',label:'Saídas',   sub:'Despesas',        visible:true},
   {id:'products',  icon:'fas fa-boxes',         label:'Catálogo',  sub:'Produtos',        visible:true},
@@ -1069,7 +1231,7 @@ function buildSidebarNav() {
   const nav   = document.getElementById('sidebarNav');
   if (!nav) return;
   nav.innerHTML = items.map(item => {
-    const extra = item.id==='fiado' ? `id="fiadoBadge"` : '';
+    const extra = item.id==='fiado' ? `id="fiadoBadge"` : item.id==='boletos' ? `id="boletosBadge"` : '';
     return `<button onclick="showTab('${item.id}')" id="btn-${item.id}" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
       <i class="${item.icon} text-xl w-6"></i>
       <div><span class="block font-bold">${item.label}</span><span class="text-xs text-white/70" ${extra}>${item.sub}</span></div>
@@ -1173,9 +1335,10 @@ window.showTab = tab => {
   document.getElementById(`mobile-btn-${tab}`)?.classList.add('active');
   if (tab==='history')  { filterHistory(); }
   if (tab==='expenses') { filterExpenses(); updateExpenseSummary(); loadExpenseCategories(); }
+  if (tab==='boletos')  { renderBoletos(); }
   if (tab==='products') { loadProducts(); searchProducts(); loadFilterCategories(); }
   if (tab==='reports')  { loadFilterCategories(); loadExpenseCategoriesForReports(); applyCustomFilter(); }
-  if (tab==='settings') { updateSettingsInfo(); loadCategories(); buildMenuEditor('menuEditorList'); }
+  if (tab==='settings') { updateSettingsInfo(); loadCategories(); loadExpenseCategoriesList(); buildMenuEditor('menuEditorList'); }
   if (tab==='dashboard'){ updateCategorySelectForSales(); setTransactionType('sale'); updateScreen(); }
   if (tab==='profit')   { initProfitTab(); }
   if (tab==='fiado')    { Fiado.init(); }
@@ -1292,17 +1455,28 @@ window.finalizeSale = async () => {
   const timeStr = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const itensFiado   = saleCart.filter(i=>i.payment==='Fiado/Prazo');
   try {
+    // Escrita em lote: 1 chamada ao Firestore para todos os itens do carrinho,
+    // em vez de 1 escrita por item (reduz o consumo de "escritas/dia").
     const batch = writeBatch(db);
+    const optimisticDocs = [];
     saleCart.forEach(item=>{
       const ref = doc(salesCol);
-      batch.set(ref,{
+      const payload = {
         date:dateISO, timestamp:now.toISOString(), time:timeStr,
         desc:item.desc, category:item.category,
         value:item.total||item.value, payment:item.payment, type:'sale',
         qty: item.qty||1, unitValue: item.value
-      });
+      };
+      batch.set(ref,payload);
+      optimisticDocs.push({id:ref.id, ...payload});
     });
     await batch.commit();
+    // Atualização otimista: injeta os itens localmente na hora, sem esperar
+    // o listener em tempo real (que só dispara depois de ler de volta do
+    // servidor). Isso evita 1 leitura extra por item recém-criado.
+    localSales = [...optimisticDocs, ...localSales];
+    saveCache(CACHE_KEYS.sales, localSales);
+    updateScreen();
     if (itensFiado.length>0) {
       document.getElementById('loadingIndicator').classList.add('hidden');
       btn.disabled=false;
@@ -1368,12 +1542,16 @@ window.addTransaction = async () => {
   btn.disabled=true; document.getElementById('loadingIndicator').classList.remove('hidden');
   const now = new Date();
   try {
-    await addDoc(expensesCol,{
+    const payload = {
       date:localDateISO(), timestamp:now.toISOString(),
       time:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
       desc, category:document.getElementById('category').value,
       value:price, payment:document.getElementById('payment').value, type:'expense'
-    });
+    };
+    const ref = await addDoc(expensesCol,payload);
+    localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
+    saveCache(CACHE_KEYS.expenses, localExpenses);
+    updateScreen();
     showNotification('Saída salva!','success');
     document.getElementById('desc').value=''; document.getElementById('value').value='';
     document.getElementById('desc').focus();
@@ -1389,14 +1567,18 @@ window.saveExpense = async () => {
   const btn = document.getElementById('saveExpenseBtn');
   btn.disabled=true; document.getElementById('loadingIndicator').classList.remove('hidden');
   try {
-    await addDoc(expensesCol,{
+    const payload = {
       date:document.getElementById('expenseDate').value||localDateISO(),
       timestamp:now.toISOString(),
       time:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
       desc, category:document.getElementById('expenseCategory').value,
       value:price, payment:document.getElementById('expensePayment').value, type:'expense',
       notes:document.getElementById('expenseNotes').value
-    });
+    };
+    const ref = await addDoc(expensesCol,payload);
+    localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
+    saveCache(CACHE_KEYS.expenses, localExpenses);
+    updateScreen();
     showNotification('Saída salva!','success'); closeModal('expenseModal');
   } catch { showNotification('Erro ao salvar','error'); }
   finally { btn.disabled=false; document.getElementById('loadingIndicator').classList.add('hidden'); }
@@ -1406,6 +1588,10 @@ window.deleteTransaction = async (type, id) => {
   if (!confirm('Excluir esta transação?')) return;
   try {
     await deleteDoc(doc(db, type==='sale'?'vendas_agrovida':'saidas_agrovida', id));
+    // Remove otimisticamente da lista local + cache (sem esperar o listener)
+    if (type==='sale') { localSales = localSales.filter(s=>s.id!==id); saveCache(CACHE_KEYS.sales, localSales); }
+    else               { localExpenses = localExpenses.filter(e=>e.id!==id); saveCache(CACHE_KEYS.expenses, localExpenses); }
+    updateScreen();
     showNotification('Excluída!','success');
   } catch { showNotification('Erro ao excluir','error'); }
 };
@@ -1421,12 +1607,16 @@ window.showAddExpenseModal = () => {
 
 // ─── META ─────────────────────────────────
 async function loadMetaMensal() {
+  // Cache-first: usa o valor local imediatamente; confirma com o Firebase em 2º plano
+  metaMensal = parseFloat(localStorage.getItem('metaAgro'))||metaMensal;
+  updateMetaDisplay();
   try {
     const snap = await getDoc(doc(settingsCol,'metaMensal'));
-    metaMensal = snap.exists()?(snap.data().valor||5000):5000;
+    trackReads(1);
+    const remoteVal = snap.exists()?(snap.data().valor||5000):5000;
     if (!snap.exists()) await setDoc(doc(settingsCol,'metaMensal'),{valor:5000});
-  } catch { metaMensal = parseFloat(localStorage.getItem('metaAgro'))||5000; }
-  updateMetaDisplay();
+    if (remoteVal !== metaMensal) { metaMensal = remoteVal; localStorage.setItem('metaAgro',metaMensal); updateMetaDisplay(); }
+  } catch { /* mantém valor do cache local */ }
 }
 async function saveMetaMensal(val) {
   try { await setDoc(doc(settingsCol,'metaMensal'),{valor:val}); } catch {}
@@ -1508,11 +1698,55 @@ function updateDashboardFiadoKPIs() {
 }
 
 // ─── HISTÓRICO ────────────────────────────
-window.filterHistory = () => {
+// Cache local por mês para consultas de períodos fora da janela "ao vivo"
+// (últimos 60 dias). Evita reler o Firestore toda vez que o usuário volta
+// a filtrar o mesmo mês antigo.
+const _historicoCacheMemoria = {}; // { 'YYYY-MM': {sales:[], expenses:[]} }
+async function buscarHistoricoMes(mesISO) {
+  if (_historicoCacheMemoria[mesISO]) return _historicoCacheMemoria[mesISO];
+  const cacheKey = `agro_hist_${mesISO}`;
+  const cached = readCache(cacheKey);
+  // Cache de mês fechado (mês diferente do atual) não expira — dados antigos não mudam mais.
+  const isMesFechado = mesISO < localDateISO().substring(0,7);
+  if (cached && isMesFechado) { _historicoCacheMemoria[mesISO]=cached.data; return cached.data; }
+
+  const inicio = `${mesISO}-01`, fimObj = new Date(mesISO+'-01T00:00:00'); fimObj.setMonth(fimObj.getMonth()+1); fimObj.setDate(0);
+  const fim = `${fimObj.getFullYear()}-${String(fimObj.getMonth()+1).padStart(2,'0')}-${String(fimObj.getDate()).padStart(2,'0')}`;
+  try {
+    const [sSnap,eSnap] = await Promise.all([
+      getDocs(query(salesCol, where('date','>=',inicio), where('date','<=',fim), orderBy('date','desc'))),
+      getDocs(query(expensesCol, where('date','>=',inicio), where('date','<=',fim), orderBy('date','desc')))
+    ]);
+    trackReads(sSnap.size + eSnap.size);
+    const data = {
+      sales: sSnap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'})),
+      expenses: eSnap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'expense'}))
+    };
+    _historicoCacheMemoria[mesISO]=data;
+    saveCache(cacheKey, data);
+    return data;
+  } catch(e) { console.error('buscarHistoricoMes:',e); return {sales:[],expenses:[]}; }
+}
+
+window.filterHistory = async () => {
   const m    = document.getElementById('filterMonth').value;
   const d    = document.getElementById('filterDate').value;
   const type = document.getElementById('filterType').value;
-  let sl=[...localSales], el=[...localExpenses];
+  const cutoff = cutoffDateISO();
+  let sl, el;
+  const alvoDate = d || (m ? m+'-01' : null);
+  const foraDaJanela = alvoDate && alvoDate < cutoff;
+
+  if (foraDaJanela) {
+    // Período mais antigo que a janela "ao vivo": busca sob demanda (com cache)
+    const mesAlvo = (d||m).substring(0,7);
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    const hist = await buscarHistoricoMes(mesAlvo);
+    document.getElementById('loadingIndicator').classList.add('hidden');
+    sl=[...hist.sales]; el=[...hist.expenses];
+  } else {
+    sl=[...localSales]; el=[...localExpenses];
+  }
   if (d)      { sl=sl.filter(s=>s.date===d);            el=el.filter(e=>e.date===d);            document.getElementById('filterMonth').value=''; }
   else if (m) { sl=sl.filter(s=>s.date.startsWith(m));  el=el.filter(e=>e.date.startsWith(m));  document.getElementById('filterDate').value=''; }
   let all=[];
@@ -1556,7 +1790,32 @@ window.filterExpenses = () => {
     const dateBR=e.date.split('-').reverse().join('/');
     return `<tr class="border-b expense-row hover:bg-red-50 text-sm"><td class="p-3 text-xs text-gray-500">${dateBR}</td><td class="p-3 font-medium">${e.desc}</td><td class="p-3"><span class="bg-red-100 px-2 py-0.5 rounded text-red-600 text-xs">${e.category||'-'}</span></td><td class="p-3 text-xs text-gray-500">${e.payment}</td><td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(e.value)}</td><td class="p-3 text-center"><button onclick="window.deleteTransaction('expense','${e.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
   }).join('') : '<tr><td colspan="6" class="p-8 text-center text-gray-400 text-sm">Nenhuma despesa</td></tr>';
+  renderExpensesByCategory(f);
 };
+function renderExpensesByCategory(list) {
+  const tbody = document.getElementById('expensesByCategoryBody');
+  if (!tbody) return;
+  const grupos = {};
+  list.forEach(e=>{
+    const cat = e.category || 'Sem categoria';
+    if (!grupos[cat]) grupos[cat] = {total:0, qtd:0};
+    grupos[cat].total += e.value;
+    grupos[cat].qtd += 1;
+  });
+  const totalGeral = list.reduce((s,e)=>s+e.value,0);
+  const linhas = Object.entries(grupos).map(([cat,d])=>({cat, ...d, pct: totalGeral>0?(d.total/totalGeral)*100:0}))
+    .sort((a,b)=>b.total-a.total);
+  const maxTotal = Math.max(...linhas.map(l=>l.total),1);
+  tbody.innerHTML = linhas.length ? linhas.map(l=>`
+    <tr class="border-b hover:bg-gray-50 text-sm">
+      <td class="p-3"><span class="bg-red-100 px-2 py-0.5 rounded text-red-600 text-xs font-medium">${l.cat}</span></td>
+      <td class="p-3 text-right font-bold text-expense-red">${window.formatMoney(l.total)}</td>
+      <td class="p-3 text-center text-xs text-gray-500">${l.pct.toFixed(1)}%</td>
+      <td class="p-3 text-center text-xs text-gray-500">${l.qtd}</td>
+      <td class="p-3"><div class="profit-bar-bg"><div class="profit-bar-fill" style="width:${(l.total/maxTotal*100).toFixed(1)}%;background:#ef4444"></div></div></td>
+    </tr>`).join('')
+    : '<tr><td colspan="5" class="p-8 text-center text-gray-400 text-sm">Nenhuma saída no filtro atual</td></tr>';
+}
 function updateExpenseSummary() {
   const m = localDateISO().substring(0,7);
   const me= localExpenses.filter(e=>e.date.startsWith(m));
@@ -1589,6 +1848,10 @@ function loadExpenseCategories() {
   const se=document.getElementById('expenseCategory');
   if (se) se.innerHTML=expenseCategories.map(c=>`<option value="${c}">${c}</option>`).join('');
 }
+function loadExpenseCategoriesList() {
+  const l=document.getElementById('expenseCategoriesList');
+  if (l) l.innerHTML=expenseCategories.map((c,i)=>`<div class="flex justify-between items-center p-2 bg-red-50 rounded-lg text-sm"><span>${c}</span><button onclick="removeExpenseCategory(${i})" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button></div>`).join('');
+}
 function loadExpenseCategoriesForReports() {
   const s=document.getElementById('customFilterCategory');
   if (s) { const all=[...new Set([...categories,...expenseCategories])]; s.innerHTML='<option value="">Todas</option>'+all.map(c=>`<option value="${c}">${c}</option>`).join(''); }
@@ -1597,18 +1860,64 @@ function loadFilterCategories() {
   const s=document.getElementById('filterCategory');
   if (s) s.innerHTML='<option value="">Todas</option>'+categories.map(c=>`<option value="${c}">${c}</option>`).join('');
 }
+
+// ─── SINCRONIZAÇÃO DE CATEGORIAS ENTRE DISPOSITIVOS ───────────────
+// As categorias (de produto/venda e de saída) agora ficam salvas em um
+// único documento no Firebase (configuracoes_agrovida/categorias) e são
+// escutadas em tempo real: mudar em um aparelho reflete em todos os outros
+// automaticamente. O localStorage continua sendo usado só como cache
+// (para a tela não ficar vazia enquanto o Firebase ainda não respondeu).
+const categoriasDocRef = doc(settingsCol,'categorias');
+function refreshAllCategoryUI() {
+  loadCategories(); loadExpenseCategoriesList();
+  updateCategorySelect(); updateCategorySelectForSales();
+  loadExpenseCategories(); loadFilterCategories(); loadExpenseCategoriesForReports();
+}
+async function persistCategoriasFirestore() {
+  try { await setDoc(categoriasDocRef, { categories, expenseCategories, updatedAt:new Date().toISOString() }, {merge:true}); }
+  catch(e){ console.error('persistCategoriasFirestore:',e); showNotification('Categoria salva localmente, mas não sincronizou (sem conexão)','warning'); }
+}
+onSnapshot(categoriasDocRef, snap=>{
+  trackReads(1);
+  if (!snap.exists()) { persistCategoriasFirestore(); return; } // primeira vez: envia o que já existe local
+  const d = snap.data();
+  let mudou=false;
+  if (Array.isArray(d.categories) && JSON.stringify(d.categories)!==JSON.stringify(categories)) { categories=d.categories; mudou=true; }
+  if (Array.isArray(d.expenseCategories) && JSON.stringify(d.expenseCategories)!==JSON.stringify(expenseCategories)) { expenseCategories=d.expenseCategories; mudou=true; }
+  if (mudou) {
+    localStorage.setItem('agroCategories',JSON.stringify(categories));
+    localStorage.setItem('agroExpenseCategories',JSON.stringify(expenseCategories));
+    refreshAllCategoryUI();
+  }
+},e=>console.error('categorias listener:',e));
+
 window.addCategory = () => {
   const v=document.getElementById('newCategory').value.trim();
   if (v&&!categories.includes(v)) {
     categories.push(v); localStorage.setItem('agroCategories',JSON.stringify(categories));
-    loadCategories(); updateCategorySelect(); updateCategorySelectForSales(); loadFilterCategories();
+    refreshAllCategoryUI(); persistCategoriasFirestore();
     document.getElementById('newCategory').value=''; showNotification('Categoria adicionada!','success');
   }
 };
 window.removeCategory = i => {
   if (confirm(`Remover "${categories[i]}"?`)) {
     categories.splice(i,1); localStorage.setItem('agroCategories',JSON.stringify(categories));
-    loadCategories(); updateCategorySelect(); updateCategorySelectForSales(); loadFilterCategories();
+    refreshAllCategoryUI(); persistCategoriasFirestore();
+    showNotification('Removida!','success');
+  }
+};
+window.addExpenseCategory = () => {
+  const v=document.getElementById('newExpenseCategory').value.trim();
+  if (v&&!expenseCategories.includes(v)) {
+    expenseCategories.push(v); localStorage.setItem('agroExpenseCategories',JSON.stringify(expenseCategories));
+    refreshAllCategoryUI(); persistCategoriasFirestore();
+    document.getElementById('newExpenseCategory').value=''; showNotification('Categoria de saída adicionada!','success');
+  }
+};
+window.removeExpenseCategory = i => {
+  if (confirm(`Remover "${expenseCategories[i]}"?`)) {
+    expenseCategories.splice(i,1); localStorage.setItem('agroExpenseCategories',JSON.stringify(expenseCategories));
+    refreshAllCategoryUI(); persistCategoriasFirestore();
     showNotification('Removida!','success');
   }
 };
@@ -1624,18 +1933,51 @@ function getFiadoPaymentsInRange(s,e) {
   });
   return t;
 }
-function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
+async function getRangeData(startISO,endISO) {
+  // Junta dados "ao vivo" (localSales/localExpenses) com meses antigos buscados sob demanda
+  const cutoff = cutoffDateISO();
+  let sales = [...localSales], expenses = [...localExpenses];
+  if (startISO < cutoff) {
+    // Busca os meses antigos necessários (com cache) e mescla, evitando duplicar
+    const mesesNecessarios = new Set();
+    let cur = new Date(startISO+'-01T00:00:00'==startISO+'T00:00:00'?startISO+'T00:00:00':startISO+'T00:00:00');
+    cur = new Date(startISO+'T00:00:00');
+    const fim = new Date((endISO<cutoff?endISO:cutoff)+'T00:00:00');
+    cur.setDate(1);
+    while (cur<=fim) { mesesNecessarios.add(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}`); cur.setMonth(cur.getMonth()+1); }
+    document.getElementById('loadingIndicator').classList.remove('hidden');
+    for (const mes of mesesNecessarios) {
+      const hist = await buscarHistoricoMes(mes);
+      const idsS = new Set(sales.map(s=>s.id)), idsE = new Set(expenses.map(e=>e.id));
+      hist.sales.forEach(s=>{ if(!idsS.has(s.id)) sales.push(s); });
+      hist.expenses.forEach(e=>{ if(!idsE.has(e.id)) expenses.push(e); });
+    }
+    document.getElementById('loadingIndicator').classList.add('hidden');
+  }
+  return {sales,expenses};
+}
+async function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
   const incFiado=document.getElementById('incluirFiadoRelatorio')?.checked!==false;
   const inRange=(d,s,e)=>{ const dd=new Date(d+'T00:00:00'); return dd>=new Date(s+'T00:00:00')&&dd<=new Date(e+'T23:59:59'); };
-  let fs=localSales.filter(s=>inRange(s.date,startISO,endISO)&&(!catFilter||s.category===catFilter)&&(typeFilter==='all'||typeFilter==='sale'));
-  const fe=localExpenses.filter(e=>inRange(e.date,startISO,endISO)&&(!catFilter||e.category===catFilter)&&(typeFilter==='all'||typeFilter==='expense'));
+  const {sales:allSales, expenses:allExpenses} = await getRangeData(startISO,endISO);
+  let fs=allSales.filter(s=>inRange(s.date,startISO,endISO)&&(!catFilter||s.category===catFilter)&&(typeFilter==='all'||typeFilter==='sale'));
+  const fe=allExpenses.filter(e=>inRange(e.date,startISO,endISO)&&(!catFilter||e.category===catFilter)&&(typeFilter==='all'||typeFilter==='expense'));
   let fiadoLancado=0;
   if (incFiado&&(typeFilter==='all'||typeFilter==='sale')) {
-    fiadoLancado=localSales.filter(s=>inRange(s.date,startISO,endISO)&&s.payment==='Fiado/Prazo').reduce((s,x)=>s+x.value,0);
+    fiadoLancado=allSales.filter(s=>inRange(s.date,startISO,endISO)&&s.payment==='Fiado/Prazo').reduce((s,x)=>s+x.value,0);
   }
   const tS=fs.reduce((s,x)=>s+x.value,0), tE=fe.reduce((s,x)=>s+x.value,0);
+  // FIX: o custo do produto é POR UNIDADE — precisa multiplicar pela quantidade
+  // vendida na linha, senão o custo fica subestimado em vendas com qty > 1
+  // (ex: 5 unidades vendidas descontava o custo de apenas 1). Também passa a
+  // comparar o nome do produto sem diferenciar maiúsculas/minúsculas, igual
+  // já era feito na aba "Lucro por Produto".
   let profit=0;
-  fs.forEach(sale=>{ const p=products.find(x=>x.name===sale.desc); if(p&&p.cost) profit+=sale.value-p.cost; });
+  fs.forEach(sale=>{
+    const p=products.find(x=>x.name.toLowerCase()===String(sale.desc||'').toLowerCase());
+    const custo = (p&&p.cost>0) ? p.cost*(sale.qty||1) : sale.value*DEFAULT_COST_RATIO;
+    profit+=sale.value-custo;
+  });
   profit-=tE;
   const fiadoRec=getFiadoPaymentsInRange(startISO,endISO);
   const nb=tS-tE;
@@ -1650,6 +1992,106 @@ function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
   updateCashFlowChart(fs,fe,startISO,endISO);
   updateCategoryChart(fs,fe);
   updateTopExpensesTable(fe);
+  await renderAnalytics(startISO,endISO,fs,fe);
+}
+
+// ─── ANÁLISES ESTRATÉGICAS / PROJEÇÕES ────────────
+async function renderAnalytics(startISO,endISO,fs,fe) {
+  // 1) Comparativo com o período anterior de mesma duração
+  const startDate = new Date(startISO+'T00:00:00'), endDate = new Date(endISO+'T00:00:00');
+  const diasPeriodo = Math.round((endDate-startDate)/86400000)+1;
+  const prevEnd = new Date(startDate); prevEnd.setDate(prevEnd.getDate()-1);
+  const prevStart = new Date(prevEnd); prevStart.setDate(prevStart.getDate()-diasPeriodo+1);
+  const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const prevStartISO=toISO(prevStart), prevEndISO=toISO(prevEnd);
+  const {sales:prevRangeSales, expenses:prevRangeExpenses} = await getRangeData(prevStartISO,prevEndISO);
+  const inRangeP=(d,s,e)=>{ const dd=new Date(d+'T00:00:00'); return dd>=new Date(s+'T00:00:00')&&dd<=new Date(e+'T23:59:59'); };
+  const prevSalesTotal = prevRangeSales.filter(s=>inRangeP(s.date,prevStartISO,prevEndISO)).reduce((s,x)=>s+x.value,0);
+  const prevExpTotal   = prevRangeExpenses.filter(e=>inRangeP(e.date,prevStartISO,prevEndISO)).reduce((s,x)=>s+x.value,0);
+  const curSalesTotal = fs.reduce((s,x)=>s+x.value,0);
+  const curExpTotal   = fe.reduce((s,x)=>s+x.value,0);
+  const pct=(cur,prev)=> prev>0 ? ((cur-prev)/prev*100) : (cur>0?100:0);
+  const pctVendas = pct(curSalesTotal,prevSalesTotal), pctSaidas = pct(curExpTotal,prevExpTotal);
+  const elV=document.getElementById('analyticsCompVendas');
+  if (elV) { elV.textContent = `${pctVendas>=0?'▲':'▼'} ${Math.abs(pctVendas).toFixed(1)}%`; elV.className=`text-lg font-bold ${pctVendas>=0?'text-green-600':'text-red-600'}`; }
+  const elS=document.getElementById('analyticsCompSaidas');
+  // Para saídas, queda é positiva (verde) e alta é negativa (vermelho) — cor invertida
+  if (elS) { elS.textContent = `${pctSaidas>=0?'▲':'▼'} ${Math.abs(pctSaidas).toFixed(1)}%`; elS.className=`text-lg font-bold ${pctSaidas<=0?'text-green-600':'text-red-600'}`; }
+  const periodoEl = document.getElementById('analyticsCompPeriodo');
+  if (periodoEl) periodoEl.textContent = `vs. ${prevStartISO.split('-').reverse().join('/')} – ${prevEndISO.split('-').reverse().join('/')} (${diasPeriodo} dia${diasPeriodo>1?'s':''})`;
+
+  // 2) Projeção de fechamento do mês — só quando o filtro é "do dia 1 até hoje" do mês atual
+  const hojeISO = localDateISO(), mesAtual = hojeISO.substring(0,7);
+  const projEl = document.getElementById('analyticsProjecaoMes'), projDetEl = document.getElementById('analyticsProjecaoDetalhe');
+  if (startISO===mesAtual+'-01' && endISO===hojeISO) {
+    const diaAtual = new Date().getDate();
+    const diasNoMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+    const mediaDiaria = diaAtual>0 ? curSalesTotal/diaAtual : 0;
+    const projecao = mediaDiaria*diasNoMes;
+    if (projEl) projEl.textContent = window.formatMoney(projecao);
+    if (projDetEl) projDetEl.textContent = `Ritmo atual: ${window.formatMoney(mediaDiaria)}/dia · dia ${diaAtual} de ${diasNoMes}`;
+  } else {
+    if (projEl) projEl.textContent = '—';
+    if (projDetEl) projDetEl.textContent = 'Selecione o período "do dia 1 até hoje" para ver a projeção do mês atual';
+  }
+
+  // 3) Tendência dos últimos 6 meses + projeção linear simples (mínimos quadrados)
+  await renderTrendChart();
+
+  // 4) Desempenho por dia da semana no período filtrado
+  renderWeekdayChart(fs);
+}
+
+async function renderTrendChart() {
+  const hoje = new Date();
+  const meses = [];
+  for (let i=5;i>=0;i--) { const d=new Date(hoje.getFullYear(),hoje.getMonth()-i,1); meses.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`); }
+  const mesAtual = localDateISO().substring(0,7);
+  const totals = [];
+  for (const mes of meses) {
+    if (mes===mesAtual) totals.push(localSales.filter(s=>s.date.startsWith(mes)).reduce((s,x)=>s+x.value,0));
+    else { const hist = await buscarHistoricoMes(mes); totals.push(hist.sales.reduce((s,x)=>s+x.value,0)); }
+  }
+  const n=totals.length, xs=totals.map((_,i)=>i);
+  const sumX=xs.reduce((a,b)=>a+b,0), sumY=totals.reduce((a,b)=>a+b,0);
+  const sumXY=xs.reduce((a,x,i)=>a+x*totals[i],0), sumXX=xs.reduce((a,x)=>a+x*x,0);
+  const denom=(n*sumXX-sumX*sumX);
+  const slope = denom!==0 ? (n*sumXY-sumX*sumY)/denom : 0;
+  const intercept = (sumY-slope*sumX)/n;
+  const projecao = Math.max(0, slope*n+intercept);
+  const mesesLabels = meses.map(m=>{ const [y,mo]=m.split('-'); return `${mo}/${y.slice(2)}`; });
+  const proxData = new Date(hoje.getFullYear(),hoje.getMonth()+1,1);
+  const proxLabel = `${String(proxData.getMonth()+1).padStart(2,'0')}/${String(proxData.getFullYear()).slice(2)} (proj.)`;
+  const ctx=document.getElementById('trendChart')?.getContext('2d');
+  if (!ctx) return;
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:[...mesesLabels, proxLabel],
+      datasets:[
+        {label:'Vendas reais', data:[...totals,null], borderColor:'rgb(0,144,54)', backgroundColor:'rgba(0,144,54,0.08)', borderWidth:2, tension:0.25, fill:true},
+        {label:'Tendência/Projeção', data:[...Array(n-1).fill(null), totals[n-1], projecao], borderColor:'rgb(59,130,246)', borderDash:[6,4], borderWidth:2}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true}}}
+  });
+}
+
+function renderWeekdayChart(fs) {
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const soma=[0,0,0,0,0,0,0], qtd=[0,0,0,0,0,0,0];
+  fs.forEach(s=>{ const d=new Date(s.date+'T12:00:00').getDay(); soma[d]+=s.value; qtd[d]+=1; });
+  const medias = soma.map((s,i)=>qtd[i]>0?s/qtd[i]:0);
+  const ctx=document.getElementById('weekdayChart')?.getContext('2d');
+  if (!ctx) return;
+  if (weekdayChart) weekdayChart.destroy();
+  const maxV=Math.max(...medias);
+  weekdayChart = new Chart(ctx,{
+    type:'bar',
+    data:{ labels:dias, datasets:[{label:'Média por dia', data:medias, backgroundColor:medias.map(v=>v===maxV&&v>0?'rgba(0,144,54,0.85)':'rgba(0,144,54,0.35)'), borderColor:'rgb(0,144,54)', borderWidth:1}] },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+  });
 }
 
 // ─── FIX: Gráfico fluxo de caixa com data correta ────────────
@@ -1705,12 +2147,12 @@ function updateTopExpensesTable(expenses) {
     return `<tr class="border-b expense-row hover:bg-red-50 text-sm"><td class="p-3 font-medium">${e.desc}</td><td class="p-3"><span class="bg-red-100 px-2 py-0.5 rounded text-red-600 text-xs">${e.category||'-'}</span></td><td class="p-3 text-center text-xs text-gray-500">${dateBR}</td><td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(e.value)}</td><td class="p-3 text-center text-xs text-gray-500">${e.payment}</td></tr>`;
   }).join('');
 }
-window.applyCustomFilter = () => {
+window.applyCustomFilter = async () => {
   const s=document.getElementById('customFilterStart').value;
   const e=document.getElementById('customFilterEnd').value;
   if (!s||!e) { showNotification('Selecione as datas','error'); return; }
   if (new Date(s)>new Date(e)) { showNotification('Data inicial maior que final','error'); return; }
-  updateReports(s,e,document.getElementById('customFilterType').value,document.getElementById('customFilterCategory').value);
+  await updateReports(s,e,document.getElementById('customFilterType').value,document.getElementById('customFilterCategory').value);
 };
 
 // ─── LUCRO POR PRODUTO ────────────────────
@@ -1722,14 +2164,15 @@ function initProfitTab() {
   if (s) s.innerHTML='<option value="">Todas</option>'+categories.map(c=>`<option value="${c}">${c}</option>`).join('');
   renderProfitReport();
 }
-window.renderProfitReport = () => {
+window.renderProfitReport = async () => {
   const start=document.getElementById('profitFilterStart').value;
   const end  =document.getElementById('profitFilterEnd').value;
   const cat  =document.getElementById('profitFilterCategory').value;
   const sort =document.getElementById('profitSort')?.value||'profit_desc';
   const incFiado=document.getElementById('incluirFiadoLucro')?.checked!==false;
   if (!start||!end) { showNotification('Selecione o período','error'); return; }
-  let filtered=localSales.filter(s=>{
+  const {sales:baseSales} = await getRangeData(start,end);
+  let filtered=baseSales.filter(s=>{
     const d=new Date(s.date+'T12:00:00');
     return d>=new Date(start+'T00:00:00')&&d<=new Date(end+'T23:59:59')&&(!cat||s.category===cat);
   });
@@ -1739,7 +2182,10 @@ window.renderProfitReport = () => {
       (c.transactions||[]).filter(t=>t.type==='debit').forEach(t=>{
         const d=(t.date||'').substring(0,10);
         if (d>=start&&d<=end&&!mainFiadoKeys.has(t.desc+'|'+d)) {
-          filtered.push({date:d,desc:t.desc,category:cat||(categories[0]||'Outros'),value:t.total,payment:'Fiado/Prazo',type:'sale',_fromFiado:true});
+          // FIX: preserva a quantidade real do lançamento fiado (t.qtd) — antes
+          // esse campo não era passado adiante e o cálculo de custo assumia
+          // sempre qty=1, mesmo quando várias unidades foram vendidas.
+          filtered.push({date:d,desc:t.desc,category:cat||(categories[0]||'Outros'),value:t.total,qty:t.qtd||1,payment:'Fiado/Prazo',type:'sale',_fromFiado:true});
         }
       });
     });
@@ -1756,8 +2202,13 @@ window.renderProfitReport = () => {
     if (sale.payment==='Fiado/Prazo'||sale._fromFiado) map[key].temFiado=true;
   });
   let data=Object.values(map).map(item=>{
-    const tc=item.unitCost*(item.qty), profit=item.revenue-tc, margin=item.revenue>0?(profit/item.revenue)*100:0;
-    return {...item,totalCost:tc,profit,margin};
+    // Produtos SEM cadastro/custo: assume-se que o custo foi de 80% da receita
+    // (margem de 20%), já que muitas vendas são só anotadas por descrição,
+    // sem produto cadastrado no Catálogo. Produtos com custo real cadastrado
+    // continuam usando o valor informado.
+    const tc = item.hasCost ? item.unitCost*item.qty : item.revenue*DEFAULT_COST_RATIO;
+    const profit=item.revenue-tc, margin=item.revenue>0?(profit/item.revenue)*100:0;
+    return {...item,totalCost:tc,profit,margin,estimado:!item.hasCost};
   });
   const [sf,so]=sort.split('_');
   data.sort((a,b)=>{
@@ -1839,13 +2290,40 @@ window.exportProfitPDF = () => {
   pd.save(`lucro-${localDateISO()}.pdf`); showNotification('PDF exportado!','success');
 };
 
-// ─── PRODUTOS ─────────────────────────────
-async function loadProducts() {
+// ─── PRODUTOS (cache-first, TTL 10 min) ──
+async function loadProducts(forceRefresh=false) {
+  const cached = readCache(CACHE_KEYS.products);
+  const cacheAge = cached ? Date.now()-cached.ts : Infinity;
+  const isFresh = cached && cacheAge < PRODUCTS_CACHE_TTL;
+
+  // 1) Mostra cache imediatamente (mesmo se estiver "velho") para não deixar tela vazia
+  if (cached && !products.length) {
+    products = cached.data;
+    updateProductsDisplay();
+  }
+  updateProductsCacheInfo(cached?cacheAge:null);
+
+  // 2) Só busca no Firestore se: forçado pelo usuário, sem cache, ou cache expirado
+  if (!forceRefresh && isFresh) return;
+
   try {
     const snap=await getDocs(query(productsCol,orderBy('createdAt','desc')));
+    trackReads(snap.size);
     products=snap.docs.map(d=>({id:d.id,...d.data(),price:parseFloat(d.data().price)||0,cost:parseFloat(d.data().cost)||0,discountPrice:parseFloat(d.data().discountPrice)||0,stock:parseInt(d.data().stock)||0}));
+    saveCache(CACHE_KEYS.products, products);
     sortProducts();
-  } catch(e){ console.error('loadProducts:',e); }
+    updateProductsCacheInfo(0);
+    if (forceRefresh) showNotification('Catálogo atualizado!','success');
+  } catch(e){ console.error('loadProducts:',e); if(!products.length) showNotification('Sem conexão — usando cache local','warning'); }
+}
+window.loadProducts = loadProducts;
+function updateProductsCacheInfo(ageMs) {
+  const el = document.getElementById('productsCacheInfo');
+  if (!el) return;
+  if (ageMs===null||ageMs===undefined) { el.textContent=''; return; }
+  const min = Math.floor(ageMs/60000);
+  el.textContent = min<1 ? 'atualizado agora' : `cache: ${min} min atrás`;
+  const st = document.getElementById('statCacheAge'); if (st) st.textContent = min<1?'agora':`${min} min`;
 }
 window.sortProducts = () => {
   const [f,o]=(document.getElementById('productSort')?.value||'name_asc').split('_');
@@ -1891,16 +2369,33 @@ window.saveProduct = async () => {
   document.getElementById('loadingIndicator').classList.remove('hidden');
   try {
     const pd={name,price,cost,discountPrice:document.getElementById('productDiscountPrice').value?parseFloat(document.getElementById('productDiscountPrice').value.replace(',','.'))||0:0,stock:parseInt(document.getElementById('productStock').value)||0,category:document.getElementById('productCategory').value,unit:document.getElementById('productUnit').value,sku:document.getElementById('productSKU').value.trim(),updatedAt:serverTimestamp()};
-    if (editingProductId){ await updateDoc(doc(productsCol,editingProductId),pd); showNotification('Atualizado!','success'); }
-    else { pd.createdAt=serverTimestamp(); pd.salesCount=0; await addDoc(productsCol,pd); showNotification('Cadastrado!','success'); }
-    closeModal('productModal'); await loadProducts();
+    if (editingProductId){
+      await updateDoc(doc(productsCol,editingProductId),pd);
+      // Atualização otimista no array local + cache, sem reler a coleção inteira
+      const idx=products.findIndex(p=>p.id===editingProductId);
+      if (idx>-1) products[idx]={...products[idx],...pd,updatedAt:new Date().toISOString()};
+      showNotification('Atualizado!','success');
+    } else {
+      pd.createdAt=serverTimestamp(); pd.salesCount=0;
+      const ref = await addDoc(productsCol,pd);
+      products.unshift({id:ref.id,...pd,createdAt:new Date().toISOString()});
+      showNotification('Cadastrado!','success');
+    }
+    saveCache(CACHE_KEYS.products, products);
+    sortProducts();
+    closeModal('productModal');
   } catch { showNotification('Erro ao salvar','error'); }
   finally { document.getElementById('loadingIndicator').classList.add('hidden'); }
 };
 window.deleteProduct = async id => {
   if (!confirm('Excluir produto?')) return;
-  try { await deleteDoc(doc(productsCol,id)); showNotification('Excluído!','success'); await loadProducts(); }
-  catch { showNotification('Erro','error'); }
+  try {
+    await deleteDoc(doc(productsCol,id));
+    products = products.filter(p=>p.id!==id);
+    saveCache(CACHE_KEYS.products, products);
+    updateProductsDisplay();
+    showNotification('Excluído!','success');
+  } catch { showNotification('Erro','error'); }
 };
 function updateProductsDisplay() {
   const grid=document.getElementById('productsGrid'); if(!grid) return;
@@ -1960,13 +2455,34 @@ function parseNFeXML(xml) {
     const p=det.getElementsByTagName('prod')[0]; if(!p) continue;
     prods.push({name:p.getElementsByTagName('xProd')[0]?.textContent||'',sku:p.getElementsByTagName('cProd')[0]?.textContent||'',cost:parseFloat((p.getElementsByTagName('vUnCom')[0]?.textContent||'0').replace(',','.'))||0,quantity:parseFloat((p.getElementsByTagName('qCom')[0]?.textContent||'1').replace(',','.'))||1,unit:p.getElementsByTagName('uCom')[0]?.textContent||'Un',category:'Importado'});
   }
-  return {products:prods};
+  // ─── Dados do fornecedor e número da nota (para os boletos) ───
+  const fornecedor = doc.getElementsByTagName('emit')[0]?.getElementsByTagName('xNome')[0]?.textContent || 'Fornecedor não identificado';
+  const nNF = doc.getElementsByTagName('ide')[0]?.getElementsByTagName('nNF')[0]?.textContent || '';
+  // ─── Duplicatas/boletos (seção <cobr><dup> da NFe) — nem toda nota tem essa
+  // seção (ex: pagamento à vista). Quando existe, cada <dup> é uma parcela
+  // com vencimento e valor, que vira automaticamente uma conta a pagar.
+  const boletos = [];
+  const cobr = doc.getElementsByTagName('cobr')[0];
+  if (cobr) {
+    const dups = cobr.getElementsByTagName('dup');
+    for (const dup of dups) {
+      const nDup  = dup.getElementsByTagName('nDup')[0]?.textContent || '';
+      const dVenc = dup.getElementsByTagName('dVenc')[0]?.textContent || '';
+      const vDup  = parseFloat((dup.getElementsByTagName('vDup')[0]?.textContent||'0').replace(',','.'))||0;
+      if (dVenc && vDup>0) {
+        boletos.push({ desc: fornecedor, valor: vDup, vencimento: dVenc, nota: nNF + (nDup?`/${nDup}`:''), status:'pendente', origem:'xml' });
+      }
+    }
+  }
+  return {products:prods, boletos, fornecedor, nNF};
 }
 function displayXMLImportSummary(data) {
   const ex=products.map(p=>p.sku||p.name.toLowerCase());
   const up=data.products.filter(p=>ex.includes(p.sku)||ex.includes(p.name.toLowerCase()));
   const cr=data.products.filter(p=>!ex.includes(p.sku)&&!ex.includes(p.name.toLowerCase()));
-  document.getElementById('xmlImportSummary').innerHTML=`<div class="bg-gray-50 border rounded-lg p-3 mt-2 grid grid-cols-2 gap-3 text-sm"><div class="text-center bg-yellow-50 rounded p-2"><p class="font-bold text-yellow-800">📝 Atualizar</p><p>${up.length}</p></div><div class="text-center bg-blue-50 rounded p-2"><p class="font-bold text-blue-800">➕ Criar</p><p>${cr.length}</p></div></div>`;
+  const nB=(data.boletos||[]).length;
+  const totalB=(data.boletos||[]).reduce((s,b)=>s+b.valor,0);
+  document.getElementById('xmlImportSummary').innerHTML=`<div class="bg-gray-50 border rounded-lg p-3 mt-2 grid grid-cols-2 gap-3 text-sm"><div class="text-center bg-yellow-50 rounded p-2"><p class="font-bold text-yellow-800">📝 Atualizar</p><p>${up.length}</p></div><div class="text-center bg-blue-50 rounded p-2"><p class="font-bold text-blue-800">➕ Criar</p><p>${cr.length}</p></div></div>${nB>0?`<div class="mt-2 bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"><i class="fas fa-file-invoice-dollar mr-1"></i><strong>${nB} boleto(s)</strong> encontrado(s) na nota · Total: <strong>${window.formatMoney(totalB)}</strong> · Fornecedor: ${data.fornecedor||'-'}<br><span class="text-xs">Serão criados automaticamente em "Contas a Pagar" ao processar.</span></div>`:`<div class="mt-2 text-xs text-gray-400">Nenhuma duplicata/boleto encontrado nesta nota (provavelmente pagamento à vista).</div>`}`;
   document.getElementById('xmlImportSummary').classList.remove('hidden');
 }
 window.processXMLImport = async () => {
@@ -1975,15 +2491,38 @@ window.processXMLImport = async () => {
   document.getElementById('loadingIndicator').classList.remove('hidden');
   let u=0,c=0;
   try {
+    // Escreve em lote (1 chamada ao Firestore) em vez de 1 escrita por produto do XML
+    const batch = writeBatch(db);
+    const atualizacoesLocais = [];
     for (const xp of xmlImportData.products) {
       const ex=products.find(p=>p.sku===xp.sku||p.name.toLowerCase()===xp.name.toLowerCase());
-      const pd={name:xp.name,sku:xp.sku,cost:xp.cost,price:xp.cost*(1+margin/100),stock:(ex?.stock||0)+xp.quantity,unit:xp.unit,category:xp.category,updatedAt:serverTimestamp()};
-      if(ex){await updateDoc(doc(productsCol,ex.id),pd);u++;}
-      else{pd.createdAt=serverTimestamp();pd.salesCount=0;await addDoc(productsCol,pd);c++;}
+      const pd={name:xp.name,sku:xp.sku,cost:xp.cost,price:xp.cost*(1+margin/100),stock:(ex?.stock||0)+xp.quantity,unit:xp.unit,category:xp.category,updatedAt:new Date().toISOString()};
+      if(ex){ batch.update(doc(productsCol,ex.id),pd); atualizacoesLocais.push({id:ex.id,...pd}); u++; }
+      else{ const ref=doc(productsCol); pd.createdAt=new Date().toISOString(); pd.salesCount=0; batch.set(ref,pd); atualizacoesLocais.push({id:ref.id,...pd}); c++; }
+    }
+    // Boletos/duplicatas detectados na nota (seção <cobr><dup>) entram no MESMO lote
+    const boletosDetectados = xmlImportData.boletos || [];
+    const novosBoletosLocais = [];
+    boletosDetectados.forEach(b=>{
+      const ref = doc(boletosCol);
+      const payload = {...b, nfNumero:xmlImportData.nNF||'', createdAt:new Date().toISOString()};
+      batch.set(ref, payload);
+      novosBoletosLocais.push({id:ref.id, ...payload});
+    });
+    await batch.commit();
+    atualizacoesLocais.forEach(item=>{
+      const idx=products.findIndex(p=>p.id===item.id);
+      if (idx>-1) products[idx]={...products[idx],...item}; else products.unshift(item);
+    });
+    saveCache(CACHE_KEYS.products, products);
+    if (novosBoletosLocais.length) {
+      boletos = [...boletos, ...novosBoletosLocais];
+      saveCache(CACHE_KEYS.boletos, boletos);
+      updateBoletosBadge();
     }
     localStorage.setItem('defaultProfitMargin',margin);
-    showNotification(`${u} atualizados, ${c} criados`,'success');
-    closeModal('xmlImportModal'); await loadProducts();
+    showNotification(`${u} atualizados, ${c} criados${novosBoletosLocais.length?`, ${novosBoletosLocais.length} boleto(s) lançado(s)`:''}`,'success');
+    closeModal('xmlImportModal'); sortProducts();
   } catch { showNotification('Erro na importação','error'); }
   finally { document.getElementById('loadingIndicator').classList.add('hidden'); xmlImportData=null; }
 };
@@ -1994,7 +2533,7 @@ if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('d
 window.exportHistoryExcel = () => {
   const all=[...localSales.map(s=>({...s,_tp:'Venda'})),...localExpenses.map(e=>({...e,_tp:'Saída'}))].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
   const ws=XLSX.utils.json_to_sheet(all.map(t=>({'Tipo':t._tp,'Data':t.date.split('-').reverse().join('/'),'Hora':t.time||'','Descrição':t.desc||'','Categoria':t.category||'','Pagamento':t.payment||'','Valor':t._tp==='Saída'?-t.value:t.value})));
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Histórico');XLSX.writeFile(wb,`historico-${localDateISO()}.xlsx`);showNotification('Exportado!','success');
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Histórico');XLSX.writeFile(wb,`historico-${localDateISO()}.xlsx`);showNotification('Exportado! (apenas últimos 60 dias — use Relatórios para períodos antigos)','success');
 };
 window.exportExpensesExcel = () => {
   const ws=XLSX.utils.json_to_sheet(localExpenses.map(e=>({'Data':e.date.split('-').reverse().join('/'),'Descrição':e.desc||'','Categoria':e.category||'','Pagamento':e.payment||'','Valor':e.value||0})));
@@ -2022,7 +2561,7 @@ window.createFullBackup = () => {
   try {
     const data = {
       timestamp: new Date().toISOString(),
-      version: '6.0.0',
+      version: '6.1.0',
       sales:    localSales,
       expenses: localExpenses,
       products: products,
@@ -2053,9 +2592,13 @@ function updateSettingsInfo() {
   s('totalExpensesCount',localExpenses.length);
   s('totalProductsCount',products.length);
   s('lastUpdate',        new Date().toLocaleDateString('pt-BR'));
+  s('statLiveDocs',       localSales.length+localExpenses.length);
+  s('statReadsToday',     _estimatedReadsToday);
   document.getElementById('defaultMonthlyGoal')?.setAttribute('value',parseFloat(localStorage.getItem('defaultMonthlyGoal'))||5000);
   document.getElementById('defaultProfitMargin')?.setAttribute('value',parseFloat(localStorage.getItem('defaultProfitMargin'))||30);
   document.getElementById('storeName')?.setAttribute('value',localStorage.getItem('storeName')||'AgroVida+');
+  const pc = readCache(CACHE_KEYS.products);
+  updateProductsCacheInfo(pc?Date.now()-pc.ts:null);
   updateDashboardFiadoKPIs();
 }
 window.changePassword = () => window.showModal('passwordModal');
@@ -2158,8 +2701,18 @@ function fGetOverdue(c) {
 function fSaldo(c) { return (c.transactions||[]).reduce((s,t)=>s+t.total,0); }
 window.fSaldo=fSaldo;
 
+// Cache-first: mostra clientes fiado salvos localmente antes do listener responder
+(function loadFiadoCache(){
+  const cached = readCache(CACHE_KEYS.fiado);
+  if (cached && cached.data && cached.data.length) {
+    fClientes = cached.data;
+    updateDashboardFiadoKPIs();
+  }
+})();
+
 onSnap2(query2(fColClients,orderBy2("createdAt","desc")),snap=>{
   fClientes=snap.docs.map(d=>({id:d.id,...d.data()}));
+  saveCache(CACHE_KEYS.fiado, fClientes);
   Fiado.refreshUI();
   updateDashboardFiadoKPIs();
 },e=>console.error("Fiado listener:",e));
@@ -2382,17 +2935,206 @@ document.addEventListener('click',e=>{
   if(c&&!c.contains(e.target)) document.getElementById('fiadoSearchResults')?.classList.add('hidden');
 });
 
-// ─── FIRESTORE LISTENERS ──────────────────
-onSnapshot(query(salesCol,orderBy("timestamp","desc")),snap=>{
+// ════════════════════════════════════════════════
+// MÓDULO CONTAS A PAGAR (BOLETOS)
+// ════════════════════════════════════════════════
+// Cache-first: mostra boletos salvos localmente antes do Firebase responder
+(function loadBoletosCache(){
+  const cached = readCache(CACHE_KEYS.boletos);
+  if (cached && cached.data && cached.data.length) { boletos = cached.data; }
+})();
+
+onSnapshot(query(boletosCol, orderBy('vencimento','asc')), snap=>{
+  trackReads(snap.size);
+  boletos = snap.docs.map(d=>({id:d.id,...d.data(),valor:parseFloat(d.data().valor)||0}));
+  saveCache(CACHE_KEYS.boletos, boletos);
+  updateBoletosBadge();
+  if (!document.getElementById('tab-boletos').classList.contains('hidden')) renderBoletos();
+},e=>console.error('Boletos listener:',e));
+
+function diasAte(dataISO) {
+  const hoje=new Date(localDateISO()+'T00:00:00');
+  const alvo=new Date(dataISO+'T00:00:00');
+  return Math.round((alvo-hoje)/86400000);
+}
+function statusBoleto(b) {
+  if (b.status==='pago') return 'pago';
+  const d = diasAte(b.vencimento);
+  if (d<0) return 'atrasado';
+  if (d===0) return 'hoje';
+  return 'pendente';
+}
+function updateBoletosBadge() {
+  const hoje = boletos.filter(b=>b.status!=='pago'&&statusBoleto(b)==='hoje').length;
+  const atrasados = boletos.filter(b=>b.status!=='pago'&&statusBoleto(b)==='atrasado').length;
+  const badge = document.getElementById('boletosBadge');
+  if (badge) badge.textContent = (hoje+atrasados)>0 ? `${hoje+atrasados} p/ hoje` : 'Contas a Pagar';
+}
+window.filtrarBoletosPreset = preset => {
+  document.getElementById('boletoFilterMonth').value='';
+  document.getElementById('boletoFilterFornecedor').value='';
+  document.getElementById('boletoFilterStatus').value = preset==='aberto'?'pendente':preset==='atrasado'?'pendente':'all';
+  renderBoletos(preset);
+};
+window.limparFiltrosBoletos = () => {
+  document.getElementById('boletoFilterStatus').value='pendente';
+  document.getElementById('boletoFilterMonth').value='';
+  document.getElementById('boletoFilterFornecedor').value='';
+  renderBoletos();
+};
+window.renderBoletos = (preset=null) => {
+  const statusF = document.getElementById('boletoFilterStatus')?.value||'pendente';
+  const mesF    = document.getElementById('boletoFilterMonth')?.value||'';
+  const fornF   = (document.getElementById('boletoFilterFornecedor')?.value||'').toLowerCase();
+  let list = [...boletos];
+  if (preset==='hoje')     list = list.filter(b=>b.status!=='pago'&&statusBoleto(b)==='hoje');
+  else if (preset==='semana') list = list.filter(b=>b.status!=='pago'&&diasAte(b.vencimento)>=0&&diasAte(b.vencimento)<=7);
+  else if (preset==='atrasado') list = list.filter(b=>b.status!=='pago'&&statusBoleto(b)==='atrasado');
+  else {
+    if (statusF==='pendente') list = list.filter(b=>b.status!=='pago');
+    else if (statusF==='pago') list = list.filter(b=>b.status==='pago');
+  }
+  if (mesF)  list = list.filter(b=>(b.vencimento||'').startsWith(mesF));
+  if (fornF) list = list.filter(b=>(b.desc||'').toLowerCase().includes(fornF));
+  list.sort((a,b)=>(a.vencimento||'').localeCompare(b.vencimento||''));
+
+  const tbody=document.getElementById('boletosTableBody');
+  if (tbody) {
+    tbody.innerHTML = list.length ? list.map(b=>{
+      const st = statusBoleto(b);
+      const vencBR = (b.vencimento||'').split('-').reverse().join('/');
+      const badge = st==='pago'?'<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Pago</span>'
+        : st==='atrasado'?'<span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">⚠️ Atrasado</span>'
+        : st==='hoje'?'<span class="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-bold">Vence hoje</span>'
+        : '<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">Pendente</span>';
+      return `<tr class="border-b hover:bg-gray-50 text-sm ${st==='atrasado'?'bg-red-50':''}">
+        <td class="p-3 text-xs font-medium">${vencBR}</td>
+        <td class="p-3 font-medium">${b.desc||'-'}${b.origem==='xml'?' <span class="text-xs text-purple-500"><i class="fas fa-file-import"></i></span>':''}</td>
+        <td class="p-3 text-xs text-gray-500">${b.nota||'-'}</td>
+        <td class="p-3 text-xs text-gray-500">${b.origem==='xml'?'XML':'Manual'}</td>
+        <td class="p-3 text-right font-bold text-expense-red">${window.formatMoney(b.valor)}</td>
+        <td class="p-3 text-center">${badge}</td>
+        <td class="p-3 text-center whitespace-nowrap">
+          ${b.status!=='pago'?`<button onclick="marcarBoletoPago('${b.id}')" class="text-green-500 hover:text-green-700 mr-2" title="Marcar como pago"><i class="fas fa-check-circle"></i></button>`:''}
+          <button onclick="editarBoleto('${b.id}')" class="text-blue-500 hover:text-blue-700 mr-2" title="Editar"><i class="fas fa-edit"></i></button>
+          <button onclick="deletarBoleto('${b.id}')" class="text-red-400 hover:text-red-600" title="Excluir"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="7" class="p-8 text-center text-gray-400 text-sm">Nenhum boleto encontrado</td></tr>';
+  }
+  updateBoletosKPIs();
+};
+function updateBoletosKPIs() {
+  const abertos = boletos.filter(b=>b.status!=='pago');
+  const hoje     = abertos.filter(b=>statusBoleto(b)==='hoje').reduce((s,b)=>s+b.valor,0);
+  const semana   = abertos.filter(b=>{const d=diasAte(b.vencimento);return d>=0&&d<=7;}).reduce((s,b)=>s+b.valor,0);
+  const totalAberto = abertos.reduce((s,b)=>s+b.valor,0);
+  const atrasados   = abertos.filter(b=>statusBoleto(b)==='atrasado').length;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('boletoKpiHoje',      window.formatMoney(hoje));
+  s('boletoKpiSemana',    window.formatMoney(semana));
+  s('boletoKpiAberto',    window.formatMoney(totalAberto));
+  s('boletoKpiAtrasados', atrasados);
+}
+window.showAddBoletoModal = () => {
+  document.getElementById('boletoModalTitle').textContent='Novo Boleto';
+  document.getElementById('boletoModal').dataset.editId='';
+  ['boletoDesc','boletoValor','boletoNota','boletoObs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('boletoVencimento').value=localDateISO();
+  document.getElementById('boletoStatus').value='pendente';
+  window.showModal('boletoModal');
+};
+window.editarBoleto = id => {
+  const b = boletos.find(x=>x.id===id); if (!b) return;
+  document.getElementById('boletoModalTitle').textContent='Editar Boleto';
+  document.getElementById('boletoModal').dataset.editId=id;
+  document.getElementById('boletoDesc').value=b.desc||'';
+  document.getElementById('boletoValor').value=(b.valor||0).toFixed(2).replace('.',',');
+  document.getElementById('boletoVencimento').value=b.vencimento||'';
+  document.getElementById('boletoNota').value=b.nota||'';
+  document.getElementById('boletoStatus').value=b.status||'pendente';
+  document.getElementById('boletoObs').value=b.obs||'';
+  window.showModal('boletoModal');
+};
+window.saveBoleto = async () => {
+  const desc = document.getElementById('boletoDesc').value.trim();
+  const valor = parseFloat(document.getElementById('boletoValor').value.replace(',','.'));
+  const vencimento = document.getElementById('boletoVencimento').value;
+  if (!desc)              { showNotification('Informe o fornecedor/descrição','error'); return; }
+  if (!valor||valor<=0)   { showNotification('Valor inválido','error'); return; }
+  if (!vencimento)        { showNotification('Informe o vencimento','error'); return; }
+  const editId = document.getElementById('boletoModal').dataset.editId;
+  const payload = {
+    desc, valor, vencimento,
+    nota: document.getElementById('boletoNota').value.trim(),
+    status: document.getElementById('boletoStatus').value,
+    obs: document.getElementById('boletoObs').value.trim(),
+    origem: editId ? (boletos.find(b=>b.id===editId)?.origem||'manual') : 'manual',
+    updatedAt: new Date().toISOString()
+  };
+  document.getElementById('loadingIndicator').classList.remove('hidden');
+  try {
+    if (editId) {
+      await updateDoc(doc(boletosCol,editId), payload);
+      const idx=boletos.findIndex(b=>b.id===editId); if(idx>-1) boletos[idx]={...boletos[idx],...payload};
+    } else {
+      payload.createdAt = new Date().toISOString();
+      const ref = await addDoc(boletosCol, payload);
+      boletos.push({id:ref.id,...payload});
+    }
+    saveCache(CACHE_KEYS.boletos, boletos);
+    closeModal('boletoModal'); renderBoletos();
+    showNotification('Boleto salvo!','success');
+  } catch(e) { console.error(e); showNotification('Erro ao salvar boleto','error'); }
+  finally { document.getElementById('loadingIndicator').classList.add('hidden'); }
+};
+window.marcarBoletoPago = async id => {
+  try {
+    await updateDoc(doc(boletosCol,id), {status:'pago', pagoEm:new Date().toISOString()});
+    const idx=boletos.findIndex(b=>b.id===id); if(idx>-1) { boletos[idx].status='pago'; boletos[idx].pagoEm=new Date().toISOString(); }
+    saveCache(CACHE_KEYS.boletos, boletos);
+    renderBoletos();
+    showNotification('Marcado como pago!','success');
+  } catch { showNotification('Erro','error'); }
+};
+window.deletarBoleto = async id => {
+  if (!confirm('Excluir este boleto?')) return;
+  try {
+    await deleteDoc(doc(boletosCol,id));
+    boletos = boletos.filter(b=>b.id!==id);
+    saveCache(CACHE_KEYS.boletos, boletos);
+    renderBoletos();
+    showNotification('Excluído!','success');
+  } catch { showNotification('Erro ao excluir','error'); }
+};
+
+// ─── CACHE-FIRST: renderiza com dados salvos localmente antes do Firebase responder ───
+(function loadSalesExpensesCache(){
+  const cs = readCache(CACHE_KEYS.sales);
+  const ce = readCache(CACHE_KEYS.expenses);
+  if (cs && cs.data && cs.data.length) localSales = cs.data;
+  if (ce && ce.data && ce.data.length) localExpenses = ce.data;
+  if ((cs&&cs.data.length)||(ce&&ce.data.length)) updateScreen();
+})();
+
+// ─── FIRESTORE LISTENERS (limitados aos últimos 60 dias) ──
+// Antes: onSnapshot ouvia a coleção INTEIRA para sempre (custo cresce com o tempo).
+// Agora: só monitora em tempo real os últimos 60 dias. Períodos mais antigos
+// são buscados sob demanda em Relatórios/Histórico (getDocs + cache local).
+onSnapshot(query(salesCol, where('date','>=',cutoffDateISO()), orderBy("date","desc")),snap=>{
+  trackReads(snap.size);
   localSales=snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'}));
+  saveCache(CACHE_KEYS.sales, localSales);
   updateScreen();
   if(!document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
   if(!document.getElementById('tab-reports').classList.contains('hidden'))  applyCustomFilter();
   if(!document.getElementById('tab-profit').classList.contains('hidden'))   renderProfitReport();
 },e=>console.error("Vendas:",e));
 
-onSnapshot(query(expensesCol,orderBy("timestamp","desc")),snap=>{
+onSnapshot(query(expensesCol, where('date','>=',cutoffDateISO()), orderBy("date","desc")),snap=>{
+  trackReads(snap.size);
   localExpenses=snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'expense'}));
+  saveCache(CACHE_KEYS.expenses, localExpenses);
   updateScreen();
   if(!document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
   if(!document.getElementById('tab-reports').classList.contains('hidden'))  applyCustomFilter();
@@ -2403,9 +3145,10 @@ window.addEventListener('load', async ()=>{
   // Constrói sidebar e bottom nav com ordem personalizada
   buildSidebarNav();
   buildBottomNav();
+  updateBoletosBadge();
 
-  await loadProducts();
-  await loadMetaMensal();
+  await loadProducts();       // cache-first, TTL 10 min
+  await loadMetaMensal();     // cache-first
   updateCategorySelect();
   updateCategorySelectForSales();
   loadCategories();
