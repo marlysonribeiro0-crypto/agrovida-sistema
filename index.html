@@ -228,7 +228,6 @@ body {
     <img src="logo.png" alt="AgroVida+" class="logo-img"
       onerror="this.style.display='none'; document.getElementById('altLogo').style.display='block'">
     <h1 id="altLogo" class="hidden text-agro-green font-bold text-xl">AGROVIDA+</h1>
-    <!-- Botão personalizar menu (só desktop) -->
     <button onclick="abrirMenuEditor()" class="hidden md:flex text-white/60 hover:text-white transition ml-auto" title="Personalizar menu">
       <i class="fas fa-grip-vertical text-sm"></i>
     </button>
@@ -236,7 +235,6 @@ body {
   <div id="connectionStatus" class="p-2.5 text-center text-xs flex justify-center items-center gap-2 connection-status bg-green-500 text-white">
     <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Online
   </div>
-  <!-- Nav dinâmica — ordem controlada pelo usuário -->
   <nav class="mt-3 flex-1 overflow-y-auto" id="sidebarNav"></nav>
   <div class="p-3 text-center text-xs text-white/50">v6.1.0 ⚡ AgroVida+</div>
 </aside>
@@ -247,9 +245,7 @@ body {
     <div class="loading-spinner"></div><span class="text-sm font-medium">Processando…</span>
   </div>
 
-  <!-- ══════════════════════════════════
-       DASHBOARD / BALCÃO
-  ══════════════════════════════════ -->
+  <!-- DASHBOARD / BALCÃO -->
   <div id="tab-dashboard" class="fade-in">
     <!-- KPIs linha 1 -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
@@ -302,19 +298,16 @@ body {
       <div class="p-4 border-b">
         <h2 class="font-bold text-gray-700 mb-2"><i class="fas fa-exchange-alt text-agro-green mr-2"></i> Nova Transação</h2>
         <div class="flex gap-3 flex-wrap">
-          <button id="transactionTypeSale"    onclick="setTransactionType('sale')"    class="type-filter-btn active"><i class="fas fa-plus-circle mr-2"></i> Venda</button>
+          <button id="transactionTypeSale" onclick="setTransactionType('sale')" class="type-filter-btn active"><i class="fas fa-plus-circle mr-2"></i> Venda</button>
           <button id="transactionTypeExpense" onclick="setTransactionType('expense')" class="type-filter-btn"><i class="fas fa-minus-circle mr-2"></i> Saída/Despesa</button>
         </div>
       </div>
       <div class="p-4">
-        <!-- Grid campos: QTD | PRODUTO | CATEGORIA | VALOR | PAGAMENTO | BOTÃO -->
         <div class="grid grid-cols-2 md:grid-cols-12 gap-3 items-end">
-          <!-- Qtd -->
           <div class="col-span-1 md:col-span-1" id="qtdFieldWrapper">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Qtd</label>
             <input type="number" id="itemQty" class="input-field text-center" value="1" min="0.01" step="0.01" placeholder="1">
           </div>
-          <!-- Descrição -->
           <div class="col-span-1 md:col-span-4">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="transactionLabel">Produto</label>
             <div class="relative">
@@ -322,35 +315,29 @@ body {
               <div id="descSuggestions" class="search-suggestions hidden"></div>
             </div>
           </div>
-          <!-- Categoria -->
           <div class="col-span-1 md:col-span-2">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
             <select id="category" class="input-field"></select>
           </div>
-          <!-- Valor -->
           <div class="col-span-1 md:col-span-2">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor Unit. (R$)</label>
             <input type="text" id="value" class="input-field text-right" placeholder="0,00" required inputmode="decimal">
           </div>
-          <!-- Pagamento -->
           <div class="col-span-1 md:col-span-2" id="paymentWrapper">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pagamento</label>
             <select id="payment" class="input-field">
               <option>Dinheiro</option><option>Pix</option><option>Débito</option><option>Crédito</option><option>Fiado/Prazo</option>
             </select>
           </div>
-          <!-- Botão -->
           <div class="col-span-2 md:col-span-1">
             <button onclick="handleTransactionAction()" id="addTransactionBtn" class="btn-primary w-full"><i class="fas fa-cart-plus mr-1"></i> Add</button>
           </div>
         </div>
 
-        <!-- Total em tempo real (venda) -->
         <div id="itemTotalPreview" class="hidden mt-2 text-right text-sm text-gray-500">
           Subtotal: <span id="itemTotalValue" class="font-bold text-agro-green">R$ 0,00</span>
         </div>
 
-        <!-- Carrinho -->
         <div id="saleCartSection" class="mt-5 hidden">
           <div class="border-t pt-4">
             <div class="flex justify-between items-center mb-2">
@@ -397,9 +384,7 @@ body {
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       RELATÓRIOS
-  ══════════════════════════════════ -->
+  <!-- RELATÓRIOS -->
   <div id="tab-reports" class="hidden fade-in">
     <h2 class="text-xl font-bold text-gray-800 mb-5">Relatórios Avançados</h2>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
@@ -436,7 +421,6 @@ body {
       <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-3">Distribuição por Categoria</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
     </div>
 
-    <!-- ── Análises Estratégicas / Projeções ── -->
     <div class="flex items-center gap-2 mb-3 mt-2">
       <i class="fas fa-chess text-agro-green"></i><h2 class="text-lg font-bold text-gray-800">Análises Estratégicas</h2>
     </div>
@@ -473,9 +457,7 @@ body {
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       LUCRO POR PRODUTO
-  ══════════════════════════════════ -->
+  <!-- LUCRO POR PRODUTO -->
   <div id="tab-profit" class="hidden fade-in">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5">
       <div>
@@ -484,7 +466,7 @@ body {
       </div>
       <div class="flex gap-2 flex-wrap">
         <button onclick="exportProfitExcel()" class="btn-secondary flex items-center gap-2"><i class="fas fa-file-excel"></i> <span class="hidden md:inline">Excel</span></button>
-        <button onclick="exportProfitPDF()"   class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i>   <span class="hidden md:inline">PDF</span></button>
+        <button onclick="exportProfitPDF()" class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span></button>
       </div>
     </div>
     <div class="card p-4 mb-5">
@@ -506,9 +488,9 @@ body {
       <div class="summary-stat-card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Margem Média</p><p class="text-xl font-bold text-purple-600" id="profitAvgMargin">0%</p></div>
     </div>
     <div class="profit-report-tabs">
-      <button class="profit-tab-btn active" onclick="switchProfitTab('table')"   id="profitTabTable"><i class="fas fa-table mr-1"></i> Tabela</button>
-      <button class="profit-tab-btn"        onclick="switchProfitTab('chart')"   id="profitTabChart"><i class="fas fa-chart-bar mr-1"></i> Gráfico</button>
-      <button class="profit-tab-btn"        onclick="switchProfitTab('ranking')" id="profitTabRanking"><i class="fas fa-trophy mr-1"></i> Ranking</button>
+      <button class="profit-tab-btn active" onclick="switchProfitTab('table')" id="profitTabTable"><i class="fas fa-table mr-1"></i> Tabela</button>
+      <button class="profit-tab-btn" onclick="switchProfitTab('chart')" id="profitTabChart"><i class="fas fa-chart-bar mr-1"></i> Gráfico</button>
+      <button class="profit-tab-btn" onclick="switchProfitTab('ranking')" id="profitTabRanking"><i class="fas fa-trophy mr-1"></i> Ranking</button>
     </div>
     <div id="profitViewTable">
       <div class="card">
@@ -552,9 +534,7 @@ body {
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       HISTÓRICO
-  ══════════════════════════════════ -->
+  <!-- HISTÓRICO -->
   <div id="tab-history" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h2 class="text-xl font-bold text-gray-800">Histórico Completo</h2>
@@ -581,9 +561,7 @@ body {
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       SAÍDAS
-  ══════════════════════════════════ -->
+  <!-- SAÍDAS -->
   <div id="tab-expenses" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h2 class="text-xl font-bold text-gray-800">Gestão de Saídas</h2>
@@ -630,16 +608,19 @@ body {
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       CONTAS A PAGAR (BOLETOS)
-  ══════════════════════════════════ -->
+  <!-- CONTAS A PAGAR (BOLETOS) -->
   <div id="tab-boletos" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <div>
         <h2 class="text-xl font-bold text-gray-800">Contas a Pagar</h2>
         <p class="text-sm text-gray-500 mt-1">Boletos manuais e capturados de XML (NFe)</p>
       </div>
-      <button onclick="showAddBoletoModal()" class="btn-expense"><i class="fas fa-plus mr-2"></i> Novo Boleto</button>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="limparBoletosDuplicados()" class="btn-secondary text-sm px-3 py-2">
+          <i class="fas fa-broom mr-1"></i> Limpar Duplicatas
+        </button>
+        <button onclick="showAddBoletoModal()" class="btn-expense"><i class="fas fa-plus mr-2"></i> Novo Boleto</button>
+      </div>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
       <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('hoje')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-calendar-day text-red-500"></i> Vence Hoje</p><h3 class="text-xl font-bold text-red-600 mt-1" id="boletoKpiHoje">R$ 0,00</h3></div>
@@ -667,9 +648,7 @@ body {
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       CATÁLOGO
-  ══════════════════════════════════ -->
+  <!-- CATÁLOGO -->
   <div id="tab-products" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
@@ -677,7 +656,7 @@ body {
         <span id="productsCacheInfo" class="text-xs text-gray-400 flex items-center px-2"></span>
         <button onclick="loadProducts(true)" class="btn-secondary flex items-center gap-2" title="Recarregar do Firebase"><i class="fas fa-sync-alt"></i> <span class="hidden md:inline">Atualizar</span></button>
         <button onclick="showXMLImportModal()" class="btn-xml flex items-center gap-2"><i class="fas fa-file-import"></i> <span class="hidden md:inline">XML</span></button>
-        <button onclick="exportCatalogPDF()"   class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span></button>
+        <button onclick="exportCatalogPDF()" class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span></button>
         <button onclick="showAddProductModal()" class="btn-primary"><i class="fas fa-plus mr-2"></i> Novo</button>
       </div>
     </div>
@@ -706,9 +685,7 @@ body {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="productsGrid"></div>
   </div>
 
-  <!-- ══════════════════════════════════
-       FIADO
-  ══════════════════════════════════ -->
+  <!-- FIADO -->
   <div id="tab-fiado" class="hidden fade-in">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5">
       <div>
@@ -718,9 +695,9 @@ body {
       <button onclick="Fiado.novoCliente()" class="btn-primary flex items-center gap-2"><i class="fas fa-user-plus"></i> Novo Cliente</button>
     </div>
     <div class="flex gap-2 border-b border-gray-200 mb-5 overflow-x-auto">
-      <button id="ftab-dashboard"    onclick="Fiado.switchView('dashboard')"    class="fiado-tab-btn active px-4 py-2 font-semibold text-sm border-b-2 border-green-600 text-green-700 whitespace-nowrap"><i class="fas fa-chart-line mr-1"></i> Dashboard</button>
-      <button id="ftab-clientes"     onclick="Fiado.switchView('clientes')"     class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-users mr-1"></i> Clientes</button>
-      <button id="ftab-pagamentos"   onclick="Fiado.switchView('pagamentos')"   class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-hand-holding-usd mr-1"></i> Pagamentos</button>
+      <button id="ftab-dashboard" onclick="Fiado.switchView('dashboard')" class="fiado-tab-btn active px-4 py-2 font-semibold text-sm border-b-2 border-green-600 text-green-700 whitespace-nowrap"><i class="fas fa-chart-line mr-1"></i> Dashboard</button>
+      <button id="ftab-clientes" onclick="Fiado.switchView('clientes')" class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-users mr-1"></i> Clientes</button>
+      <button id="ftab-pagamentos" onclick="Fiado.switchView('pagamentos')" class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-hand-holding-usd mr-1"></i> Pagamentos</button>
       <button id="ftab-notificacoes" onclick="Fiado.switchView('notificacoes')" class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-bell mr-1"></i> Notificações<span id="fiadoAlertBadge" class="hidden ml-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">0</span></button>
     </div>
     <div id="fview-dashboard" class="fiado-view">
@@ -810,10 +787,10 @@ body {
         <div class="space-y-4">
           <div class="card p-4">
             <h4 class="font-bold text-gray-700 mb-3 text-sm"><i class="fas fa-cart-plus mr-2 text-green-600"></i>Nova Venda</h4>
-            <input type="text"   id="fAddDesc"  class="input-field mb-2" placeholder="Produto/Serviço" style="padding:10px;font-size:14px">
+            <input type="text" id="fAddDesc" class="input-field mb-2" placeholder="Produto/Serviço" style="padding:10px;font-size:14px">
             <div class="flex gap-2 mb-2">
-              <input type="number" id="fAddQtd"  class="input-field" value="1" min="0.01" step="0.01" style="padding:10px;font-size:14px">
-              <input type="number" id="fAddVal"  class="input-field" placeholder="R$ Unit." min="0" step="0.01" style="padding:10px;font-size:14px">
+              <input type="number" id="fAddQtd" class="input-field" value="1" min="0.01" step="0.01" style="padding:10px;font-size:14px">
+              <input type="number" id="fAddVal" class="input-field" placeholder="R$ Unit." min="0" step="0.01" style="padding:10px;font-size:14px">
             </div>
             <input type="number" id="fAddDesc2" class="input-field mb-2" placeholder="Desconto (R$)" min="0" step="0.01" style="padding:10px;font-size:14px">
             <button onclick="Fiado.addItem()" class="btn-primary w-full text-sm"><i class="fas fa-plus-circle mr-1"></i> Lançar Venda</button>
@@ -863,9 +840,7 @@ body {
     </div>
   </div>
 
-  <!-- ══════════════════════════════════
-       CONFIGURAÇÕES
-  ══════════════════════════════════ -->
+  <!-- CONFIGURAÇÕES -->
   <div id="tab-settings" class="hidden fade-in">
     <h2 class="text-xl font-bold text-gray-800 mb-5">Configurações do Sistema</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -886,7 +861,6 @@ body {
           <div class="pt-4 border-t"><label class="block text-sm font-medium text-gray-700 mb-2">Backup Completo</label><button onclick="createFullBackup()" class="btn-primary w-full"><i class="fas fa-save mr-2"></i> Criar Backup JSON</button><p class="text-xs text-gray-500 mt-1">Salva todos os dados locais em JSON</p></div>
         </div>
       </div>
-      <!-- Personalizar Menu -->
       <div class="card p-5">
         <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-grip-vertical text-agro-green"></i> Personalizar Menu</h3>
         <p class="text-xs text-gray-500 mb-3">Arraste para reordenar · Marque/desmarque para ocultar</p>
@@ -939,12 +913,10 @@ body {
   </div>
 </main>
 
-<!-- ── Bottom Nav Mobile (ordem igual ao sidebar) ── -->
+<!-- Bottom Nav Mobile -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav"></nav>
 
-<!-- ════════════════════ MODAIS ════════════════════ -->
-
-<!-- Produto -->
+<!-- MODAIS -->
 <div id="productModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4" id="productModalTitle">Adicionar Produto</h3>
@@ -971,7 +943,6 @@ body {
   </div>
 </div>
 
-<!-- XML -->
 <div id="xmlImportModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-file-import text-purple-600 mr-2"></i> Importar XML (NFe)</h3>
@@ -986,6 +957,7 @@ body {
         <p>✅ Produtos existentes → <strong>atualizados</strong></p>
         <p>✅ Produtos novos → <strong>cadastrados</strong></p>
         <p>✅ Preço de custo e venda extraídos automaticamente</p>
+        <p>✅ Boletos/Duplicatas → <strong>criados automaticamente</strong> (sem duplicação)</p>
       </div>
       <div><label class="block text-sm font-medium text-gray-700 mb-1">Margem de Lucro (%)</label><input type="number" id="xmlProfitMargin" class="input-field" value="30"><p class="text-xs text-gray-500 mt-1">Aplicada sobre o custo</p></div>
       <div id="xmlImportSummary" class="hidden"></div>
@@ -997,7 +969,6 @@ body {
   </div>
 </div>
 
-<!-- Boleto (Conta a Pagar) -->
 <div id="boletoModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4" id="boletoModalTitle">Novo Boleto</h3>
@@ -1020,7 +991,6 @@ body {
   </div>
 </div>
 
-<!-- Saída -->
 <div id="expenseModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4" id="expenseModalTitle">Nova Saída/Despesa</h3>
@@ -1043,7 +1013,6 @@ body {
   </div>
 </div>
 
-<!-- Senha -->
 <div id="passwordModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4">Alterar Senha</h3>
@@ -1058,7 +1027,6 @@ body {
   </div>
 </div>
 
-<!-- Modal: Selecionar cliente fiado -->
 <div id="fiadoClienteModal" class="modal-overlay">
   <div class="modal-content" style="max-width:480px">
     <h3 class="text-lg font-bold text-gray-800 mb-1"><i class="fas fa-handshake text-yellow-500 mr-2"></i>Lançar no Fiado</h3>
@@ -1071,7 +1039,6 @@ body {
   </div>
 </div>
 
-<!-- Modal: Editor de menu -->
 <div id="menuEditorModal" class="modal-overlay">
   <div class="modal-content" style="max-width:400px">
     <h3 class="text-lg font-bold text-gray-800 mb-1"><i class="fas fa-grip-vertical text-agro-green mr-2"></i>Personalizar Menu</h3>
@@ -1084,15 +1051,13 @@ body {
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     SCRIPT PRINCIPAL
-════════════════════════════════════════ -->
+<!-- SCRIPT PRINCIPAL -->
 <script type="module">
 // ─── Formatador moeda ───────────────────
 const _fmt = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});
 window.formatMoney = v => _fmt.format(parseFloat(v)||0);
 
-// ─── Data local ISO (sem fuso errado) ───
+// ─── Data local ISO ──────────────────────
 function localDateISO() {
   const n = new Date();
   return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
@@ -1120,7 +1085,7 @@ if (tentativa !== SENHA_LOJA) {
   throw new Error('Senha Incorreta');
 }
 
-// ─── Firebase (principal) ───────────────
+// ─── Firebase ─────────────────────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, limit, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -1154,10 +1119,9 @@ let cashFlowChart=null, categoryChart=null, profitBarChart=null, profitMarginCha
 let xmlImportData     = null;
 let lastProfitData    = [];
 let _pendingFiadoCallback = null;
-let _isFirstLoad = true; // flag para evitar duplicação na primeira carga
 
 // ══════════════════════════════════════════════════════════
-// CAMADA DE CACHE / OTIMIZAÇÃO FIREBASE (Spark Plan)
+// CACHE E OTIMIZAÇÃO
 // ══════════════════════════════════════════════════════════
 const LIVE_WINDOW_DAYS   = 60;
 const PRODUCTS_CACHE_TTL = 10*60*1000;
@@ -1186,7 +1150,7 @@ function readCache(key) {
   try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
 
-// ─── MENU PERSONALIZÁVEL ─────────────────────────────────────────
+// ─── MENU PERSONALIZÁVEL ──────────────────
 const MENU_ITEMS_DEFAULT = [
   {id:'dashboard', icon:'fas fa-cash-register', label:'Balcão',    sub:'Vendas/Saídas',  visible:true},
   {id:'reports',   icon:'fas fa-chart-bar',     label:'Relatórios',sub:'Avançados',       visible:true},
@@ -1418,7 +1382,6 @@ window.renderCart = () => {
 
 window.removeFromCart = i => { saleCart.splice(i,1); renderCart(); };
 
-// Prévia do subtotal ao digitar
 function updateItemPreview() {
   const qty   = parseFloat(document.getElementById('itemQty')?.value)||1;
   const price = parseFloat(document.getElementById('value')?.value?.replace(',','.'))||0;
@@ -1454,7 +1417,6 @@ window.finalizeSale = async () => {
       optimisticDocs.push({id:ref.id, ...payload});
     });
     await batch.commit();
-    // FIX: atualização otimista apenas se o documento não existir localmente
     const existingIds = new Set(localSales.map(s => s.id));
     const newDocs = optimisticDocs.filter(d => !existingIds.has(d.id));
     localSales = [...newDocs, ...localSales];
@@ -1515,7 +1477,7 @@ function renderFiadoClienteModal() {
   }).join('');
 }
 
-// ─── TRANSAÇÃO SAÍDA (direto) ────────────
+// ─── TRANSAÇÃO SAÍDA ──────────────────────
 window.addTransaction = async () => {
   const desc  = document.getElementById('desc').value.trim();
   const price = parseFloat(document.getElementById('value').value.replace(',','.'));
@@ -1532,7 +1494,6 @@ window.addTransaction = async () => {
       value:price, payment:document.getElementById('payment').value, type:'expense'
     };
     const ref = await addDoc(expensesCol,payload);
-    // FIX: verifica se já existe localmente antes de adicionar
     const existingIds = new Set(localExpenses.map(e => e.id));
     if (!existingIds.has(ref.id)) {
       localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
@@ -1973,7 +1934,6 @@ async function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
   await renderAnalytics(startISO,endISO,fs,fe);
 }
 
-// ─── ANÁLISES ESTRATÉGICAS / PROJEÇÕES ────────────
 async function renderAnalytics(startISO,endISO,fs,fe) {
   const startDate = new Date(startISO+'T00:00:00'), endDate = new Date(endISO+'T00:00:00');
   const diasPeriodo = Math.round((endDate-startDate)/86400000)+1;
@@ -2253,7 +2213,7 @@ window.exportProfitPDF = () => {
   pd.save(`lucro-${localDateISO()}.pdf`); showNotification('PDF exportado!','success');
 };
 
-// ─── PRODUTOS (cache-first, TTL 10 min) ──
+// ─── PRODUTOS ─────────────────────────────
 async function loadProducts(forceRefresh=false) {
   const cached = readCache(CACHE_KEYS.products);
   const cacheAge = cached ? Date.now()-cached.ts : Infinity;
@@ -2415,82 +2375,252 @@ window.handleXMLFile = file => {
   };
   r.readAsText(file);
 };
+
+// ════════════════════════════════════════════
+// CORREÇÃO: parseNFeXML com prevenção de duplicatas
+// ════════════════════════════════════════════
 function parseNFeXML(xml) {
-  const doc=new DOMParser().parseFromString(xml,'text/xml'), prods=[];
+  const doc = new DOMParser().parseFromString(xml, 'text/xml');
+  const prods = [];
+  const boletos = [];
+  const boletosSet = new Set(); // ← IMPEDE DUPLICATAS
+  
+  // --- Processar produtos ---
   for (const det of doc.getElementsByTagName('det')) {
-    const p=det.getElementsByTagName('prod')[0]; if(!p) continue;
-    prods.push({name:p.getElementsByTagName('xProd')[0]?.textContent||'',sku:p.getElementsByTagName('cProd')[0]?.textContent||'',cost:parseFloat((p.getElementsByTagName('vUnCom')[0]?.textContent||'0').replace(',','.'))||0,quantity:parseFloat((p.getElementsByTagName('qCom')[0]?.textContent||'1').replace(',','.'))||1,unit:p.getElementsByTagName('uCom')[0]?.textContent||'Un',category:'Importado'});
+    const p = det.getElementsByTagName('prod')[0];
+    if (!p) continue;
+    prods.push({
+      name: p.getElementsByTagName('xProd')[0]?.textContent || '',
+      sku: p.getElementsByTagName('cProd')[0]?.textContent || '',
+      cost: parseFloat((p.getElementsByTagName('vUnCom')[0]?.textContent || '0').replace(',', '.')) || 0,
+      quantity: parseFloat((p.getElementsByTagName('qCom')[0]?.textContent || '1').replace(',', '.')) || 1,
+      unit: p.getElementsByTagName('uCom')[0]?.textContent || 'Un',
+      category: 'Importado'
+    });
   }
+
+  // --- Processar fornecedor e nota ---
   const fornecedor = doc.getElementsByTagName('emit')[0]?.getElementsByTagName('xNome')[0]?.textContent || 'Fornecedor não identificado';
   const nNF = doc.getElementsByTagName('ide')[0]?.getElementsByTagName('nNF')[0]?.textContent || '';
-  const boletos = [];
+
+  // --- Processar boletos APENAS UMA VEZ (com Set para evitar duplicatas) ---
   const cobr = doc.getElementsByTagName('cobr')[0];
   if (cobr) {
     const dups = cobr.getElementsByTagName('dup');
+    
     for (const dup of dups) {
-      const nDup  = dup.getElementsByTagName('nDup')[0]?.textContent || '';
+      const nDup = dup.getElementsByTagName('nDup')[0]?.textContent || '';
       const dVenc = dup.getElementsByTagName('dVenc')[0]?.textContent || '';
-      const vDup  = parseFloat((dup.getElementsByTagName('vDup')[0]?.textContent||'0').replace(',','.'))||0;
-      if (dVenc && vDup>0) {
-        boletos.push({ desc: fornecedor, valor: vDup, vencimento: dVenc, nota: nNF + (nDup?`/${nDup}`:''), status:'pendente', origem:'xml' });
+      const vDup = parseFloat((dup.getElementsByTagName('vDup')[0]?.textContent || '0').replace(',', '.')) || 0;
+      
+      // Chave única para evitar duplicatas
+      const key = `${nNF}-${nDup}-${dVenc}-${vDup}`;
+      
+      if (dVenc && vDup > 0 && !boletosSet.has(key)) {
+        boletosSet.add(key);
+        boletos.push({
+          desc: fornecedor,
+          valor: vDup,
+          vencimento: dVenc,
+          nota: nNF + (nDup ? `/${nDup}` : ''),
+          status: 'pendente',
+          origem: 'xml'
+        });
       }
     }
   }
-  return {products:prods, boletos, fornecedor, nNF};
+
+  return { products: prods, boletos, fornecedor, nNF };
 }
+
 function displayXMLImportSummary(data) {
   const ex=products.map(p=>p.sku||p.name.toLowerCase());
   const up=data.products.filter(p=>ex.includes(p.sku)||ex.includes(p.name.toLowerCase()));
   const cr=data.products.filter(p=>!ex.includes(p.sku)&&!ex.includes(p.name.toLowerCase()));
   const nB=(data.boletos||[]).length;
   const totalB=(data.boletos||[]).reduce((s,b)=>s+b.valor,0);
-  document.getElementById('xmlImportSummary').innerHTML=`<div class="bg-gray-50 border rounded-lg p-3 mt-2 grid grid-cols-2 gap-3 text-sm"><div class="text-center bg-yellow-50 rounded p-2"><p class="font-bold text-yellow-800">📝 Atualizar</p><p>${up.length}</p></div><div class="text-center bg-blue-50 rounded p-2"><p class="font-bold text-blue-800">➕ Criar</p><p>${cr.length}</p></div></div>${nB>0?`<div class="mt-2 bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"><i class="fas fa-file-invoice-dollar mr-1"></i><strong>${nB} boleto(s)</strong> encontrado(s) na nota · Total: <strong>${window.formatMoney(totalB)}</strong> · Fornecedor: ${data.fornecedor||'-'}<br><span class="text-xs">Serão criados automaticamente em "Contas a Pagar" ao processar.</span></div>`:`<div class="mt-2 text-xs text-gray-400">Nenhuma duplicata/boleto encontrado nesta nota (provavelmente pagamento à vista).</div>`}`;
+  document.getElementById('xmlImportSummary').innerHTML=`
+    <div class="bg-gray-50 border rounded-lg p-3 mt-2 grid grid-cols-2 gap-3 text-sm">
+      <div class="text-center bg-yellow-50 rounded p-2"><p class="font-bold text-yellow-800">📝 Atualizar</p><p>${up.length}</p></div>
+      <div class="text-center bg-blue-50 rounded p-2"><p class="font-bold text-blue-800">➕ Criar</p><p>${cr.length}</p></div>
+    </div>
+    ${nB>0?`<div class="mt-2 bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+      <i class="fas fa-file-invoice-dollar mr-1"></i><strong>${nB} boleto(s)</strong> encontrado(s) na nota · Total: <strong>${window.formatMoney(totalB)}</strong> · Fornecedor: ${data.fornecedor||'-'}<br>
+      <span class="text-xs">✅ Serão criados automaticamente em "Contas a Pagar" ao processar (sem duplicação).</span>
+    </div>`:`<div class="mt-2 text-xs text-gray-400">Nenhuma duplicata/boleto encontrado nesta nota (provavelmente pagamento à vista).</div>`}
+  `;
   document.getElementById('xmlImportSummary').classList.remove('hidden');
 }
+
+// ════════════════════════════════════════════
+// CORREÇÃO: processXMLImport com verificação de duplicatas
+// ════════════════════════════════════════════
 window.processXMLImport = async () => {
-  if (!xmlImportData?.products.length) { showNotification('Nenhum produto','error'); return; }
-  const margin=parseFloat(document.getElementById('xmlProfitMargin').value)||30;
+  if (!xmlImportData?.products.length) {
+    showNotification('Nenhum produto', 'error');
+    return;
+  }
+
+  const margin = parseFloat(document.getElementById('xmlProfitMargin').value) || 30;
   document.getElementById('loadingIndicator').classList.remove('hidden');
-  let u=0,c=0;
+  
+  let u = 0, c = 0, b = 0;
+
   try {
     const batch = writeBatch(db);
     const atualizacoesLocais = [];
+
+    // --- Processar produtos ---
     for (const xp of xmlImportData.products) {
-      const ex=products.find(p=>p.sku===xp.sku||p.name.toLowerCase()===xp.name.toLowerCase());
-      const pd={name:xp.name,sku:xp.sku,cost:xp.cost,price:xp.cost*(1+margin/100),stock:(ex?.stock||0)+xp.quantity,unit:xp.unit,category:xp.category,updatedAt:new Date().toISOString()};
-      if(ex){ batch.update(doc(productsCol,ex.id),pd); atualizacoesLocais.push({id:ex.id,...pd}); u++; }
-      else{ const ref=doc(productsCol); pd.createdAt=new Date().toISOString(); pd.salesCount=0; batch.set(ref,pd); atualizacoesLocais.push({id:ref.id,...pd}); c++; }
+      const ex = products.find(p => p.sku === xp.sku || p.name.toLowerCase() === xp.name.toLowerCase());
+      const pd = {
+        name: xp.name,
+        sku: xp.sku,
+        cost: xp.cost,
+        price: xp.cost * (1 + margin / 100),
+        stock: (ex?.stock || 0) + xp.quantity,
+        unit: xp.unit,
+        category: xp.category,
+        updatedAt: new Date().toISOString()
+      };
+      
+      if (ex) {
+        batch.update(doc(productsCol, ex.id), pd);
+        atualizacoesLocais.push({ id: ex.id, ...pd });
+        u++;
+      } else {
+        const ref = doc(productsCol);
+        pd.createdAt = new Date().toISOString();
+        pd.salesCount = 0;
+        batch.set(ref, pd);
+        atualizacoesLocais.push({ id: ref.id, ...pd });
+        c++;
+      }
     }
+
+    // --- Processar boletos COM VERIFICAÇÃO DE DUPLICATAS ---
     const boletosDetectados = xmlImportData.boletos || [];
-    const novosBoletosLocais = [];
-    boletosDetectados.forEach(b=>{
+    
+    for (const boleto of boletosDetectados) {
+      // Verificar se já existe no banco local
+      const existe = boletos.some(b => 
+        b.nota === boleto.nota && 
+        b.vencimento === boleto.vencimento && 
+        Math.abs(b.valor - boleto.valor) < 0.01 &&
+        b.desc === boleto.desc
+      );
+      
+      if (existe) {
+        console.log('🔄 Boleto já existe, pulando:', boleto.nota);
+        continue;
+      }
+      
       const ref = doc(boletosCol);
-      const payload = {...b, nfNumero:xmlImportData.nNF||'', createdAt:new Date().toISOString()};
+      const payload = {
+        ...boleto,
+        nfNumero: xmlImportData.nNF || '',
+        createdAt: new Date().toISOString()
+      };
       batch.set(ref, payload);
-      novosBoletosLocais.push({id:ref.id, ...payload});
-    });
-    await batch.commit();
-    atualizacoesLocais.forEach(item=>{
-      const idx=products.findIndex(p=>p.id===item.id);
-      if (idx>-1) products[idx]={...products[idx],...item}; else products.unshift(item);
-    });
-    saveCache(CACHE_KEYS.products, products);
-    if (novosBoletosLocais.length) {
-      boletos = [...boletos, ...novosBoletosLocais];
-      saveCache(CACHE_KEYS.boletos, boletos);
-      updateBoletosBadge();
+      b++;
     }
-    localStorage.setItem('defaultProfitMargin',margin);
-    showNotification(`${u} atualizados, ${c} criados${novosBoletosLocais.length?`, ${novosBoletosLocais.length} boleto(s) lançado(s)`:''}`,'success');
-    closeModal('xmlImportModal'); sortProducts();
-  } catch(e) {
-    console.error('processXMLImport:',e);
-    showNotification('Erro na importação','error');
+
+    // --- Executar tudo ---
+    await batch.commit();
+
+    // --- Atualizar cache local ---
+    atualizacoesLocais.forEach(item => {
+      const idx = products.findIndex(p => p.id === item.id);
+      if (idx > -1) products[idx] = { ...products[idx], ...item };
+      else products.unshift(item);
+    });
+    
+    saveCache(CACHE_KEYS.products, products);
+
+    // Adicionar apenas os novos boletos (que não existiam)
+    if (b > 0) {
+      const novosBoletos = boletosDetectados.filter(b => {
+        return !boletos.some(bb => 
+          bb.nota === b.nota && 
+          bb.vencimento === b.vencimento && 
+          Math.abs(bb.valor - b.valor) < 0.01
+        );
+      });
+      
+      if (novosBoletos.length > 0) {
+        const boletosParaAdicionar = novosBoletos.map((b, i) => ({ 
+          id: `temp_${Date.now()}_${i}`, 
+          ...b 
+        }));
+        boletos = [...boletos, ...boletosParaAdicionar];
+        saveCache(CACHE_KEYS.boletos, boletos);
+        updateBoletosBadge();
+      }
+    }
+
+    localStorage.setItem('defaultProfitMargin', margin);
+    showNotification(`${u} atualizados, ${c} criados, ${b} boleto(s) lançado(s)`, 'success');
+    closeModal('xmlImportModal');
+    sortProducts();
+
+  } catch (e) {
+    console.error('processXMLImport:', e);
+    showNotification('Erro na importação', 'error');
+  } finally {
+    document.getElementById('loadingIndicator').classList.add('hidden');
+    xmlImportData = null;
   }
-  finally { document.getElementById('loadingIndicator').classList.add('hidden'); xmlImportData=null; }
 };
-const dz=document.getElementById('xmlDropZone');
-if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files[0])handleXMLFile(e.dataTransfer.files[0]);});}
+
+// ════════════════════════════════════════════
+// FUNÇÃO PARA LIMPAR BOLETOS DUPLICADOS
+// ════════════════════════════════════════════
+window.limparBoletosDuplicados = async () => {
+  if (!confirm('⚠️ Isso vai REMOVER boletos duplicados. Continuar?')) return;
+  
+  const grupos = {};
+  let removidos = 0;
+  
+  // Agrupar por chave única (nota + vencimento + valor + desc)
+  boletos.forEach(b => {
+    const key = `${b.nota || ''}|${b.vencimento || ''}|${b.valor || 0}|${b.desc || ''}`;
+    if (!grupos[key]) grupos[key] = [];
+    grupos[key].push(b);
+  });
+  
+  for (const [key, items] of Object.entries(grupos)) {
+    if (items.length > 1) {
+      // Manter o primeiro, deletar os outros
+      const [manter, ...remover] = items;
+      for (const b of remover) {
+        if (b.id) {
+          try {
+            await deleteDoc(doc(boletosCol, b.id));
+            removidos++;
+          } catch (e) {
+            console.error('Erro ao deletar boleto:', e);
+          }
+        }
+      }
+    }
+  }
+  
+  if (removidos > 0) {
+    // Atualizar lista local
+    const novosBoletos = [];
+    for (const [key, items] of Object.entries(grupos)) {
+      if (items.length > 0) {
+        novosBoletos.push(items[0]);
+      }
+    }
+    boletos = novosBoletos;
+    saveCache(CACHE_KEYS.boletos, boletos);
+    renderBoletos();
+    showNotification(`${removidos} boleto(s) duplicado(s) removido(s)!`, 'success');
+  } else {
+    showNotification('Nenhum boleto duplicado encontrado!', 'info');
+  }
+};
 
 // ─── EXPORTAÇÃO ───────────────────────────
 window.exportHistoryExcel = () => {
@@ -2635,9 +2765,9 @@ window.quickAdd = (name,cat,price) => {
   showTab('dashboard');
 };
 
-// ════════════════════════════════════════════════
-// MÓDULO FIADO — Firebase separado
-// ════════════════════════════════════════════════
+// ════════════════════════════════════════════
+// MÓDULO FIADO
+// ════════════════════════════════════════════
 import { initializeApp as initApp2 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore as getFS2, collection as col2, addDoc as addDoc2, updateDoc as updateDoc2, deleteDoc as deleteDoc2, doc as doc2, onSnapshot as onSnap2, orderBy as orderBy2, query as query2, getDoc as getDoc2, setDoc as setDoc2 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -2895,9 +3025,9 @@ document.addEventListener('click',e=>{
   if(c&&!c.contains(e.target)) document.getElementById('fiadoSearchResults')?.classList.add('hidden');
 });
 
-// ════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // MÓDULO CONTAS A PAGAR (BOLETOS)
-// ════════════════════════════════════════════════
+// ════════════════════════════════════════════
 (function loadBoletosCache(){
   const cached = readCache(CACHE_KEYS.boletos);
   if (cached && cached.data && cached.data.length) { boletos = cached.data; }
@@ -3067,7 +3197,7 @@ window.deletarBoleto = async id => {
   } catch(e) { console.error('deletarBoleto:',e); showNotification('Erro ao excluir','error'); }
 };
 
-// ─── CACHE-FIRST: renderiza com dados salvos localmente ──
+// ─── CACHE-FIRST ────────────────────────────
 (function loadSalesExpensesCache(){
   const cs = readCache(CACHE_KEYS.sales);
   const ce = readCache(CACHE_KEYS.expenses);
@@ -3076,13 +3206,11 @@ window.deletarBoleto = async id => {
   if ((cs&&cs.data.length)||(ce&&ce.data.length)) updateScreen();
 })();
 
-// ─── FIRESTORE LISTENERS (limitados aos últimos 60 dias) ──
+// ─── FIRESTORE LISTENERS ──────────────────
 onSnapshot(query(salesCol, where('date','>=',cutoffDateISO()), orderBy("date","desc")),snap=>{
   trackReads(snap.size);
-  // FIX: Sincroniza o array local sem duplicar IDs existentes
   const newDocs = snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'}));
   const existingIds = new Set(localSales.map(s => s.id));
-  // Substitui ou adiciona documentos do snapshot, mantendo a ordem
   let updated = [...localSales];
   newDocs.forEach(doc => {
     const idx = updated.findIndex(s => s.id === doc.id);
@@ -3092,7 +3220,6 @@ onSnapshot(query(salesCol, where('date','>=',cutoffDateISO()), orderBy("date","d
       updated.unshift(doc);
     }
   });
-  // Remove documentos que não estão mais no snapshot (foram excluídos)
   const snapshotIds = new Set(newDocs.map(d => d.id));
   updated = updated.filter(s => snapshotIds.has(s.id));
   localSales = updated;
