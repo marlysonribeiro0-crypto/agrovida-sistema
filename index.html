@@ -112,7 +112,9 @@ body {
 /* ── Sugestões busca ── */
 .search-suggestions { position: absolute; background: white; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px; max-height: 200px; overflow-y: auto; z-index: 10; width: 100%; box-shadow: 0 4px 8px -1px rgba(0,0,0,0.12); }
 .search-suggestion-item { padding: 11px 13px; cursor: pointer; border-bottom: 1px solid #f3f4f6; transition: background 0.15s; font-size: 13px; }
-.search-suggestion-item:hover { background-color: #f0fdf4; }
+@media (hover:hover){ .search-suggestion-item:hover { background-color: #f0fdf4; } }
+.search-suggestion-item:active { background-color: #dcfce7; }
+.search-suggestion-item { min-height: 44px; touch-action: manipulation; }
 .search-suggestion-item:last-child { border-bottom: none; border-radius: 0 0 10px 10px; }
 
 /* ── XML drop ── */
@@ -238,7 +240,7 @@ body {
   </div>
   <!-- Nav dinâmica — ordem controlada pelo usuário -->
   <nav class="mt-3 flex-1 overflow-y-auto" id="sidebarNav"></nav>
-  <div class="p-3 text-center text-xs text-white/50">v6.1.0 ⚡ AgroVida+</div>
+  <div class="p-3 text-center text-xs text-white/50">v6.3.0 ⚡ AgroVida+</div>
 </aside>
 
 <!-- MAIN -->
@@ -286,7 +288,7 @@ body {
       <div class="card px-3 py-2"><p class="text-xs font-bold text-gray-500 uppercase">Saídas Hoje</p><h3 class="text-lg font-bold leading-tight text-expense-red" id="dashExpensesToday">R$ 0,00</h3></div>
       <div class="card px-3 py-2"><p class="text-xs font-bold text-gray-500 uppercase">Saldo do Dia</p><h3 class="text-lg font-bold leading-tight" id="dashBalanceToday">R$ 0,00</h3></div>
       <div class="card px-3 py-2"><p class="text-xs font-bold text-gray-500 uppercase">Ticket Médio</p><h3 class="text-lg font-bold leading-tight text-gray-800" id="averageTicket">R$ 0,00</h3></div>
-      <div class="card px-3 py-2"><p class="text-xs font-bold text-gray-500 uppercase">Acumulado Mês</p><h3 class="text-lg font-bold leading-tight text-gray-800" id="dashTotalMonth">R$ 0,00</h3></div>
+      <div class="card px-3 py-2"><p class="text-xs font-bold text-gray-500 uppercase">Acumulado Mês</p><h3 class="text-lg font-bold leading-tight text-gray-800" id="dashTotalMonth">R$ 0,00</h3><p class="text-[10px] text-gray-400 leading-tight mt-0.5" id="dashMonthNote"></p></div>
     </div>
 
     <!-- KPIs fiado -->
@@ -857,7 +859,7 @@ body {
       <div class="card p-5 md:col-span-2">
         <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-info-circle text-agro-green"></i> Informações do Sistema</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Versão</p><p class="font-bold text-sm">v6.1.0</p></div>
+          <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Versão</p><p class="font-bold text-sm">v6.3.0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Total Vendas</p><p class="font-bold text-agro-green" id="totalSalesCount">0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Total Saídas</p><p class="font-bold text-expense-red" id="totalExpensesCount">0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Produtos</p><p class="font-bold" id="totalProductsCount">0</p></div>
@@ -872,6 +874,26 @@ body {
         </div>
       </div>
     </div>
+  </div>
+  <!-- ══════════ FERRAMENTAS DE GESTÃO ══════════ -->
+  <div id="tab-management" class="hidden fade-in">
+    <div class="flex flex-wrap justify-between items-end gap-3 mb-4">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">Ferramentas de Gestão</h2>
+        <p class="text-sm text-gray-500">Diagnóstico automático + Pareto, Curva ABC, Ishikawa, 5W2H e SWOT</p>
+      </div>
+      <div class="flex flex-wrap gap-2 items-center">
+        <input type="date" id="mgStart" class="input-field" style="width:auto;min-height:38px;padding:6px 10px" onchange="Mgmt.render()">
+        <input type="date" id="mgEnd" class="input-field" style="width:auto;min-height:38px;padding:6px 10px" onchange="Mgmt.render()">
+        <select id="mgDim" class="input-field" style="width:auto;min-height:38px;padding:6px 10px" onchange="Mgmt.render()">
+          <option value="item">Agrupar por descrição do item</option>
+          <option value="cat">Agrupar por categoria</option>
+        </select>
+      </div>
+    </div>
+    <div id="mgAlerts" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"></div>
+    <div id="mgTabs" class="flex gap-1 border-b border-gray-200 mb-4 overflow-x-auto"></div>
+    <div id="mgBody"></div>
   </div>
 </main>
 
@@ -1004,6 +1026,7 @@ body {
 // ─── Formatador moeda ───────────────────
 const _fmt = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});
 window.formatMoney = v => _fmt.format(parseFloat(v)||0);
+const escAttr = s => String(s??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 // ─── Data local ISO (sem fuso errado) ───
 function localDateISO() {
@@ -1101,6 +1124,7 @@ const MENU_ITEMS_DEFAULT = [
   {id:'history',   icon:'fas fa-chart-line',    label:'Histórico', sub:'Vendas/Saídas',   visible:true},
   {id:'expenses',  icon:'fas fa-money-bill-wave',label:'Saídas',   sub:'Despesas',        visible:true},
   {id:'products',  icon:'fas fa-boxes',         label:'Catálogo',  sub:'Produtos',        visible:true},
+  {id:'management',icon:'fas fa-sitemap',     label:'Gestão',    sub:'Pareto · ABC · SWOT', visible:true},
   {id:'settings',  icon:'fas fa-cog',           label:'Config.',   sub:'Sistema',         visible:true},
 ];
 
@@ -1235,6 +1259,7 @@ window.showTab = tab => {
   if (tab==='dashboard'){ updateCategorySelectForSales(); setTransactionType('sale'); updateScreen(); }
   if (tab==='profit')   { initProfitTab(); }
   if (tab==='fiado')    { Fiado.init(); }
+  if (tab==='management'){ Mgmt.init(); }
   if (tab!=='dashboard') { saleCart=[]; renderCart(); }
   document.getElementById('mainContent').scrollTop=0;
 };
@@ -1502,7 +1527,7 @@ async function saveMetaMensal(val) {
 function updateMetaDisplay() {
   document.getElementById('metaValueDisplay').textContent=`Meta: ${window.formatMoney(metaMensal)}`;
   const m = localDateISO().substring(0,7);
-  const total = localSales.filter(s=>s.date.startsWith(m)).reduce((a,c)=>a+c.value,0);
+  const total = calcCaixa(d=>d.startsWith(m)).entrada;   // à vista + fiado recebido no mês
   const pct   = metaMensal>0?Math.min((total/metaMensal)*100,100):0;
   document.getElementById('progressBar').style.width=`${pct}%`;
   document.getElementById('metaStatusText').textContent=`${pct.toFixed(1)}% atingido`;
@@ -1531,7 +1556,10 @@ function updateScreen() {
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
     set('dashTotalToday',   window.formatMoney(tT));
     set('dashExpensesToday',window.formatMoney(tE));
-    set('dashTotalMonth',   window.formatMoney(tM));
+    // Acumulado do mês (caixa): vendas à vista + fiado recebido ao longo do mês
+    const cxMes = calcCaixa(d=>d.startsWith(month));
+    set('dashTotalMonth',   window.formatMoney(cxMes.entrada));
+    set('dashMonthNote',    `à vista ${window.formatMoney(cxMes.avista)} + fiado rec. ${window.formatMoney(cxMes.fiadoRec)}`);
     set('averageTicket',    window.formatMoney(todaySales.length?tT/todaySales.length:0));
     set('sumSales',         window.formatMoney(tT));
     set('sumExpenses',      window.formatMoney(tE));
@@ -1541,6 +1569,7 @@ function updateScreen() {
     updateMetaDisplay();
     updateDashboardFiadoKPIs();
     updateCashDashboard();
+    if (!document.getElementById('tab-management').classList.contains('hidden')) Mgmt.render();
 
     const tbody=document.getElementById('todayTableBody');
     if (tbody) {
@@ -2093,7 +2122,7 @@ function updateProductsDisplay() {
   grid.innerHTML=f.length?f.map(p=>`
     <div class="card product-card p-4">
       <div class="flex justify-between items-start mb-2">
-        <h3 class="font-bold text-gray-800 text-sm truncate flex-1 mr-2">${p.name}</h3>
+        <h3 class="font-bold text-gray-800 text-sm truncate flex-1 mr-2">${escAttr(p.name)}</h3>
         <div class="flex gap-2 flex-shrink-0">
           <button onclick="window.showEditProductModal('${p.id}')" class="text-blue-500 hover:text-blue-700 text-sm"><i class="fas fa-edit"></i></button>
           <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-700 text-sm"><i class="fas fa-trash"></i></button>
@@ -2110,7 +2139,7 @@ function updateProductsDisplay() {
         ${p.stock!==undefined?`<div class="text-xs ${p.stock>10?'text-green-600':p.stock>0?'text-yellow-600':'text-red-600'}"><i class="fas fa-box mr-1"></i>${p.stock} ${p.unit}</div>`:''}
         ${p.discountPrice>0?`<div class="text-xs font-bold text-orange-600"><i class="fas fa-tag mr-1"></i>${window.formatMoney(p.discountPrice)}</div>`:''}
       </div>
-      <button onclick="quickAdd('${p.name}','${p.category||'Outros'}',${p.price})" class="btn-primary w-full text-sm py-2"><i class="fas fa-cart-plus mr-1"></i> Usar na Venda</button>
+      <button data-n="${escAttr(p.name)}" data-c="${escAttr(p.category||'Outros')}" onclick="quickAdd(this.dataset.n,this.dataset.c,${p.price})" class="btn-primary w-full text-sm py-2"><i class="fas fa-cart-plus mr-1"></i> Usar na Venda</button>
     </div>`).join('')
   :'<div class="col-span-full text-center p-8 text-gray-400"><i class="fas fa-box-open text-3xl text-gray-300 mb-3 block"></i><p class="text-sm">Nenhum produto encontrado</p></div>';
 }
@@ -2205,7 +2234,7 @@ window.createFullBackup = () => {
   try {
     const data = {
       timestamp: new Date().toISOString(),
-      version: '6.1.0',
+      version: '6.3.0',
       sales:    localSales,
       expenses: localExpenses,
       products: products,
@@ -2291,23 +2320,51 @@ document.getElementById('itemQty')?.addEventListener('input', updateItemPreview)
 // ─── SUGESTÕES BUSCA PRODUTO ──────────────
 const descInp=document.getElementById('desc');
 const sugDiv =document.getElementById('descSuggestions');
+// Itens já vendidos (inclusive os SEM cadastro) com último preço e categoria usados
+let _histCache={ref:null,list:[]};
+function getSalesHistory(){
+  if(_histCache.ref===localSales) return _histCache.list;
+  const seen=new Map();
+  localSales.forEach(sl=>expandSale(sl).forEach(it=>{
+    const k=(it.desc||'').trim().toLowerCase(); if(!k||seen.has(k)) return;
+    seen.set(k,{name:it.desc.trim(),category:it.category||'Outros',price:parseFloat(it.value)||0,hist:true});
+  }));
+  _histCache={ref:localSales,list:[...seen.values()]};
+  return _histCache.list;
+}
+function showSuggestions(){
+  const q=descInp.value.trim().toLowerCase();
+  if(q.length<2||transactionType!=='sale'){ sugDiv.classList.add('hidden'); return; }
+  const cat=products.filter(p=>p.name.toLowerCase().includes(q)||(p.sku&&p.sku.toLowerCase()===q)).map(p=>({name:p.name,category:p.category||'Outros',price:p.price||0}));
+  const have=new Set(cat.map(x=>x.name.toLowerCase()));
+  const hist=getSalesHistory().filter(h=>h.name.toLowerCase().includes(q)&&!have.has(h.name.toLowerCase()));
+  const m=[...cat,...hist].slice(0,8);
+  sugDiv.innerHTML=m.map(p=>`<div class="search-suggestion-item flex justify-between items-center gap-2" data-n="${escAttr(p.name)}" data-c="${escAttr(p.category)}" data-p="${p.price}"><span>${p.hist?'🕘 ':''}${escAttr(p.name)}</span><span class="font-bold text-agro-green text-xs whitespace-nowrap">${p.price>0?window.formatMoney(p.price):''}</span></div>`).join('');
+  sugDiv.classList.toggle('hidden',!m.length);
+}
 if(descInp&&sugDiv){
-  descInp.addEventListener('input',function(){
-    const q=this.value.toLowerCase();
-    if(q.length<2||transactionType!=='sale'){sugDiv.classList.add('hidden');return;}
-    const m=products.filter(p=>p.name.toLowerCase().includes(q)).slice(0,6);
-    if(m.length){sugDiv.innerHTML=m.map(p=>`<div class="search-suggestion-item flex justify-between" onclick="selectSuggestion('${p.name.replace(/'/g,"\\'")}','${p.category||'Outros'}',${p.price})"><span>${p.name}</span><span class="font-bold text-agro-green text-xs">${window.formatMoney(p.price)}</span></div>`).join('');sugDiv.classList.remove('hidden');}
-    else sugDiv.classList.add('hidden');
+  descInp.addEventListener('input',showSuggestions);
+  // Seleção no pointerup (1 toque). No mouse, pointerdown não tira o foco do campo.
+  // Ignora se o dedo arrastou (rolagem da lista).
+  let dn=null;
+  sugDiv.addEventListener('pointerdown',e=>{ dn={x:e.clientX,y:e.clientY}; if(e.pointerType==='mouse') e.preventDefault(); });
+  sugDiv.addEventListener('pointerup',e=>{
+    const it=e.target.closest('.search-suggestion-item'); if(!it||!dn) return;
+    const moved=Math.abs(e.clientX-dn.x)>10||Math.abs(e.clientY-dn.y)>10; dn=null;
+    if(!moved) selectSuggestion(it.dataset.n,it.dataset.c,parseFloat(it.dataset.p)||0);
   });
-  descInp.addEventListener('blur',()=>setTimeout(()=>sugDiv.classList.add('hidden'),180));
+  descInp.addEventListener('blur',()=>setTimeout(()=>sugDiv.classList.add('hidden'),350));
 }
 window.selectSuggestion = (name,cat,price) => {
   descInp.value=name;
-  document.getElementById('category').value=cat;
-  document.getElementById('value').value=price.toFixed(2).replace('.',',');
+  const c=document.getElementById('category'); if([...c.options].some(o=>o.value===cat)) c.value=cat;
+  const v=document.getElementById('value');
+  v.value=price>0?price.toFixed(2).replace('.',','):'';
   updateItemPreview();
-  sugDiv.classList.add('hidden');
-  descInp.focus();
+  // atrasa o fechamento: evita o "clique fantasma" cair no campo que estava embaixo da lista
+  setTimeout(()=>sugDiv.classList.add('hidden'),350);
+  const next=price>0?document.getElementById('itemQty'):v;   // preço conhecido → vai para a quantidade
+  next.focus(); next.select?.();
 };
 window.quickAdd = (name,cat,price) => {
   setTransactionType('sale');
@@ -2405,6 +2462,8 @@ onSnap2(query2(fColClients,orderBy2("createdAt","desc")),snap=>{
   updateDashboardFiadoKPIs();
   if (!document.getElementById('tab-dashboard').classList.contains('hidden')) updateScreen();
   if (!document.getElementById('tab-history').classList.contains('hidden'))   filterHistory();
+  if (!document.getElementById('tab-reports').classList.contains('hidden') && document.getElementById('customFilterStart').value && document.getElementById('customFilterEnd').value) applyCustomFilter();
+  if (!document.getElementById('tab-profit').classList.contains('hidden'))    renderProfitReport();
 },e=>console.error("Fiado listener:",e));
 
 function setLoading(v){document.getElementById('loadingIndicator')?.classList.toggle('hidden',!v);}
@@ -2655,6 +2714,154 @@ onSnapshot(query(expensesCol,orderBy("timestamp","desc")),snap=>{
 },e=>console.error("Saídas:",e));
 
 // ─── INICIALIZAÇÃO ────────────────────────
+// ════════════════════════════════════════════════
+// FERRAMENTAS DE GESTÃO — Pareto · ABC · Ishikawa · 5W2H · SWOT
+// Itens sem cadastro: agrupa pela descrição normalizada (sem acento, sem
+// números/unidades), então "Milho 5kg", "milho no peso" e "Saco de milho"
+// caem no mesmo item. Também dá para analisar por categoria.
+// ════════════════════════════════════════════════
+const mg$=id=>document.getElementById(id), mgF=v=>window.formatMoney(v);
+const MG_TABS=[['pareto','Pareto','fa-chart-column'],['abc','Curva ABC','fa-layer-group'],['ishikawa','Ishikawa','fa-fish'],['w2h','5W2H','fa-list-check'],['swot','SWOT','fa-table-cells-large']];
+const MG_CAUSAS=['Pessoas','Processos','Produtos/Estoque','Equipamentos','Financeiro','Mercado/Clientes'];
+const MG_SWOT=[['F','Forças (interno)','green'],['W','Fraquezas (interno)','red'],['O','Oportunidades (externo)','blue'],['T','Ameaças (externo)','yellow']];
+const MG_DIAS=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+const mgLoad=(k,d)=>{try{return JSON.parse(localStorage.getItem('agroMg_'+k))??d;}catch{return d;}};
+const mgSave=(k,v)=>localStorage.setItem('agroMg_'+k,JSON.stringify(v));
+const mgNorm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()
+  .replace(/\b\d+([.,]\d+)?\s*(kg|kgs|g|gr|un|l|lt|ml|sc|pct)?\b/g,' ')
+  .replace(/\b(kg|kgs|g|gr|un|und|sc|saco|pct|pacote|cx|caixa|de|do|da|dos|das|a|o|e|meio|meia|no|na|peso)\b/g,' ')
+  .replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+
+function mgRank(m){
+  const a=Object.values(m).sort((x,y)=>y.v-x.v), t=a.reduce((n,x)=>n+x.v,0)||1; let c=0;
+  a.forEach(x=>{ const antes=c; x.p=x.v/t*100; c+=x.p; x.c=c; x.cls=antes<80?'A':antes<95?'B':'C'; });
+  return a;
+}
+function mgCompute(){
+  const s=mg$('mgStart').value, e=mg$('mgEnd').value, dim=mg$('mgDim').value;
+  if(!s||!e||s>e) return null;
+  const days=Math.round((new Date(e+'T12:00:00')-new Date(s+'T12:00:00'))/864e5)+1;
+  const pe=new Date(s+'T12:00:00'); pe.setDate(pe.getDate()-1);
+  const ps=new Date(pe); ps.setDate(ps.getDate()-days+1);
+  const sel=(arr,a,b)=>arr.filter(x=>x.date>=a&&x.date<=b), tot=a=>a.reduce((n,i)=>n+(i.total||0),0);
+  const items=sel(localSales,s,e).flatMap(expandSale), exps=sel(localExpenses,s,e);
+  const catalog=new Set(products.map(p=>mgNorm(p.name)));
+  const g={}, byDate={}; let semCad=0;
+  items.forEach(it=>{
+    const raw=(it.desc||'').trim(), cat=it.category||'Sem categoria', nk=mgNorm(raw);
+    const k=dim==='cat'?cat:(nk||mgNorm(cat)||'outros');
+    const x=g[k]||(g[k]={name:dim==='cat'?cat:(raw||cat),v:0,q:0});
+    x.v+=it.total||0; x.q+=it.qty||1;
+    if(!catalog.has(nk)) semCad+=it.total||0;
+    byDate[it.date]=(byDate[it.date]||0)+(it.total||0);
+  });
+  const dow=Array(7).fill(0), dn=Array(7).fill(0);
+  Object.entries(byDate).forEach(([d,v])=>{ const w=new Date(d+'T12:00:00').getDay(); dow[w]+=v; dn[w]++; });
+  const dowAvg=dow.map((v,i)=>({i,avg:dn[i]?v/dn[i]:0,n:dn[i]})).filter(x=>x.n>=2);
+  const ec={}, ed={};
+  exps.forEach(x=>{ const c=x.category||'Outros'; (ec[c]=ec[c]||{name:c,v:0}).v+=x.value; const k=mgNorm(x.desc)||c; (ed[k]=ed[k]||{name:x.desc||c,v:0}).v+=x.value; });
+  let receber=0, atras=0;
+  fClientes.forEach(c=>{ const b=fSaldo(c); if(b>0.05){ receber+=b; if(fGetOverdue(c)) atras++; } });
+  return {rev:tot(items), exp:exps.reduce((n,x)=>n+x.value,0), prevRev:tot(sel(localSales,isoOf(ps),isoOf(pe)).flatMap(expandSale)),
+          rank:mgRank(g), eCat:mgRank(ec), eDesc:mgRank(ed), semCad, receber, atras, dowAvg};
+}
+function mgAlerts(D){
+  const a=[], f=mgF, pc=x=>x.toFixed(0)+'%';
+  if(!D.rev){ a.push({t:'info',txt:'Sem vendas no período selecionado.'}); return a; }
+  if(D.prevRev>0){
+    const v=(D.rev-D.prevRev)/D.prevRev*100;
+    if(v<=-10) a.push({t:'warn',txt:`Receita ${pc(-v)} menor que o período anterior (${f(D.rev)} contra ${f(D.prevRev)}).`,ish:['Mercado/Clientes','Queda nas vendas em relação ao período anterior'],sw:['T','Queda recente nas vendas']});
+    else if(v>=10) a.push({t:'ok',txt:`Receita ${pc(v)} maior que o período anterior (${f(D.rev)} contra ${f(D.prevRev)}).`,sw:['F','Vendas em crescimento']});
+  }
+  const r=D.exp/D.rev*100;
+  if(r>=70) a.push({t:'warn',txt:`As saídas consomem ${pc(r)} da receita do período.`,ish:['Financeiro','Despesas altas em relação às vendas'],sw:['W','Despesas altas em relação às vendas']});
+  const te=D.eCat[0];
+  if(te&&te.p>=35) a.push({t:'info',txt:`Maior saída: ${escAttr(te.name)} (${pc(te.p)} das despesas).`,ish:['Financeiro','Despesa concentrada em '+te.name]});
+  if(D.receber>0){
+    const fp=D.receber/D.rev*100;
+    a.push({t:(fp>=30||D.atras)?'warn':'info',txt:`Fiado a receber: ${f(D.receber)} (${pc(fp)} da receita do período)${D.atras?` · ${D.atras} cliente(s) atrasado(s)`:''}.`,ish:['Financeiro','Dinheiro parado no fiado'],sw:['W','Dependência de vendas no fiado']});
+  }
+  const A=D.rank.filter(x=>x.cls==='A');
+  if(D.rank.length>3) a.push({t:'info',txt:`${A.length} de ${D.rank.length} itens (${pc(A.length/D.rank.length*100)}) geram cerca de 80% da receita.`,sw:['O','Focar estoque e preço nos itens classe A']});
+  if(D.semCad/D.rev>=0.3) a.push({t:'info',txt:`${pc(D.semCad/D.rev*100)} da receita vem de itens fora do catálogo. A análise agrupa pela descrição digitada.`});
+  if(D.dowAvg.length>=3){
+    const o=[...D.dowAvg].sort((x,y)=>y.avg-x.avg), b=o[0], w=o[o.length-1];
+    a.push({t:'info',txt:`Melhor dia: ${MG_DIAS[b.i]} (média ${f(b.avg)}). Mais fraco: ${MG_DIAS[w.i]} (média ${f(w.avg)}).`,ish:['Mercado/Clientes','Vendas fracas na '+MG_DIAS[w.i]],sw:['O','Promoção para o dia mais fraco ('+MG_DIAS[w.i]+')']});
+  }
+  return a;
+}
+
+window.Mgmt={
+  tab:'pareto', pd:'v', chart:null, D:null, alerts:[],
+  init(){
+    if(!mg$('mgStart').value){ const t=localDateISO(), d=new Date(t+'T12:00:00'); d.setDate(d.getDate()-89); mg$('mgStart').value=isoOf(d); mg$('mgEnd').value=t; }
+    this.render();
+  },
+  setTab(t){ this.tab=t; this.render(); },
+  render(){
+    const D=mgCompute(); if(!D) return; this.D=D;
+    mg$('mgTabs').innerHTML=MG_TABS.map(([k,l,i])=>`<button onclick="Mgmt.setTab('${k}')" class="px-4 py-2 font-semibold text-sm border-b-2 whitespace-nowrap ${k===this.tab?'border-green-600 text-green-700':'border-transparent text-gray-500'}"><i class="fas ${i} mr-1"></i>${l}</button>`).join('');
+    this.alerts=mgAlerts(D);
+    mg$('mgAlerts').innerHTML=this.alerts.map((a,i)=>`<div class="card p-3 border-l-4 ${a.t==='warn'?'border-red-400':a.t==='ok'?'border-green-500':'border-blue-400'}"><p class="text-sm text-gray-700">${a.t==='warn'?'⚠️':a.t==='ok'?'✅':'💡'} ${a.txt}</p>${(a.ish||a.sw)?`<div class="mt-2 flex gap-2 text-xs">${a.ish?`<button onclick="Mgmt.useAlert(${i},'ish')" class="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">+ Ishikawa</button>`:''}${a.sw?`<button onclick="Mgmt.useAlert(${i},'sw')" class="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200">+ SWOT</button>`:''}</div>`:''}</div>`).join('');
+    mg$('mgBody').innerHTML=this[{pareto:'rPareto',abc:'rAbc',ishikawa:'rIshikawa',w2h:'rW2h',swot:'rSwot'}[this.tab]](D);
+    if(this.tab==='pareto') this.drawPareto(D);
+  },
+  useAlert(i,k){
+    const a=this.alerts[i];
+    if(k==='ish'){ const s=mgLoad('ish',{efeito:'Vendas abaixo do esperado',causas:{}}); const l=(s.causas[a.ish[0]]=s.causas[a.ish[0]]||[]); if(!l.includes(a.ish[1])) l.push(a.ish[1]); mgSave('ish',s); showNotification('Adicionado ao Ishikawa','success'); }
+    else { const s=mgLoad('swot',{F:[],W:[],O:[],T:[]}); if(!s[a.sw[0]].includes(a.sw[1])) s[a.sw[0]].push(a.sw[1]); mgSave('swot',s); showNotification('Adicionado ao SWOT','success'); }
+    if(this.tab==='ishikawa'||this.tab==='swot') this.render();
+  },
+  // ── Pareto ──
+  rPareto(){
+    const dimTxt=mg$('mgDim').value==='cat'?'categoria':'item', o=(v,l)=>`<option value="${v}" ${this.pd===v?'selected':''}>${l}</option>`;
+    return `<div class="card p-4"><div class="flex flex-wrap justify-between items-center gap-2 mb-2"><h3 class="font-bold text-gray-700">Pareto (80/20)</h3><select class="input-field" style="width:auto;min-height:38px;padding:6px 10px" onchange="Mgmt.pd=this.value;Mgmt.render()">${o('v','Vendas por '+dimTxt)}${o('ec','Despesas por categoria')}${o('ed','Despesas por descrição')}</select></div><p class="text-xs text-gray-500 mb-2">Barras = valor · linha laranja = % acumulado. Os itens até os 80% são os poucos que respondem pela maior parte do resultado (ou do gasto).</p><div class="chart-container" style="height:340px"><canvas id="mgParetoChart"></canvas></div></div>`;
+  },
+  drawPareto(D){
+    const rows=(this.pd==='v'?D.rank:this.pd==='ec'?D.eCat:D.eDesc).slice(0,15), ctx=mg$('mgParetoChart')?.getContext('2d');
+    if(!ctx) return; if(this.chart) this.chart.destroy();
+    this.chart=new Chart(ctx,{type:'bar',data:{labels:rows.map(r=>r.name.length>16?r.name.slice(0,16)+'…':r.name),datasets:[
+      {type:'bar',label:'Valor (R$)',data:rows.map(r=>r.v),backgroundColor:this.pd==='v'?'rgba(34,197,94,.7)':'rgba(239,68,68,.65)',yAxisID:'y'},
+      {type:'line',label:'% acumulado',data:rows.map(r=>+r.c.toFixed(1)),borderColor:'#f59e0b',backgroundColor:'#f59e0b',tension:.2,pointRadius:3,yAxisID:'y1'}]},
+      options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true},y1:{position:'right',min:0,max:100,grid:{drawOnChartArea:false},ticks:{callback:v=>v+'%'}}}}});
+  },
+  // ── Curva ABC ──
+  rAbc(D){
+    const col={A:'green',B:'yellow',C:'gray'};
+    const cards=['A','B','C'].map(c=>{ const x=D.rank.filter(r=>r.cls===c), v=x.reduce((n,r)=>n+r.v,0);
+      return `<div class="card p-3 text-center"><p class="text-xs font-bold text-gray-500 uppercase">Classe ${c}</p><p class="text-lg font-bold text-${col[c]}-700">${x.length} ${x.length===1?'item':'itens'}</p><p class="text-xs text-gray-500">${mgF(v)} · ${(v/(D.rev||1)*100).toFixed(0)}% da receita</p></div>`; }).join('');
+    const rows=D.rank.map((r,i)=>`<tr class="border-b text-sm"><td class="p-2 text-gray-400">${i+1}</td><td class="p-2 font-medium">${escAttr(r.name)}</td><td class="p-2 text-center">${+r.q.toFixed(2)}</td><td class="p-2 text-right font-bold">${mgF(r.v)}</td><td class="p-2 text-right">${r.p.toFixed(1)}%</td><td class="p-2 text-right text-gray-500">${r.c.toFixed(1)}%</td><td class="p-2 text-center"><span class="px-2 py-0.5 rounded text-xs font-bold bg-${col[r.cls]}-100 text-${col[r.cls]}-800">${r.cls}</span></td></tr>`).join('');
+    return `<div class="grid grid-cols-3 gap-3 mb-3">${cards}</div><p class="text-xs text-gray-500 mb-3"><b>A</b> (até 80% da receita): nunca deixar faltar e cuidar do preço · <b>B</b> (80–95%): acompanhar · <b>C</b> (restante): avaliar se compensa manter.</p><div class="card"><div class="table-responsive"><table class="w-full"><thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold"><tr><th class="p-2">#</th><th class="p-2 text-left">Item</th><th class="p-2">Qtd lançada</th><th class="p-2 text-right">Receita</th><th class="p-2 text-right">%</th><th class="p-2 text-right">% acum.</th><th class="p-2">Classe</th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="p-6 text-center text-gray-400">Sem vendas no período</td></tr>'}</tbody></table></div></div>`;
+  },
+  // ── Ishikawa ──
+  rIshikawa(){
+    const s=mgLoad('ish',{efeito:'Vendas abaixo do esperado',causas:{}});
+    const cards=MG_CAUSAS.map((c,i)=>{ const l=s.causas[c]||[];
+      return `<div class="card p-3"><h4 class="font-bold text-sm text-agro-green mb-2">${c}</h4><ul class="space-y-1 mb-2">${l.map((t,j)=>`<li class="flex justify-between gap-2 text-sm bg-gray-50 rounded px-2 py-1"><span>${escAttr(t)}</span><button onclick="Mgmt.delCausa(${i},${j})" class="text-red-400"><i class="fas fa-times"></i></button></li>`).join('')||'<li class="text-xs text-gray-400">Sem causas</li>'}</ul><div class="flex gap-1"><input id="mgC${i}" class="input-field" style="min-height:36px;padding:6px 10px;font-size:13px" placeholder="Nova causa…" onkeydown="if(event.key==='Enter')Mgmt.addCausa(${i})"><button onclick="Mgmt.addCausa(${i})" class="btn-primary" style="min-height:36px;padding:6px 12px">+</button></div></div>`; }).join('');
+    return `<div class="card p-4 mb-3"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Problema / efeito (cabeça do peixe)</label><input class="input-field" value="${escAttr(s.efeito)}" onchange="Mgmt.setEfeito(this.value)"><p class="text-xs text-gray-500 mt-2">Liste as possíveis causas em cada "espinha". Os botões "+ Ishikawa" dos alertas acima trazem sugestões dos seus números. Depois transforme as causas principais em ações no 5W2H.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-3">${cards}</div>`;
+  },
+  setEfeito(v){ const s=mgLoad('ish',{efeito:'',causas:{}}); s.efeito=v; mgSave('ish',s); },
+  addCausa(i){ const el=mg$('mgC'+i), t=el.value.trim(); if(!t) return; const s=mgLoad('ish',{efeito:'Vendas abaixo do esperado',causas:{}}); (s.causas[MG_CAUSAS[i]]=s.causas[MG_CAUSAS[i]]||[]).push(t); mgSave('ish',s); this.render(); },
+  delCausa(i,j){ const s=mgLoad('ish',{efeito:'',causas:{}}); (s.causas[MG_CAUSAS[i]]||[]).splice(j,1); mgSave('ish',s); this.render(); },
+  // ── 5W2H ──
+  W2H:[['what','O quê'],['why','Por quê'],['who','Quem'],['where','Onde'],['when','Quando'],['how','Como'],['much','Quanto custa']],
+  rW2h(){
+    const L=mgLoad('w2h',[]), f=this.W2H;
+    return `<div class="card p-4 mb-3"><div class="grid grid-cols-2 md:grid-cols-4 gap-2">${f.map(([k,l])=>`<div class="${k==='what'?'col-span-2':''}"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">${l}</label><input id="w2_${k}" class="input-field" ${k==='when'?'type="date"':''} style="min-height:38px;padding:8px 10px;font-size:14px"></div>`).join('')}<div class="flex items-end"><button onclick="Mgmt.addW2h()" class="btn-primary w-full">Adicionar</button></div></div></div><div class="card"><div class="table-responsive"><table class="w-full text-sm"><thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold"><tr><th class="p-2">✓</th>${f.map(([,l])=>`<th class="p-2 text-left">${l}</th>`).join('')}<th class="p-2"></th></tr></thead><tbody>${L.map((p,i)=>`<tr class="border-b ${p.done?'opacity-50 line-through':''}"><td class="p-2 text-center"><input type="checkbox" ${p.done?'checked':''} onchange="Mgmt.toggleW2h(${i})" class="w-4 h-4 accent-green-600"></td>${f.map(([k])=>`<td class="p-2">${k==='when'&&p[k]?p[k].split('-').reverse().join('/'):escAttr(p[k]||'')}</td>`).join('')}<td class="p-2"><button onclick="Mgmt.delW2h(${i})" class="text-red-400"><i class="fas fa-trash text-xs"></i></button></td></tr>`).join('')||'<tr><td colspan="9" class="p-6 text-center text-gray-400">Nenhuma ação cadastrada</td></tr>'}</tbody></table></div></div>`;
+  },
+  addW2h(){ const p={done:false}; this.W2H.forEach(([k])=>p[k]=mg$('w2_'+k).value.trim()); if(!p.what){ showNotification('Informe o que será feito','error'); return; } const L=mgLoad('w2h',[]); L.push(p); mgSave('w2h',L); this.render(); },
+  toggleW2h(i){ const L=mgLoad('w2h',[]); if(L[i]) L[i].done=!L[i].done; mgSave('w2h',L); this.render(); },
+  delW2h(i){ if(!confirm('Excluir esta ação?')) return; const L=mgLoad('w2h',[]); L.splice(i,1); mgSave('w2h',L); this.render(); },
+  // ── SWOT ──
+  rSwot(){
+    const s=mgLoad('swot',{F:[],W:[],O:[],T:[]});
+    return `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${MG_SWOT.map(([k,l,c])=>`<div class="card p-3 border-t-4 border-${c}-400"><h4 class="font-bold text-sm mb-2 text-${c}-700">${l}</h4><ul class="space-y-1 mb-2">${(s[k]||[]).map((t,j)=>`<li class="flex justify-between gap-2 text-sm bg-${c}-50 rounded px-2 py-1"><span>${escAttr(t)}</span><button onclick="Mgmt.delSwot('${k}',${j})" class="text-red-400"><i class="fas fa-times"></i></button></li>`).join('')||'<li class="text-xs text-gray-400">Vazio</li>'}</ul><div class="flex gap-1"><input id="sw_${k}" class="input-field" style="min-height:36px;padding:6px 10px;font-size:13px" placeholder="Adicionar…" onkeydown="if(event.key==='Enter')Mgmt.addSwot('${k}')"><button onclick="Mgmt.addSwot('${k}')" class="btn-primary" style="min-height:36px;padding:6px 12px">+</button></div></div>`).join('')}</div>`;
+  },
+  addSwot(k){ const t=mg$('sw_'+k).value.trim(); if(!t) return; const s=mgLoad('swot',{F:[],W:[],O:[],T:[]}); (s[k]=s[k]||[]).push(t); mgSave('swot',s); this.render(); },
+  delSwot(k,j){ const s=mgLoad('swot',{F:[],W:[],O:[],T:[]}); (s[k]||[]).splice(j,1); mgSave('swot',s); this.render(); }
+};
+
+
 window.addEventListener('load', async ()=>{
   // Constrói sidebar e bottom nav com ordem personalizada
   buildSidebarNav();
