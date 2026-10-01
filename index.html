@@ -228,6 +228,7 @@ body {
     <img src="logo.png" alt="AgroVida+" class="logo-img"
       onerror="this.style.display='none'; document.getElementById('altLogo').style.display='block'">
     <h1 id="altLogo" class="hidden text-agro-green font-bold text-xl">AGROVIDA+</h1>
+    <!-- Botão personalizar menu (só desktop) -->
     <button onclick="abrirMenuEditor()" class="hidden md:flex text-white/60 hover:text-white transition ml-auto" title="Personalizar menu">
       <i class="fas fa-grip-vertical text-sm"></i>
     </button>
@@ -235,8 +236,9 @@ body {
   <div id="connectionStatus" class="p-2.5 text-center text-xs flex justify-center items-center gap-2 connection-status bg-green-500 text-white">
     <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span> Online
   </div>
+  <!-- Nav dinâmica — ordem controlada pelo usuário -->
   <nav class="mt-3 flex-1 overflow-y-auto" id="sidebarNav"></nav>
-  <div class="p-3 text-center text-xs text-white/50">v6.1.0 ⚡ AgroVida+</div>
+  <div class="p-3 text-center text-xs text-white/50">v6.0.0 ⚡ AgroVida+</div>
 </aside>
 
 <!-- MAIN -->
@@ -245,7 +247,9 @@ body {
     <div class="loading-spinner"></div><span class="text-sm font-medium">Processando…</span>
   </div>
 
-  <!-- DASHBOARD / BALCÃO -->
+  <!-- ══════════════════════════════════
+       DASHBOARD / BALCÃO
+  ══════════════════════════════════ -->
   <div id="tab-dashboard" class="fade-in">
     <!-- KPIs linha 1 -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
@@ -298,16 +302,19 @@ body {
       <div class="p-4 border-b">
         <h2 class="font-bold text-gray-700 mb-2"><i class="fas fa-exchange-alt text-agro-green mr-2"></i> Nova Transação</h2>
         <div class="flex gap-3 flex-wrap">
-          <button id="transactionTypeSale" onclick="setTransactionType('sale')" class="type-filter-btn active"><i class="fas fa-plus-circle mr-2"></i> Venda</button>
+          <button id="transactionTypeSale"    onclick="setTransactionType('sale')"    class="type-filter-btn active"><i class="fas fa-plus-circle mr-2"></i> Venda</button>
           <button id="transactionTypeExpense" onclick="setTransactionType('expense')" class="type-filter-btn"><i class="fas fa-minus-circle mr-2"></i> Saída/Despesa</button>
         </div>
       </div>
       <div class="p-4">
+        <!-- Grid campos: QTD | PRODUTO | CATEGORIA | VALOR | PAGAMENTO | BOTÃO -->
         <div class="grid grid-cols-2 md:grid-cols-12 gap-3 items-end">
+          <!-- Qtd -->
           <div class="col-span-1 md:col-span-1" id="qtdFieldWrapper">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Qtd</label>
             <input type="number" id="itemQty" class="input-field text-center" value="1" min="0.01" step="0.01" placeholder="1">
           </div>
+          <!-- Descrição -->
           <div class="col-span-1 md:col-span-4">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="transactionLabel">Produto</label>
             <div class="relative">
@@ -315,29 +322,35 @@ body {
               <div id="descSuggestions" class="search-suggestions hidden"></div>
             </div>
           </div>
+          <!-- Categoria -->
           <div class="col-span-1 md:col-span-2">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Categoria</label>
             <select id="category" class="input-field"></select>
           </div>
+          <!-- Valor -->
           <div class="col-span-1 md:col-span-2">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor Unit. (R$)</label>
             <input type="text" id="value" class="input-field text-right" placeholder="0,00" required inputmode="decimal">
           </div>
+          <!-- Pagamento -->
           <div class="col-span-1 md:col-span-2" id="paymentWrapper">
             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Pagamento</label>
             <select id="payment" class="input-field">
               <option>Dinheiro</option><option>Pix</option><option>Débito</option><option>Crédito</option><option>Fiado/Prazo</option>
             </select>
           </div>
+          <!-- Botão -->
           <div class="col-span-2 md:col-span-1">
             <button onclick="handleTransactionAction()" id="addTransactionBtn" class="btn-primary w-full"><i class="fas fa-cart-plus mr-1"></i> Add</button>
           </div>
         </div>
 
+        <!-- Total em tempo real (venda) -->
         <div id="itemTotalPreview" class="hidden mt-2 text-right text-sm text-gray-500">
           Subtotal: <span id="itemTotalValue" class="font-bold text-agro-green">R$ 0,00</span>
         </div>
 
+        <!-- Carrinho -->
         <div id="saleCartSection" class="mt-5 hidden">
           <div class="border-t pt-4">
             <div class="flex justify-between items-center mb-2">
@@ -384,7 +397,9 @@ body {
     </div>
   </div>
 
-  <!-- RELATÓRIOS -->
+  <!-- ══════════════════════════════════
+       RELATÓRIOS
+  ══════════════════════════════════ -->
   <div id="tab-reports" class="hidden fade-in">
     <h2 class="text-xl font-bold text-gray-800 mb-5">Relatórios Avançados</h2>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
@@ -396,8 +411,8 @@ body {
           <div><label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label><select id="customFilterType" class="input-field"><option value="all">Todas</option><option value="sale">Vendas</option><option value="expense">Saídas</option></select></div>
           <div><label class="block text-sm font-medium text-gray-700 mb-1">Categoria</label><select id="customFilterCategory" class="input-field"><option value="">Todas</option></select></div>
           <div class="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <input type="checkbox" id="incluirFiadoRelatorio" checked class="w-4 h-4 accent-green-600">
-            <label for="incluirFiadoRelatorio" class="text-sm font-medium text-gray-700"><i class="fas fa-handshake text-yellow-500 mr-1"></i> Incluir vendas fiado nos totais</label>
+            <input type="checkbox" id="incluirFiadoRelatorio" checked class="w-4 h-4 accent-green-600" onchange="if(document.getElementById('customFilterStart').value&&document.getElementById('customFilterEnd').value)applyCustomFilter()">
+            <label for="incluirFiadoRelatorio" class="text-sm font-medium text-gray-700"><i class="fas fa-handshake text-yellow-500 mr-1"></i> Incluir recebimentos do fiado nos totais</label>
           </div>
           <button onclick="applyCustomFilter()" class="btn-primary w-full">Aplicar Filtros</button>
         </div>
@@ -412,7 +427,7 @@ body {
         </div>
         <div class="mt-4 pt-4 border-t grid grid-cols-2 gap-4">
           <div class="text-center bg-yellow-50 rounded-lg p-3"><p class="text-xs text-gray-500">Fiado Lançado</p><p class="text-lg font-bold text-yellow-600" id="customFiadoLancado">R$ 0,00</p></div>
-          <div class="text-center bg-green-50 rounded-lg p-3"><p class="text-xs text-gray-500">Fiado Recebido</p><p class="text-lg font-bold text-green-600" id="customFiadoRecebido">R$ 0,00</p></div>
+          <div class="text-center bg-green-50 rounded-lg p-3"><p class="text-xs text-gray-500">Fiado Recebido</p><p class="text-lg font-bold text-green-600" id="customFiadoRecebido">R$ 0,00</p><p class="text-[10px] text-gray-400" id="customFiadoRecebidoNote"></p></div>
         </div>
       </div>
     </div>
@@ -420,30 +435,6 @@ body {
       <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-3">Fluxo de Caixa (Diário)</h3><div class="chart-container"><canvas id="cashFlowChart"></canvas></div></div>
       <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-3">Distribuição por Categoria</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
     </div>
-
-    <div class="flex items-center gap-2 mb-3 mt-2">
-      <i class="fas fa-chess text-agro-green"></i><h2 class="text-lg font-bold text-gray-800">Análises Estratégicas</h2>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-      <div class="card p-4">
-        <p class="text-xs font-bold text-gray-500 uppercase mb-2"><i class="fas fa-balance-scale mr-1"></i>Comparativo com Período Anterior</p>
-        <div class="grid grid-cols-2 gap-3">
-          <div><p class="text-xs text-gray-400">Vendas</p><p class="text-lg font-bold" id="analyticsCompVendas">-</p></div>
-          <div><p class="text-xs text-gray-400">Saídas</p><p class="text-lg font-bold" id="analyticsCompSaidas">-</p></div>
-        </div>
-        <p class="text-xs text-gray-400 mt-2" id="analyticsCompPeriodo">Selecione um período e clique em Aplicar Filtros</p>
-      </div>
-      <div class="card p-4">
-        <p class="text-xs font-bold text-gray-500 uppercase mb-2"><i class="fas fa-bullseye mr-1"></i>Projeção de Fechamento do Mês</p>
-        <p class="text-2xl font-bold text-agro-green" id="analyticsProjecaoMes">-</p>
-        <p class="text-xs text-gray-400 mt-1" id="analyticsProjecaoDetalhe">Baseado no ritmo de vendas até hoje</p>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
-      <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-1">Tendência (últimos 6 meses + projeção)</h3><p class="text-xs text-gray-400 mb-3">Linha tracejada = projeção com base na tendência</p><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
-      <div class="card p-4"><h3 class="font-bold text-lg text-gray-700 mb-1">Desempenho por Dia da Semana</h3><p class="text-xs text-gray-400 mb-3">Média de vendas — ajuda a identificar os melhores dias</p><div class="chart-container"><canvas id="weekdayChart"></canvas></div></div>
-    </div>
-
     <div class="card p-4">
       <h3 class="font-bold text-lg text-gray-700 mb-4">Maiores Despesas</h3>
       <div class="table-responsive">
@@ -457,7 +448,9 @@ body {
     </div>
   </div>
 
-  <!-- LUCRO POR PRODUTO -->
+  <!-- ══════════════════════════════════
+       LUCRO POR PRODUTO
+  ══════════════════════════════════ -->
   <div id="tab-profit" class="hidden fade-in">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5">
       <div>
@@ -466,7 +459,7 @@ body {
       </div>
       <div class="flex gap-2 flex-wrap">
         <button onclick="exportProfitExcel()" class="btn-secondary flex items-center gap-2"><i class="fas fa-file-excel"></i> <span class="hidden md:inline">Excel</span></button>
-        <button onclick="exportProfitPDF()" class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span></button>
+        <button onclick="exportProfitPDF()"   class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i>   <span class="hidden md:inline">PDF</span></button>
       </div>
     </div>
     <div class="card p-4 mb-5">
@@ -477,25 +470,26 @@ body {
         <div><button onclick="renderProfitReport()" class="btn-profit w-full"><i class="fas fa-search mr-2"></i> Analisar</button></div>
       </div>
       <div class="mt-3 flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <input type="checkbox" id="incluirFiadoLucro" checked class="w-4 h-4 accent-green-600">
-        <label for="incluirFiadoLucro" class="text-sm font-medium text-gray-700"><i class="fas fa-handshake text-yellow-500 mr-1"></i> Incluir vendas fiado na análise</label>
+        <input type="checkbox" id="incluirFiadoLucro" checked class="w-4 h-4 accent-green-600" onchange="renderProfitReport()">
+        <label for="incluirFiadoLucro" class="text-sm font-medium text-gray-700"><i class="fas fa-handshake text-yellow-500 mr-1"></i> Incluir recebimentos do fiado na análise</label>
       </div>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5">
       <div class="summary-stat-card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Receita Total</p><p class="text-xl font-bold text-agro-green" id="profitTotalRevenue">R$ 0,00</p></div>
       <div class="summary-stat-card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Custo Total</p><p class="text-xl font-bold text-expense-red" id="profitTotalCost">R$ 0,00</p></div>
       <div class="summary-stat-card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Lucro Bruto</p><p class="text-xl font-bold text-blue-600" id="profitTotalProfit">R$ 0,00</p></div>
+      <div class="summary-stat-card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">🤝 Receb. Fiado</p><p class="text-xl font-bold text-yellow-600" id="profitFiadoRec">R$ 0,00</p><p class="text-[10px] text-gray-400" id="profitFiadoRecNote"></p></div>
       <div class="summary-stat-card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Margem Média</p><p class="text-xl font-bold text-purple-600" id="profitAvgMargin">0%</p></div>
     </div>
     <div class="profit-report-tabs">
-      <button class="profit-tab-btn active" onclick="switchProfitTab('table')" id="profitTabTable"><i class="fas fa-table mr-1"></i> Tabela</button>
-      <button class="profit-tab-btn" onclick="switchProfitTab('chart')" id="profitTabChart"><i class="fas fa-chart-bar mr-1"></i> Gráfico</button>
-      <button class="profit-tab-btn" onclick="switchProfitTab('ranking')" id="profitTabRanking"><i class="fas fa-trophy mr-1"></i> Ranking</button>
+      <button class="profit-tab-btn active" onclick="switchProfitTab('table')"   id="profitTabTable"><i class="fas fa-table mr-1"></i> Tabela</button>
+      <button class="profit-tab-btn"        onclick="switchProfitTab('chart')"   id="profitTabChart"><i class="fas fa-chart-bar mr-1"></i> Gráfico</button>
+      <button class="profit-tab-btn"        onclick="switchProfitTab('ranking')" id="profitTabRanking"><i class="fas fa-trophy mr-1"></i> Ranking</button>
     </div>
     <div id="profitViewTable">
       <div class="card">
         <div class="p-4 border-b flex justify-between items-center flex-wrap gap-2">
-          <span class="text-xs text-gray-500">⚠️ sem custo = estimado em 80% da receita &nbsp;·&nbsp; 🤝 = fiado</span>
+          <span class="text-xs text-gray-500" id="profitLegendText">⚠️ sem custo = estimado &nbsp;·&nbsp; 🤝 = fiado</span>
           <div class="flex gap-2 items-center">
             <label class="text-xs text-gray-500">Ordenar:</label>
             <select id="profitSort" class="input-field" style="min-height:34px;padding:5px 10px;font-size:12px;width:auto" onchange="renderProfitReport()">
@@ -530,22 +524,25 @@ body {
       </div>
     </div>
     <div id="profitNoCostWarning" class="hidden mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-      <p class="text-sm text-yellow-800"><i class="fas fa-info-circle mr-2"></i><strong id="profitNoCostCount">0</strong> produto(s) sem custo cadastrado — usando estimativa padrão de <strong>80% de custo (20% de margem)</strong>. Cadastre o custo real no Catálogo para valores exatos.</p>
+      <p class="text-sm text-yellow-800"><i class="fas fa-info-circle mr-2"></i><strong id="profitNoCostCount">0</strong> produto(s) sem custo cadastrado — lucro estimado com margem padrão de <strong id="profitNoCostMargin">20</strong>%. Cadastre no Catálogo para análise exata.</p>
     </div>
   </div>
 
-  <!-- HISTÓRICO -->
+  <!-- ══════════════════════════════════
+       HISTÓRICO
+  ══════════════════════════════════ -->
   <div id="tab-history" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h2 class="text-xl font-bold text-gray-800">Histórico Completo</h2>
       <button onclick="exportHistoryExcel()" class="btn-secondary flex items-center gap-2"><i class="fas fa-file-excel"></i> <span class="hidden md:inline">Exportar</span></button>
     </div>
     <div class="card p-4 mb-4">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar Mês</label><input type="month" id="filterMonth" class="input-field" onchange="filterHistory()"></div>
         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Dia Específico</label><input type="date" id="filterDate" class="input-field" onchange="filterHistory()"></div>
         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tipo</label><select id="filterType" class="input-field" onchange="filterHistory()"><option value="all">Todos</option><option value="sale">Vendas</option><option value="expense">Saídas</option></select></div>
-        <div><div class="text-xs text-gray-500 mb-1">Total Filtro:</div><div class="text-xl font-bold" id="historyTotal">R$ 0,00</div></div>
+        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">🤝 Receb. Fiado</label><select id="filterFiadoRec" class="input-field" onchange="filterHistory()"><option value="include">Mostrar e somar</option><option value="exclude">Ocultar (só vendas)</option></select></div>
+        <div><div class="text-xs text-gray-500 mb-1">Total Filtro:</div><div class="text-xl font-bold" id="historyTotal">R$ 0,00</div><div class="text-[10px] text-gray-400 mt-0.5" id="historyFiadoNote"></div></div>
         <div class="flex items-end"><button onclick="clearFilters()" class="text-blue-600 text-sm hover:underline">Limpar Filtros</button></div>
       </div>
     </div>
@@ -561,7 +558,9 @@ body {
     </div>
   </div>
 
-  <!-- SAÍDAS -->
+  <!-- ══════════════════════════════════
+       SAÍDAS
+  ══════════════════════════════════ -->
   <div id="tab-expenses" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h2 class="text-xl font-bold text-gray-800">Gestão de Saídas</h2>
@@ -583,18 +582,6 @@ body {
         <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor Máximo</label><input type="number" step="0.01" id="expenseFilterMax" class="input-field" placeholder="9999,99" onchange="filterExpenses()"></div>
       </div>
     </div>
-    <div class="card p-4 mb-4">
-      <h3 class="font-bold text-gray-700 mb-3"><i class="fas fa-chart-pie text-expense-red mr-2"></i>Saídas por Categoria</h3>
-      <p class="text-xs text-gray-400 mb-3">Reflete os filtros acima (mês/categoria/valor)</p>
-      <div class="table-responsive">
-        <table class="w-full text-sm">
-          <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
-            <tr><th class="p-3 text-left">Categoria</th><th class="p-3 text-right">Total</th><th class="p-3 text-center">% do Total</th><th class="p-3 text-center">Qtd.</th><th class="p-3 min-w-[100px]">Proporção</th></tr>
-          </thead>
-          <tbody id="expensesByCategoryBody"></tbody>
-        </table>
-      </div>
-    </div>
     <div class="card">
       <div class="p-4 border-b"><h3 class="font-bold text-gray-700">Histórico de Saídas</h3></div>
       <div class="table-responsive">
@@ -608,55 +595,15 @@ body {
     </div>
   </div>
 
-  <!-- CONTAS A PAGAR (BOLETOS) -->
-  <div id="tab-boletos" class="hidden fade-in">
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-      <div>
-        <h2 class="text-xl font-bold text-gray-800">Contas a Pagar</h2>
-        <p class="text-sm text-gray-500 mt-1">Boletos manuais e capturados de XML (NFe)</p>
-      </div>
-      <div class="flex gap-2 flex-wrap">
-        <button onclick="limparBoletosDuplicados()" class="btn-secondary text-sm px-3 py-2">
-          <i class="fas fa-broom mr-1"></i> Limpar Duplicatas
-        </button>
-        <button onclick="showAddBoletoModal()" class="btn-expense"><i class="fas fa-plus mr-2"></i> Novo Boleto</button>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('hoje')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-calendar-day text-red-500"></i> Vence Hoje</p><h3 class="text-xl font-bold text-red-600 mt-1" id="boletoKpiHoje">R$ 0,00</h3></div>
-      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('semana')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-calendar-week text-yellow-500"></i> Próx. 7 Dias</p><h3 class="text-xl font-bold text-yellow-600 mt-1" id="boletoKpiSemana">R$ 0,00</h3></div>
-      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('aberto')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-file-invoice-dollar text-blue-500"></i> Total em Aberto</p><h3 class="text-xl font-bold text-blue-600 mt-1" id="boletoKpiAberto">R$ 0,00</h3></div>
-      <div class="card p-4 cursor-pointer" onclick="filtrarBoletosPreset('atrasado')"><p class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1"><i class="fas fa-exclamation-triangle text-red-500"></i> Atrasados</p><h3 class="text-xl font-bold text-red-600 mt-1" id="boletoKpiAtrasados">0</h3></div>
-    </div>
-    <div class="card p-4 mb-4">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Status</label><select id="boletoFilterStatus" class="input-field" onchange="renderBoletos()"><option value="pendente">Pendentes</option><option value="pago">Pagos</option><option value="all">Todos</option></select></div>
-        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (mês)</label><input type="month" id="boletoFilterMonth" class="input-field" onchange="renderBoletos()"></div>
-        <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fornecedor</label><input type="text" id="boletoFilterFornecedor" class="input-field" placeholder="Buscar..." oninput="renderBoletos()"></div>
-        <div class="flex items-end"><button onclick="limparFiltrosBoletos()" class="text-blue-600 text-sm hover:underline">Limpar Filtros</button></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="table-responsive">
-        <table class="w-full text-sm">
-          <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold">
-            <tr><th class="p-3">Vencimento</th><th class="p-3">Fornecedor/Descrição</th><th class="p-3">Nota</th><th class="p-3">Origem</th><th class="p-3 text-right">Valor</th><th class="p-3 text-center">Status</th><th class="p-3 text-center">Ações</th></tr>
-          </thead>
-          <tbody id="boletosTableBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- CATÁLOGO -->
+  <!-- ══════════════════════════════════
+       CATÁLOGO
+  ══════════════════════════════════ -->
   <div id="tab-products" class="hidden fade-in">
     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
       <h2 class="text-xl font-bold text-gray-800">Catálogo de Produtos</h2>
       <div class="flex gap-2 flex-wrap">
-        <span id="productsCacheInfo" class="text-xs text-gray-400 flex items-center px-2"></span>
-        <button onclick="loadProducts(true)" class="btn-secondary flex items-center gap-2" title="Recarregar do Firebase"><i class="fas fa-sync-alt"></i> <span class="hidden md:inline">Atualizar</span></button>
         <button onclick="showXMLImportModal()" class="btn-xml flex items-center gap-2"><i class="fas fa-file-import"></i> <span class="hidden md:inline">XML</span></button>
-        <button onclick="exportCatalogPDF()" class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span></button>
+        <button onclick="exportCatalogPDF()"   class="btn-secondary flex items-center gap-2"><i class="fas fa-file-pdf"></i> <span class="hidden md:inline">PDF</span></button>
         <button onclick="showAddProductModal()" class="btn-primary"><i class="fas fa-plus mr-2"></i> Novo</button>
       </div>
     </div>
@@ -685,7 +632,9 @@ body {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="productsGrid"></div>
   </div>
 
-  <!-- FIADO -->
+  <!-- ══════════════════════════════════
+       FIADO
+  ══════════════════════════════════ -->
   <div id="tab-fiado" class="hidden fade-in">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5">
       <div>
@@ -695,9 +644,9 @@ body {
       <button onclick="Fiado.novoCliente()" class="btn-primary flex items-center gap-2"><i class="fas fa-user-plus"></i> Novo Cliente</button>
     </div>
     <div class="flex gap-2 border-b border-gray-200 mb-5 overflow-x-auto">
-      <button id="ftab-dashboard" onclick="Fiado.switchView('dashboard')" class="fiado-tab-btn active px-4 py-2 font-semibold text-sm border-b-2 border-green-600 text-green-700 whitespace-nowrap"><i class="fas fa-chart-line mr-1"></i> Dashboard</button>
-      <button id="ftab-clientes" onclick="Fiado.switchView('clientes')" class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-users mr-1"></i> Clientes</button>
-      <button id="ftab-pagamentos" onclick="Fiado.switchView('pagamentos')" class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-hand-holding-usd mr-1"></i> Pagamentos</button>
+      <button id="ftab-dashboard"    onclick="Fiado.switchView('dashboard')"    class="fiado-tab-btn active px-4 py-2 font-semibold text-sm border-b-2 border-green-600 text-green-700 whitespace-nowrap"><i class="fas fa-chart-line mr-1"></i> Dashboard</button>
+      <button id="ftab-clientes"     onclick="Fiado.switchView('clientes')"     class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-users mr-1"></i> Clientes</button>
+      <button id="ftab-pagamentos"   onclick="Fiado.switchView('pagamentos')"   class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-hand-holding-usd mr-1"></i> Pagamentos</button>
       <button id="ftab-notificacoes" onclick="Fiado.switchView('notificacoes')" class="fiado-tab-btn px-4 py-2 font-semibold text-sm border-b-2 border-transparent text-gray-500 whitespace-nowrap"><i class="fas fa-bell mr-1"></i> Notificações<span id="fiadoAlertBadge" class="hidden ml-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">0</span></button>
     </div>
     <div id="fview-dashboard" class="fiado-view">
@@ -787,10 +736,10 @@ body {
         <div class="space-y-4">
           <div class="card p-4">
             <h4 class="font-bold text-gray-700 mb-3 text-sm"><i class="fas fa-cart-plus mr-2 text-green-600"></i>Nova Venda</h4>
-            <input type="text" id="fAddDesc" class="input-field mb-2" placeholder="Produto/Serviço" style="padding:10px;font-size:14px">
+            <input type="text"   id="fAddDesc"  class="input-field mb-2" placeholder="Produto/Serviço" style="padding:10px;font-size:14px">
             <div class="flex gap-2 mb-2">
-              <input type="number" id="fAddQtd" class="input-field" value="1" min="0.01" step="0.01" style="padding:10px;font-size:14px">
-              <input type="number" id="fAddVal" class="input-field" placeholder="R$ Unit." min="0" step="0.01" style="padding:10px;font-size:14px">
+              <input type="number" id="fAddQtd"  class="input-field" value="1" min="0.01" step="0.01" style="padding:10px;font-size:14px">
+              <input type="number" id="fAddVal"  class="input-field" placeholder="R$ Unit." min="0" step="0.01" style="padding:10px;font-size:14px">
             </div>
             <input type="number" id="fAddDesc2" class="input-field mb-2" placeholder="Desconto (R$)" min="0" step="0.01" style="padding:10px;font-size:14px">
             <button onclick="Fiado.addItem()" class="btn-primary w-full text-sm"><i class="fas fa-plus-circle mr-1"></i> Lançar Venda</button>
@@ -840,7 +789,9 @@ body {
     </div>
   </div>
 
-  <!-- CONFIGURAÇÕES -->
+  <!-- ══════════════════════════════════
+       CONFIGURAÇÕES
+  ══════════════════════════════════ -->
   <div id="tab-settings" class="hidden fade-in">
     <h2 class="text-xl font-bold text-gray-800 mb-5">Configurações do Sistema</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -849,7 +800,8 @@ body {
         <div class="space-y-4">
           <div><label class="block text-sm font-medium text-gray-700 mb-1">Nome da Loja</label><input type="text" id="storeName" class="input-field" value="AgroVida+"></div>
           <div><label class="block text-sm font-medium text-gray-700 mb-1">Meta Mensal Padrão (R$)</label><input type="number" step="0.01" id="defaultMonthlyGoal" class="input-field" value="5000"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">Margem de Lucro Padrão (%)</label><input type="number" step="1" id="defaultProfitMargin" class="input-field" value="30"><p class="text-xs text-gray-500 mt-1">Usada na importação XML</p></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">Margem de Lucro Padrão p/ Importação XML (%)</label><input type="number" step="1" id="defaultProfitMargin" class="input-field" value="30"><p class="text-xs text-gray-500 mt-1">Usada para sugerir preço de venda ao importar XML (preço = custo + margem)</p></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">Margem Estimada p/ Produtos Sem Custo Cadastrado (%)</label><input type="number" step="1" id="estimatedMargin" class="input-field" value="20"><p class="text-xs text-gray-500 mt-1">Usada nos relatórios de Lucro quando o item vendido não está cadastrado no Catálogo (ou não tem custo informado) — o sistema assume que esse % do valor de venda é lucro, e o restante é custo</p></div>
           <div><label class="block text-sm font-medium text-gray-700 mb-1">Senha de Acesso</label><div class="flex gap-2"><input type="password" id="currentPassword" class="input-field flex-1" placeholder="Senha atual" value="1234"><button onclick="changePassword()" class="btn-primary whitespace-nowrap">Alterar</button></div></div>
         </div>
       </div>
@@ -861,6 +813,7 @@ body {
           <div class="pt-4 border-t"><label class="block text-sm font-medium text-gray-700 mb-2">Backup Completo</label><button onclick="createFullBackup()" class="btn-primary w-full"><i class="fas fa-save mr-2"></i> Criar Backup JSON</button><p class="text-xs text-gray-500 mt-1">Salva todos os dados locais em JSON</p></div>
         </div>
       </div>
+      <!-- Personalizar Menu -->
       <div class="card p-5">
         <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-grip-vertical text-agro-green"></i> Personalizar Menu</h3>
         <p class="text-xs text-gray-500 mb-3">Arraste para reordenar · Marque/desmarque para ocultar</p>
@@ -868,19 +821,10 @@ body {
         <button onclick="salvarOrdemMenu()" class="btn-primary w-full mt-4"><i class="fas fa-save mr-2"></i> Salvar Ordem</button>
       </div>
       <div class="card p-5">
-        <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-tags text-agro-green"></i> Categorias de Produto/Venda</h3>
-        <p class="text-xs text-gray-500 mb-3"><i class="fas fa-sync-alt mr-1"></i>Sincronizado entre dispositivos</p>
+        <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-tags text-agro-green"></i> Categorias</h3>
         <div class="space-y-3">
           <div id="categoriesList" class="max-h-48 overflow-y-auto space-y-1"></div>
           <div class="flex gap-2"><input type="text" id="newCategory" class="input-field" placeholder="Nova categoria"><button onclick="addCategory()" class="btn-primary whitespace-nowrap">Adicionar</button></div>
-        </div>
-      </div>
-      <div class="card p-5">
-        <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-tags text-expense-red"></i> Categorias de Saída</h3>
-        <p class="text-xs text-gray-500 mb-3"><i class="fas fa-sync-alt mr-1"></i>Sincronizado entre dispositivos — use para medir saídas por categoria</p>
-        <div class="space-y-3">
-          <div id="expenseCategoriesList" class="max-h-48 overflow-y-auto space-y-1"></div>
-          <div class="flex gap-2"><input type="text" id="newExpenseCategory" class="input-field" placeholder="Nova categoria de saída"><button onclick="addExpenseCategory()" class="btn-expense whitespace-nowrap">Adicionar</button></div>
         </div>
       </div>
       <div class="card p-5 md:col-span-2">
@@ -896,15 +840,6 @@ body {
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Atualizado</p><p class="font-bold text-xs" id="lastUpdate">-</p></div>
         </div>
         <div class="mt-5 pt-4 border-t">
-          <h4 class="font-bold text-sm text-gray-700 mb-2 flex items-center gap-2"><i class="fas fa-cloud text-agro-green"></i> Uso do Firebase (estimado)</h4>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-2">
-            <div class="text-center bg-blue-50 rounded-lg p-3"><p class="text-xs text-gray-500">Leituras hoje (aprox.)</p><p class="font-bold text-blue-700" id="statReadsToday">0</p></div>
-            <div class="text-center bg-blue-50 rounded-lg p-3"><p class="text-xs text-gray-500">Docs monitorados (live)</p><p class="font-bold text-blue-700" id="statLiveDocs">0</p></div>
-            <div class="text-center bg-blue-50 rounded-lg p-3"><p class="text-xs text-gray-500">Cache local ativo</p><p class="font-bold text-blue-700" id="statCacheAge">-</p></div>
-          </div>
-          <p class="text-xs text-gray-400">Vendas/Saídas em tempo real cobrem só os últimos 60 dias. Períodos mais antigos são buscados sob demanda e ficam salvos em cache local.</p>
-        </div>
-        <div class="mt-5 pt-4 border-t">
           <button onclick="clearAllData()" class="w-full py-3 rounded-lg font-semibold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition"><i class="fas fa-trash-alt mr-2"></i> Limpar Todos os Dados</button>
           <p class="text-xs text-gray-500 mt-1 text-center">⚠️ Ação irreversível</p>
         </div>
@@ -913,10 +848,12 @@ body {
   </div>
 </main>
 
-<!-- Bottom Nav Mobile -->
+<!-- ── Bottom Nav Mobile (ordem igual ao sidebar) ── -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav"></nav>
 
-<!-- MODAIS -->
+<!-- ════════════════════ MODAIS ════════════════════ -->
+
+<!-- Produto -->
 <div id="productModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4" id="productModalTitle">Adicionar Produto</h3>
@@ -943,6 +880,7 @@ body {
   </div>
 </div>
 
+<!-- XML -->
 <div id="xmlImportModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-file-import text-purple-600 mr-2"></i> Importar XML (NFe)</h3>
@@ -957,7 +895,6 @@ body {
         <p>✅ Produtos existentes → <strong>atualizados</strong></p>
         <p>✅ Produtos novos → <strong>cadastrados</strong></p>
         <p>✅ Preço de custo e venda extraídos automaticamente</p>
-        <p>✅ Boletos/Duplicatas → <strong>criados automaticamente</strong> (sem duplicação)</p>
       </div>
       <div><label class="block text-sm font-medium text-gray-700 mb-1">Margem de Lucro (%)</label><input type="number" id="xmlProfitMargin" class="input-field" value="30"><p class="text-xs text-gray-500 mt-1">Aplicada sobre o custo</p></div>
       <div id="xmlImportSummary" class="hidden"></div>
@@ -969,28 +906,7 @@ body {
   </div>
 </div>
 
-<div id="boletoModal" class="modal-overlay">
-  <div class="modal-content">
-    <h3 class="text-lg font-bold text-gray-800 mb-4" id="boletoModalTitle">Novo Boleto</h3>
-    <div class="space-y-3">
-      <div><label class="block text-sm font-medium text-gray-700 mb-1">Fornecedor/Descrição *</label><input type="text" id="boletoDesc" class="input-field" placeholder="Ex: Distribuidora Agro Ltda"></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="block text-sm font-medium text-gray-700 mb-1">Valor (R$) *</label><input type="text" id="boletoValor" class="input-field text-right" placeholder="0,00" inputmode="decimal"></div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1">Vencimento *</label><input type="date" id="boletoVencimento" class="input-field"></div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="block text-sm font-medium text-gray-700 mb-1">Nº Nota/Duplicata</label><input type="text" id="boletoNota" class="input-field" placeholder="Opcional"></div>
-        <div><label class="block text-sm font-medium text-gray-700 mb-1">Status</label><select id="boletoStatus" class="input-field"><option value="pendente">Pendente</option><option value="pago">Pago</option></select></div>
-      </div>
-      <div><label class="block text-sm font-medium text-gray-700 mb-1">Observações</label><textarea id="boletoObs" class="input-field" rows="2" placeholder="Detalhes adicionais…"></textarea></div>
-    </div>
-    <div class="mt-5 flex justify-end gap-3">
-      <button onclick="closeModal('boletoModal')" class="px-4 py-2 text-gray-600">Cancelar</button>
-      <button onclick="saveBoleto()" id="saveBoletoBtn" class="btn-expense px-5">Salvar</button>
-    </div>
-  </div>
-</div>
-
+<!-- Saída -->
 <div id="expenseModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4" id="expenseModalTitle">Nova Saída/Despesa</h3>
@@ -1013,6 +929,7 @@ body {
   </div>
 </div>
 
+<!-- Senha -->
 <div id="passwordModal" class="modal-overlay">
   <div class="modal-content">
     <h3 class="text-lg font-bold text-gray-800 mb-4">Alterar Senha</h3>
@@ -1027,6 +944,7 @@ body {
   </div>
 </div>
 
+<!-- Modal: Selecionar cliente fiado -->
 <div id="fiadoClienteModal" class="modal-overlay">
   <div class="modal-content" style="max-width:480px">
     <h3 class="text-lg font-bold text-gray-800 mb-1"><i class="fas fa-handshake text-yellow-500 mr-2"></i>Lançar no Fiado</h3>
@@ -1039,6 +957,7 @@ body {
   </div>
 </div>
 
+<!-- Modal: Editor de menu -->
 <div id="menuEditorModal" class="modal-overlay">
   <div class="modal-content" style="max-width:400px">
     <h3 class="text-lg font-bold text-gray-800 mb-1"><i class="fas fa-grip-vertical text-agro-green mr-2"></i>Personalizar Menu</h3>
@@ -1051,13 +970,15 @@ body {
   </div>
 </div>
 
-<!-- SCRIPT PRINCIPAL -->
+<!-- ════════════════════════════════════════
+     SCRIPT PRINCIPAL
+════════════════════════════════════════ -->
 <script type="module">
 // ─── Formatador moeda ───────────────────
 const _fmt = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2});
 window.formatMoney = v => _fmt.format(parseFloat(v)||0);
 
-// ─── Data local ISO ──────────────────────
+// ─── Data local ISO (sem fuso errado) ───
 function localDateISO() {
   const n = new Date();
   return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
@@ -1085,9 +1006,9 @@ if (tentativa !== SENHA_LOJA) {
   throw new Error('Senha Incorreta');
 }
 
-// ─── Firebase ─────────────────────────────
+// ─── Firebase (principal) ───────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, limit, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDocs, serverTimestamp, updateDoc, getDoc, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyBZvxMB2qmz5IMugV6fOqq4pLUbhD7mJRU",
@@ -1102,61 +1023,54 @@ const salesCol    = collection(db,"vendas_agrovida");
 const expensesCol = collection(db,"saidas_agrovida");
 const productsCol = collection(db,"produtos_agrovida");
 const settingsCol = collection(db,"configuracoes_agrovida");
-const boletosCol  = collection(db,"boletos_agrovida");
 
 // ─── Estado global ──────────────────────
 let localSales    = [];
 let localExpenses = [];
 let products      = [];
-let boletos       = [];
 let metaMensal    = parseFloat(localStorage.getItem('metaAgro'))||5000;
 let categories    = JSON.parse(localStorage.getItem('agroCategories'))||['Ração','Medicamento','Ferramentas','Sementes','Acessórios','Serviço/Vet','Outros'];
 let expenseCategories = JSON.parse(localStorage.getItem('agroExpenseCategories'))||['Aluguel','Salários','Contas (Água/Luz)','Internet/Telefone','Manutenção','Transporte','Suprimentos','Marketing','Outros'];
 let editingProductId  = null;
 let transactionType   = 'sale';
 let saleCart = [];
-let cashFlowChart=null, categoryChart=null, profitBarChart=null, profitMarginChart=null, trendChart=null, weekdayChart=null;
+let cashFlowChart=null, categoryChart=null, profitBarChart=null, profitMarginChart=null;
 let xmlImportData     = null;
 let lastProfitData    = [];
 let _pendingFiadoCallback = null;
 
-// ══════════════════════════════════════════════════════════
-// CACHE E OTIMIZAÇÃO
-// ══════════════════════════════════════════════════════════
-const LIVE_WINDOW_DAYS   = 60;
-const PRODUCTS_CACHE_TTL = 10*60*1000;
-const DEFAULT_COST_RATIO = 0.80;
-const CACHE_KEYS = {
-  sales:    'agro_cache_sales_live',
-  expenses: 'agro_cache_expenses_live',
-  products: 'agro_cache_products',
-  fiado:    'agro_cache_fiado_clients',
-  boletos:  'agro_cache_boletos'
-};
-let _estimatedReadsToday = parseInt(sessionStorage.getItem('agro_reads_today')||'0');
-function trackReads(n) {
-  _estimatedReadsToday += n;
-  sessionStorage.setItem('agro_reads_today', String(_estimatedReadsToday));
-  const el = document.getElementById('statReadsToday'); if (el) el.textContent = _estimatedReadsToday;
+// ─── Margem estimada p/ produtos sem custo cadastrado ────
+function getEstimatedMargin() {
+  const v = parseFloat(localStorage.getItem('estimatedMarginNoCost'));
+  return (isNaN(v)||v<=0) ? 20 : v;
 }
-function cutoffDateISO() {
-  const d = new Date(); d.setDate(d.getDate()-LIVE_WINDOW_DAYS);
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function saveCache(key, data) {
-  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch(e){ /* quota cheia: ignora */ }
-}
-function readCache(key) {
-  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch { return null; }
-}
+window.getEstimatedMargin = getEstimatedMargin;
 
-// ─── MENU PERSONALIZÁVEL ──────────────────
+// ─── Expande uma venda (doc) em suas linhas de item ───────
+// Vendas novas (carrinho com vários produtos) são gravadas como 1 único
+// documento no Firestore (economiza gravações), com um array "items".
+// Esta função "desempacota" isso de volta em linhas individuais para
+// os relatórios de lucro/categoria funcionarem por produto.
+function expandSale(sale) {
+  if (Array.isArray(sale.items) && sale.items.length) {
+    return sale.items.map(it => ({
+      ...it,
+      date: sale.date, time: sale.time, timestamp: sale.timestamp,
+      payment: it.payment || sale.payment,
+      total: (it.total!=null?it.total:(it.qty||1)*(it.value||0)),
+      id: sale.id, _saleId: sale.id
+    }));
+  }
+  return [{ ...sale, total: sale.value, id: sale.id, _saleId: sale.id }];
+}
+window.expandSale = expandSale;
+
+// ─── MENU PERSONALIZÁVEL ─────────────────────────────────────────
 const MENU_ITEMS_DEFAULT = [
   {id:'dashboard', icon:'fas fa-cash-register', label:'Balcão',    sub:'Vendas/Saídas',  visible:true},
   {id:'reports',   icon:'fas fa-chart-bar',     label:'Relatórios',sub:'Avançados',       visible:true},
   {id:'profit',    icon:'fas fa-dollar-sign',   label:'Lucro',     sub:'Por Produto',     visible:true},
   {id:'fiado',     icon:'fas fa-handshake',     label:'Fiado',     sub:'Clientes',        visible:true},
-  {id:'boletos',   icon:'fas fa-file-invoice-dollar', label:'Boletos', sub:'Contas a Pagar', visible:true},
   {id:'history',   icon:'fas fa-chart-line',    label:'Histórico', sub:'Vendas/Saídas',   visible:true},
   {id:'expenses',  icon:'fas fa-money-bill-wave',label:'Saídas',   sub:'Despesas',        visible:true},
   {id:'products',  icon:'fas fa-boxes',         label:'Catálogo',  sub:'Produtos',        visible:true},
@@ -1168,6 +1082,7 @@ function getMenuItems() {
   if (!saved) return JSON.parse(JSON.stringify(MENU_ITEMS_DEFAULT));
   try {
     const parsed = JSON.parse(saved);
+    // Merge: garantir que novos itens do default apareçam
     const ids = parsed.map(x=>x.id);
     MENU_ITEMS_DEFAULT.forEach(d=>{ if (!ids.includes(d.id)) parsed.push({...d}); });
     return parsed;
@@ -1183,7 +1098,7 @@ function buildSidebarNav() {
   const nav   = document.getElementById('sidebarNav');
   if (!nav) return;
   nav.innerHTML = items.map(item => {
-    const extra = item.id==='fiado' ? `id="fiadoBadge"` : item.id==='boletos' ? `id="boletosBadge"` : '';
+    const extra = item.id==='fiado' ? `id="fiadoBadge"` : '';
     return `<button onclick="showTab('${item.id}')" id="btn-${item.id}" class="w-full text-left p-4 hover:bg-white/10 transition flex items-center gap-3">
       <i class="${item.icon} text-xl w-6"></i>
       <div><span class="block font-bold">${item.label}</span><span class="text-xs text-white/70" ${extra}>${item.sub}</span></div>
@@ -1192,7 +1107,7 @@ function buildSidebarNav() {
 }
 
 function buildBottomNav() {
-  const items = getMenuItems().filter(x=>x.visible!==false).slice(0,7);
+  const items = getMenuItems().filter(x=>x.visible!==false).slice(0,7); // max 7 no bottom
   const nav   = document.getElementById('mobileBottomNav');
   if (!nav) return;
   nav.innerHTML = items.map(item => `
@@ -1221,6 +1136,7 @@ function buildMenuEditor(containerId) {
         <span class="text-xs text-gray-500">Visível</span>
       </label>
     `;
+    // Drag events
     div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',i); div.classList.add('dragging'); });
     div.addEventListener('dragend',   ()=>div.classList.remove('dragging'));
     div.addEventListener('dragover',  e=>{ e.preventDefault(); div.classList.add('drag-over'); });
@@ -1230,7 +1146,8 @@ function buildMenuEditor(containerId) {
       const from = parseInt(e.dataTransfer.getData('text/plain'));
       const to   = parseInt(div.dataset.index);
       if (from===to) return;
-      buildMenuEditor(containerId);
+      buildMenuEditor(containerId); // re-render com nova ordem
+      // Aplica reorder
       const saved = getMenuItems();
       const el = saved.splice(from,1)[0]; saved.splice(to,0,el);
       saveMenuItems(saved);
@@ -1247,6 +1164,7 @@ window.abrirMenuEditor = () => {
 };
 
 window.salvarOrdemMenu = (fecharModal=false) => {
+  // Lê ordem atual do editor (configurações)
   const containerId = fecharModal ? 'menuEditorListModal' : 'menuEditorList';
   const container   = document.getElementById(containerId);
   if (!container) return;
@@ -1284,14 +1202,13 @@ window.showTab = tab => {
   document.getElementById(`mobile-btn-${tab}`)?.classList.add('active');
   if (tab==='history')  { filterHistory(); }
   if (tab==='expenses') { filterExpenses(); updateExpenseSummary(); loadExpenseCategories(); }
-  if (tab==='boletos')  { renderBoletos(); }
   if (tab==='products') { loadProducts(); searchProducts(); loadFilterCategories(); }
   if (tab==='reports')  { loadFilterCategories(); loadExpenseCategoriesForReports(); applyCustomFilter(); }
-  if (tab==='settings') { updateSettingsInfo(); loadCategories(); loadExpenseCategoriesList(); buildMenuEditor('menuEditorList'); }
+  if (tab==='settings') { updateSettingsInfo(); loadCategories(); buildMenuEditor('menuEditorList'); }
   if (tab==='dashboard'){ updateCategorySelectForSales(); setTransactionType('sale'); updateScreen(); }
   if (tab==='profit')   { initProfitTab(); }
   if (tab==='fiado')    { Fiado.init(); }
-  if (tab!=='dashboard'){ saleCart=[]; renderCart(); }
+  if (tab!=='dashboard') { saleCart=[]; renderCart(); }
   document.getElementById('mainContent').scrollTop=0;
 };
 
@@ -1382,6 +1299,7 @@ window.renderCart = () => {
 
 window.removeFromCart = i => { saleCart.splice(i,1); renderCart(); };
 
+// Prévia do subtotal ao digitar
 function updateItemPreview() {
   const qty   = parseFloat(document.getElementById('itemQty')?.value)||1;
   const price = parseFloat(document.getElementById('value')?.value?.replace(',','.'))||0;
@@ -1394,6 +1312,12 @@ function updateItemPreview() {
 }
 
 // ─── FINALIZAR VENDA ─────────────────────
+// FIX/OTIMIZAÇÃO: antes cada item do carrinho virava um documento
+// separado no Firestore (N gravações por venda). Agora a venda inteira
+// é gravada em UM ÚNICO documento (com um array "items"), o que reduz
+// drasticamente o número de gravações no plano gratuito do Firebase,
+// e também corrige o cálculo de "Ticket Médio" e "Total de Vendas"
+// (que antes contavam por item, e não por venda/cliente atendido).
 window.finalizeSale = async () => {
   if (!saleCart.length) { showNotification('Carrinho vazio','warning'); return; }
   const btn = document.getElementById('finalizeSaleBtn');
@@ -1403,33 +1327,29 @@ window.finalizeSale = async () => {
   const timeStr = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const itensFiado   = saleCart.filter(i=>i.payment==='Fiado/Prazo');
   try {
-    const batch = writeBatch(db);
-    const optimisticDocs = [];
-    saleCart.forEach(item=>{
-      const ref = doc(salesCol);
-      const payload = {
-        date:dateISO, timestamp:now.toISOString(), time:timeStr,
-        desc:item.desc, category:item.category,
-        value:item.total||item.value, payment:item.payment, type:'sale',
-        qty: item.qty||1, unitValue: item.value
-      };
-      batch.set(ref,payload);
-      optimisticDocs.push({id:ref.id, ...payload});
+    const itemsPayload = saleCart.map(i=>({desc:i.desc,qty:i.qty,category:i.category,value:i.value,payment:i.payment,total:i.total}));
+    const totalValue   = itemsPayload.reduce((s,i)=>s+i.total,0);
+    const totalQty     = itemsPayload.reduce((s,i)=>s+(i.qty||1),0);
+    const paymentsUsed = [...new Set(itemsPayload.map(i=>i.payment))];
+    const paymentLabel = paymentsUsed.length===1 ? paymentsUsed[0] : 'Múltiplo';
+    const catsUsed      = [...new Set(itemsPayload.map(i=>i.category))];
+    await addDoc(salesCol,{
+      date:dateISO, timestamp:now.toISOString(), time:timeStr,
+      type:'sale',
+      items:itemsPayload,
+      value: totalValue,
+      qty: totalQty,
+      payment: paymentLabel,
+      desc: itemsPayload.length===1 ? itemsPayload[0].desc : `${itemsPayload.length} itens`,
+      category: catsUsed.length===1 ? catsUsed[0] : 'Múltiplas'
     });
-    await batch.commit();
-    const existingIds = new Set(localSales.map(s => s.id));
-    const newDocs = optimisticDocs.filter(d => !existingIds.has(d.id));
-    localSales = [...newDocs, ...localSales];
-    saveCache(CACHE_KEYS.sales, localSales);
-    updateScreen();
     if (itensFiado.length>0) {
       document.getElementById('loadingIndicator').classList.add('hidden');
       btn.disabled=false;
       showNotification(`Venda salva! ${itensFiado.length} item(s) → escolha o cliente fiado`,'info');
       await abrirModalFiadoCliente(itensFiado);
     } else {
-      const cartTotal = saleCart.reduce((s,i)=>s+(i.total||i.value),0);
-      showNotification(`✅ Venda de ${saleCart.length} item(s) · ${window.formatMoney(cartTotal)}`,'success');
+      showNotification(`✅ Venda de ${saleCart.length} item(s) · ${window.formatMoney(totalValue)}`,'success');
     }
     saleCart=[]; renderCart();
     document.getElementById('desc').value=''; document.getElementById('value').value=''; document.getElementById('itemQty').value='1';
@@ -1477,7 +1397,7 @@ function renderFiadoClienteModal() {
   }).join('');
 }
 
-// ─── TRANSAÇÃO SAÍDA ──────────────────────
+// ─── TRANSAÇÃO SAÍDA (direto) ────────────
 window.addTransaction = async () => {
   const desc  = document.getElementById('desc').value.trim();
   const price = parseFloat(document.getElementById('value').value.replace(',','.'));
@@ -1487,26 +1407,16 @@ window.addTransaction = async () => {
   btn.disabled=true; document.getElementById('loadingIndicator').classList.remove('hidden');
   const now = new Date();
   try {
-    const payload = {
+    await addDoc(expensesCol,{
       date:localDateISO(), timestamp:now.toISOString(),
       time:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
       desc, category:document.getElementById('category').value,
       value:price, payment:document.getElementById('payment').value, type:'expense'
-    };
-    const ref = await addDoc(expensesCol,payload);
-    const existingIds = new Set(localExpenses.map(e => e.id));
-    if (!existingIds.has(ref.id)) {
-      localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
-    }
-    saveCache(CACHE_KEYS.expenses, localExpenses);
-    updateScreen();
+    });
     showNotification('Saída salva!','success');
     document.getElementById('desc').value=''; document.getElementById('value').value='';
     document.getElementById('desc').focus();
-  } catch(e) {
-    console.error('addTransaction:',e);
-    showNotification('Erro ao salvar','error');
-  }
+  } catch { showNotification('Erro ao salvar','error'); }
   btn.disabled=false; document.getElementById('loadingIndicator').classList.add('hidden');
 };
 
@@ -1518,26 +1428,16 @@ window.saveExpense = async () => {
   const btn = document.getElementById('saveExpenseBtn');
   btn.disabled=true; document.getElementById('loadingIndicator').classList.remove('hidden');
   try {
-    const payload = {
+    await addDoc(expensesCol,{
       date:document.getElementById('expenseDate').value||localDateISO(),
       timestamp:now.toISOString(),
       time:now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
       desc, category:document.getElementById('expenseCategory').value,
       value:price, payment:document.getElementById('expensePayment').value, type:'expense',
       notes:document.getElementById('expenseNotes').value
-    };
-    const ref = await addDoc(expensesCol,payload);
-    const existingIds = new Set(localExpenses.map(e => e.id));
-    if (!existingIds.has(ref.id)) {
-      localExpenses = [{id:ref.id, ...payload}, ...localExpenses];
-    }
-    saveCache(CACHE_KEYS.expenses, localExpenses);
-    updateScreen();
+    });
     showNotification('Saída salva!','success'); closeModal('expenseModal');
-  } catch(e) {
-    console.error('saveExpense:',e);
-    showNotification('Erro ao salvar','error');
-  }
+  } catch { showNotification('Erro ao salvar','error'); }
   finally { btn.disabled=false; document.getElementById('loadingIndicator').classList.add('hidden'); }
 };
 
@@ -1545,14 +1445,8 @@ window.deleteTransaction = async (type, id) => {
   if (!confirm('Excluir esta transação?')) return;
   try {
     await deleteDoc(doc(db, type==='sale'?'vendas_agrovida':'saidas_agrovida', id));
-    if (type==='sale') { localSales = localSales.filter(s=>s.id!==id); saveCache(CACHE_KEYS.sales, localSales); }
-    else               { localExpenses = localExpenses.filter(e=>e.id!==id); saveCache(CACHE_KEYS.expenses, localExpenses); }
-    updateScreen();
     showNotification('Excluída!','success');
-  } catch(e) {
-    console.error('deleteTransaction:',e);
-    showNotification('Erro ao excluir','error');
-  }
+  } catch { showNotification('Erro ao excluir','error'); }
 };
 
 window.showAddExpenseModal = () => {
@@ -1566,15 +1460,12 @@ window.showAddExpenseModal = () => {
 
 // ─── META ─────────────────────────────────
 async function loadMetaMensal() {
-  metaMensal = parseFloat(localStorage.getItem('metaAgro'))||metaMensal;
-  updateMetaDisplay();
   try {
     const snap = await getDoc(doc(settingsCol,'metaMensal'));
-    trackReads(1);
-    const remoteVal = snap.exists()?(snap.data().valor||5000):5000;
+    metaMensal = snap.exists()?(snap.data().valor||5000):5000;
     if (!snap.exists()) await setDoc(doc(settingsCol,'metaMensal'),{valor:5000});
-    if (remoteVal !== metaMensal) { metaMensal = remoteVal; localStorage.setItem('metaAgro',metaMensal); updateMetaDisplay(); }
-  } catch { /* mantém valor do cache local */ }
+  } catch { metaMensal = parseFloat(localStorage.getItem('metaAgro'))||5000; }
+  updateMetaDisplay();
 }
 async function saveMetaMensal(val) {
   try { await setDoc(doc(settingsCol,'metaMensal'),{valor:val}); } catch {}
@@ -1601,9 +1492,13 @@ function updateScreen() {
     const month = today.substring(0,7);
     const todaySales = localSales.filter(s=>s.date===today);
     const todayExp   = localExpenses.filter(e=>e.date===today);
+    const todayFiadoPayments = getFiadoPaymentEntries(d=>d===today);
     const monthSales = localSales.filter(s=>s.date.startsWith(month));
     const sum = arr=>arr.reduce((a,c)=>a+(parseFloat(c.value)||0),0);
-    const tT=sum(todaySales), tE=sum(todayExp), tM=sum(monthSales), bal=tT-tE;
+    const tT=sum(todaySales), tE=sum(todayExp), tM=sum(monthSales);
+    const tFiadoPag = todayFiadoPayments.reduce((s,x)=>s+x.value,0);
+    // Saldo do Dia = vendas - saídas + dinheiro efetivamente recebido do fiado hoje
+    const bal = tT - tE + tFiadoPag;
     const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
     set('dashTotalToday',   window.formatMoney(tT));
     set('dashExpensesToday',window.formatMoney(tE));
@@ -1619,17 +1514,27 @@ function updateScreen() {
 
     const tbody=document.getElementById('todayTableBody');
     if (tbody) {
-      const all=[...todaySales.map(s=>({...s,_type:'sale'})),...todayExp.map(e=>({...e,_type:'expense'}))].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+      const all=[
+        ...todaySales.map(s=>({...s,_type:'sale'})),
+        ...todayExp.map(e=>({...e,_type:'expense'})),
+        ...todayFiadoPayments.map(f=>({...f,_type:'fiado_payment'}))
+      ].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
       tbody.innerHTML = all.length ? all.map(t=>{
-        const isE=t._type==='expense', isFiado=t.payment==='Fiado/Prazo';
-        return `<tr class="border-b hover:bg-gray-50 ${isE?'expense-row':''} ${isFiado&&!isE?'bg-yellow-50':''}">
-          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${isE?'bg-red-100 text-red-800':isFiado?'bg-yellow-100 text-yellow-800':'bg-green-100 text-green-800'}">${isE?'📉 Saída':isFiado?'🤝 Fiado':'📈 Venda'}</span></td>
+        const isE=t._type==='expense', isFiadoPay=t._type==='fiado_payment', isFiado=t.payment==='Fiado/Prazo';
+        const desc = t.items ? `${t.items.length} itens: ${t.items.slice(0,2).map(i=>i.desc).join(', ')}${t.items.length>2?'…':''}` : t.desc;
+        const badge = isE?'📉 Saída':isFiadoPay?'🤝 Recebido':isFiado?'🤝 Fiado':'📈 Venda';
+        const badgeClass = isE?'bg-red-100 text-red-800':isFiadoPay?'bg-blue-100 text-blue-800':isFiado?'bg-yellow-100 text-yellow-800':'bg-green-100 text-green-800';
+        const delBtn = isFiadoPay
+          ? `<button onclick="Fiado.verExtrato('${t._fiadoClientId}')" class="text-blue-400 hover:text-blue-600" title="Ver cliente"><i class="fas fa-eye text-xs"></i></button>`
+          : `<button onclick="window.deleteTransaction('${t._type}','${t.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash text-xs"></i></button>`;
+        return `<tr class="border-b hover:bg-gray-50 ${isE?'expense-row':''} ${(isFiado&&!isE)?'bg-yellow-50':''} ${isFiadoPay?'bg-blue-50':''}">
+          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${badgeClass}">${badge}</span></td>
           <td class="p-3 text-xs text-gray-500">${t.time}</td>
-          <td class="p-3 font-medium text-sm">${t.desc}</td>
+          <td class="p-3 font-medium text-sm">${desc}</td>
           <td class="p-3"><span class="bg-gray-100 px-2 py-0.5 rounded text-gray-600 text-xs">${t.category||'-'}</span></td>
           <td class="p-3 text-xs text-gray-500">${t.payment}</td>
-          <td class="p-3 text-right font-bold ${isE?'text-red-700':isFiado?'text-yellow-700':'text-green-700'}">${isE?'-':''}${window.formatMoney(t.value)}</td>
-          <td class="p-3 text-center"><button onclick="window.deleteTransaction('${t._type}','${t.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash text-xs"></i></button></td>
+          <td class="p-3 text-right font-bold ${isE?'text-red-700':isFiadoPay?'text-blue-700':isFiado?'text-yellow-700':'text-green-700'}">${isE?'-':'+'}${window.formatMoney(t.value)}</td>
+          <td class="p-3 text-center">${delBtn}</td>
         </tr>`;
       }).join('') : '<tr><td colspan="7" class="p-8 text-center text-gray-400 text-sm">Nenhuma transação hoje</td></tr>';
     }
@@ -1644,7 +1549,7 @@ function updateDashboardFiadoKPIs() {
   fClientes.forEach(c=>{
     const bal=fSaldo(c);
     if (bal>0.05){ receber+=bal; if(fGetOverdue(c)) atrasados++; }
-    pagosHoje+=(c.transactions||[]).filter(t=>t.type==='credit'&&(t.date||'').startsWith(hoje)).reduce((s,t)=>s+Math.abs(t.total),0);
+    pagosHoje+=fGetAllTransactions(c).filter(t=>t.type==='credit'&&fDateLocal(t.date)===hoje).reduce((s,t)=>s+Math.abs(t.total),0);
   });
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   s('dashFiadoReceber',   window.formatMoney(receber));
@@ -1656,77 +1561,53 @@ function updateDashboardFiadoKPIs() {
 }
 
 // ─── HISTÓRICO ────────────────────────────
-const _historicoCacheMemoria = {};
-async function buscarHistoricoMes(mesISO) {
-  if (_historicoCacheMemoria[mesISO]) return _historicoCacheMemoria[mesISO];
-  const cacheKey = `agro_hist_${mesISO}`;
-  const cached = readCache(cacheKey);
-  const isMesFechado = mesISO < localDateISO().substring(0,7);
-  if (cached && isMesFechado) { _historicoCacheMemoria[mesISO]=cached.data; return cached.data; }
-
-  const inicio = `${mesISO}-01`, fimObj = new Date(mesISO+'-01T00:00:00'); fimObj.setMonth(fimObj.getMonth()+1); fimObj.setDate(0);
-  const fim = `${fimObj.getFullYear()}-${String(fimObj.getMonth()+1).padStart(2,'0')}-${String(fimObj.getDate()).padStart(2,'0')}`;
-  try {
-    const [sSnap,eSnap] = await Promise.all([
-      getDocs(query(salesCol, where('date','>=',inicio), where('date','<=',fim), orderBy('date','desc'))),
-      getDocs(query(expensesCol, where('date','>=',inicio), where('date','<=',fim), orderBy('date','desc')))
-    ]);
-    trackReads(sSnap.size + eSnap.size);
-    const data = {
-      sales: sSnap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'})),
-      expenses: eSnap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'expense'}))
-    };
-    _historicoCacheMemoria[mesISO]=data;
-    saveCache(cacheKey, data);
-    return data;
-  } catch(e) { console.error('buscarHistoricoMes:',e); return {sales:[],expenses:[]}; }
-}
-
-window.filterHistory = async () => {
+window.filterHistory = () => {
   const m    = document.getElementById('filterMonth').value;
   const d    = document.getElementById('filterDate').value;
   const type = document.getElementById('filterType').value;
-  const cutoff = cutoffDateISO();
-  let sl, el;
-  const alvoDate = d || (m ? m+'-01' : null);
-  const foraDaJanela = alvoDate && alvoDate < cutoff;
-
-  if (foraDaJanela) {
-    const mesAlvo = (d||m).substring(0,7);
-    document.getElementById('loadingIndicator').classList.remove('hidden');
-    const hist = await buscarHistoricoMes(mesAlvo);
-    document.getElementById('loadingIndicator').classList.add('hidden');
-    sl=[...hist.sales]; el=[...hist.expenses];
-  } else {
-    sl=[...localSales]; el=[...localExpenses];
-  }
-  if (d)      { sl=sl.filter(s=>s.date===d);            el=el.filter(e=>e.date===d);            document.getElementById('filterMonth').value=''; }
-  else if (m) { sl=sl.filter(s=>s.date.startsWith(m));  el=el.filter(e=>e.date.startsWith(m));  document.getElementById('filterDate').value=''; }
+  const incFiadoRec = (document.getElementById('filterFiadoRec')?.value||'include')!=='exclude';
+  let sl=[...localSales], el=[...localExpenses];
+  let dateTest = null;
+  if (d)      { sl=sl.filter(s=>s.date===d);            el=el.filter(e=>e.date===d);            dateTest=dd=>dd===d;            document.getElementById('filterMonth').value=''; }
+  else if (m) { sl=sl.filter(s=>s.date.startsWith(m));  el=el.filter(e=>e.date.startsWith(m));  dateTest=dd=>dd.startsWith(m);  document.getElementById('filterDate').value=''; }
   let all=[];
-  if (type==='all'||type==='sale')    all=[...all,...sl.map(s=>({...s,_type:'sale'}))];
+  if (type==='all'||type==='sale') {
+    all=[...all,...sl.map(s=>({...s,_type:'sale'}))];
+    if (incFiadoRec) all=[...all,...getFiadoPaymentEntries(dateTest).map(f=>({...f,_type:'fiado_payment'}))];
+  }
   if (type==='all'||type==='expense') all=[...all,...el.map(e=>({...e,_type:'expense'}))];
   all.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
   const total = all.reduce((s,t)=>t._type==='expense'?s-t.value:s+t.value,0);
+  const fiadoSum = all.filter(t=>t._type==='fiado_payment').reduce((s,t)=>s+t.value,0);
+  const noteEl = document.getElementById('historyFiadoNote');
+  if (noteEl) noteEl.textContent = incFiadoRec ? (fiadoSum>0?`inclui ${window.formatMoney(fiadoSum)} de receb. fiado`:'') : 'sem recebimentos do fiado';
   const tot   = document.getElementById('historyTotal');
   if (tot) { tot.textContent=window.formatMoney(total); tot.className=`text-xl font-bold ${total>=0?'text-agro-green':'text-expense-red'}`; }
   const tbody = document.getElementById('historyTableBody');
   if (!tbody) return;
   tbody.innerHTML = all.length ? all.map(t=>{
-    const isE=t._type==='expense', isFiado=t.payment==='Fiado/Prazo';
+    const isE=t._type==='expense', isFiadoPay=t._type==='fiado_payment', isFiado=t.payment==='Fiado/Prazo';
     const dateBR=t.date.split('-').reverse().join('/');
-    return `<tr class="border-b hover:bg-gray-50 ${isE?'expense-row':''} ${isFiado&&!isE?'bg-yellow-50':''}">
-      <td class="p-3"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${isE?'bg-red-100 text-red-800':isFiado?'bg-yellow-100 text-yellow-800':'bg-green-100 text-green-800'}">${isE?'📉 Saída':isFiado?'🤝 Fiado':'📈 Venda'}</span></td>
+    const desc = t.items ? `${t.items.length} itens: ${t.items.slice(0,2).map(i=>i.desc).join(', ')}${t.items.length>2?'…':''}` : t.desc;
+    const badge = isE?'📉 Saída':isFiadoPay?'🤝 Recebido':isFiado?'🤝 Fiado':'📈 Venda';
+    const badgeClass = isE?'bg-red-100 text-red-800':isFiadoPay?'bg-blue-100 text-blue-800':isFiado?'bg-yellow-100 text-yellow-800':'bg-green-100 text-green-800';
+    const delBtn = isFiadoPay
+      ? `<button onclick="Fiado.verExtrato('${t._fiadoClientId}')" class="text-blue-400 hover:text-blue-600" title="Ver cliente"><i class="fas fa-eye text-xs"></i></button>`
+      : `<button onclick="window.deleteTransaction('${t._type}','${t.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash text-xs"></i></button>`;
+    return `<tr class="border-b hover:bg-gray-50 ${isE?'expense-row':''} ${(isFiado&&!isE)?'bg-yellow-50':''} ${isFiadoPay?'bg-blue-50':''}">
+      <td class="p-3"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${badgeClass}">${badge}</span></td>
       <td class="p-3 text-xs text-gray-500">${dateBR} ${t.time||''}</td>
-      <td class="p-3 font-medium text-sm">${t.desc}</td>
+      <td class="p-3 font-medium text-sm">${desc}</td>
       <td class="p-3 text-xs text-gray-500">${t.category||'-'}</td>
       <td class="p-3 text-xs text-gray-500">${t.payment}</td>
-      <td class="p-3 text-right font-bold ${isE?'text-red-700':isFiado?'text-yellow-700':'text-gray-700'}">${isE?'-':''}${window.formatMoney(t.value)}</td>
-      <td class="p-3 text-center"><button onclick="window.deleteTransaction('${t._type}','${t.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash text-xs"></i></button></td>
+      <td class="p-3 text-right font-bold ${isE?'text-red-700':isFiadoPay?'text-blue-700':'text-gray-700'}">${isE?'-':'+'}${window.formatMoney(t.value)}</td>
+      <td class="p-3 text-center">${delBtn}</td>
     </tr>`;
   }).join('') : '<tr><td colspan="7" class="p-8 text-center text-gray-400 text-sm">Nenhuma transação encontrada</td></tr>';
 };
 window.clearFilters = () => {
   document.getElementById('filterMonth').value=''; document.getElementById('filterDate').value=''; document.getElementById('filterType').value='all';
+  const ff=document.getElementById('filterFiadoRec'); if(ff) ff.value='include';
   filterHistory();
 };
 
@@ -1743,32 +1624,7 @@ window.filterExpenses = () => {
     const dateBR=e.date.split('-').reverse().join('/');
     return `<tr class="border-b expense-row hover:bg-red-50 text-sm"><td class="p-3 text-xs text-gray-500">${dateBR}</td><td class="p-3 font-medium">${e.desc}</td><td class="p-3"><span class="bg-red-100 px-2 py-0.5 rounded text-red-600 text-xs">${e.category||'-'}</span></td><td class="p-3 text-xs text-gray-500">${e.payment}</td><td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(e.value)}</td><td class="p-3 text-center"><button onclick="window.deleteTransaction('expense','${e.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash text-xs"></i></button></td></tr>`;
   }).join('') : '<tr><td colspan="6" class="p-8 text-center text-gray-400 text-sm">Nenhuma despesa</td></tr>';
-  renderExpensesByCategory(f);
 };
-function renderExpensesByCategory(list) {
-  const tbody = document.getElementById('expensesByCategoryBody');
-  if (!tbody) return;
-  const grupos = {};
-  list.forEach(e=>{
-    const cat = e.category || 'Sem categoria';
-    if (!grupos[cat]) grupos[cat] = {total:0, qtd:0};
-    grupos[cat].total += e.value;
-    grupos[cat].qtd += 1;
-  });
-  const totalGeral = list.reduce((s,e)=>s+e.value,0);
-  const linhas = Object.entries(grupos).map(([cat,d])=>({cat, ...d, pct: totalGeral>0?(d.total/totalGeral)*100:0}))
-    .sort((a,b)=>b.total-a.total);
-  const maxTotal = Math.max(...linhas.map(l=>l.total),1);
-  tbody.innerHTML = linhas.length ? linhas.map(l=>`
-    <tr class="border-b hover:bg-gray-50 text-sm">
-      <td class="p-3"><span class="bg-red-100 px-2 py-0.5 rounded text-red-600 text-xs font-medium">${l.cat}</span></td>
-      <td class="p-3 text-right font-bold text-expense-red">${window.formatMoney(l.total)}</td>
-      <td class="p-3 text-center text-xs text-gray-500">${l.pct.toFixed(1)}%</td>
-      <td class="p-3 text-center text-xs text-gray-500">${l.qtd}</td>
-      <td class="p-3"><div class="profit-bar-bg"><div class="profit-bar-fill" style="width:${(l.total/maxTotal*100).toFixed(1)}%;background:#ef4444"></div></div></td>
-    </tr>`).join('')
-    : '<tr><td colspan="5" class="p-8 text-center text-gray-400 text-sm">Nenhuma saída no filtro atual</td></tr>';
-}
 function updateExpenseSummary() {
   const m = localDateISO().substring(0,7);
   const me= localExpenses.filter(e=>e.date.startsWith(m));
@@ -1801,10 +1657,6 @@ function loadExpenseCategories() {
   const se=document.getElementById('expenseCategory');
   if (se) se.innerHTML=expenseCategories.map(c=>`<option value="${c}">${c}</option>`).join('');
 }
-function loadExpenseCategoriesList() {
-  const l=document.getElementById('expenseCategoriesList');
-  if (l) l.innerHTML=expenseCategories.map((c,i)=>`<div class="flex justify-between items-center p-2 bg-red-50 rounded-lg text-sm"><span>${c}</span><button onclick="removeExpenseCategory(${i})" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button></div>`).join('');
-}
 function loadExpenseCategoriesForReports() {
   const s=document.getElementById('customFilterCategory');
   if (s) { const all=[...new Set([...categories,...expenseCategories])]; s.innerHTML='<option value="">Todas</option>'+all.map(c=>`<option value="${c}">${c}</option>`).join(''); }
@@ -1813,231 +1665,102 @@ function loadFilterCategories() {
   const s=document.getElementById('filterCategory');
   if (s) s.innerHTML='<option value="">Todas</option>'+categories.map(c=>`<option value="${c}">${c}</option>`).join('');
 }
-
-const categoriasDocRef = doc(settingsCol,'categorias');
-function refreshAllCategoryUI() {
-  loadCategories(); loadExpenseCategoriesList();
-  updateCategorySelect(); updateCategorySelectForSales();
-  loadExpenseCategories(); loadFilterCategories(); loadExpenseCategoriesForReports();
-}
-async function persistCategoriasFirestore() {
-  try { await setDoc(categoriasDocRef, { categories, expenseCategories, updatedAt:new Date().toISOString() }, {merge:true}); }
-  catch(e){ console.error('persistCategoriasFirestore:',e); showNotification('Categoria salva localmente, mas não sincronizou (sem conexão)','warning'); }
-}
-onSnapshot(categoriasDocRef, snap=>{
-  trackReads(1);
-  if (!snap.exists()) { persistCategoriasFirestore(); return; }
-  const d = snap.data();
-  let mudou=false;
-  if (Array.isArray(d.categories) && JSON.stringify(d.categories)!==JSON.stringify(categories)) { categories=d.categories; mudou=true; }
-  if (Array.isArray(d.expenseCategories) && JSON.stringify(d.expenseCategories)!==JSON.stringify(expenseCategories)) { expenseCategories=d.expenseCategories; mudou=true; }
-  if (mudou) {
-    localStorage.setItem('agroCategories',JSON.stringify(categories));
-    localStorage.setItem('agroExpenseCategories',JSON.stringify(expenseCategories));
-    refreshAllCategoryUI();
-  }
-},e=>console.error('categorias listener:',e));
-
 window.addCategory = () => {
   const v=document.getElementById('newCategory').value.trim();
   if (v&&!categories.includes(v)) {
     categories.push(v); localStorage.setItem('agroCategories',JSON.stringify(categories));
-    refreshAllCategoryUI(); persistCategoriasFirestore();
+    loadCategories(); updateCategorySelect(); updateCategorySelectForSales(); loadFilterCategories();
     document.getElementById('newCategory').value=''; showNotification('Categoria adicionada!','success');
   }
 };
 window.removeCategory = i => {
   if (confirm(`Remover "${categories[i]}"?`)) {
     categories.splice(i,1); localStorage.setItem('agroCategories',JSON.stringify(categories));
-    refreshAllCategoryUI(); persistCategoriasFirestore();
-    showNotification('Removida!','success');
-  }
-};
-window.addExpenseCategory = () => {
-  const v=document.getElementById('newExpenseCategory').value.trim();
-  if (v&&!expenseCategories.includes(v)) {
-    expenseCategories.push(v); localStorage.setItem('agroExpenseCategories',JSON.stringify(expenseCategories));
-    refreshAllCategoryUI(); persistCategoriasFirestore();
-    document.getElementById('newExpenseCategory').value=''; showNotification('Categoria de saída adicionada!','success');
-  }
-};
-window.removeExpenseCategory = i => {
-  if (confirm(`Remover "${expenseCategories[i]}"?`)) {
-    expenseCategories.splice(i,1); localStorage.setItem('agroExpenseCategories',JSON.stringify(expenseCategories));
-    refreshAllCategoryUI(); persistCategoriasFirestore();
+    loadCategories(); updateCategorySelect(); updateCategorySelectForSales(); loadFilterCategories();
     showNotification('Removida!','success');
   }
 };
 
 // ─── RELATÓRIOS ───────────────────────────
-function getFiadoPaymentsInRange(s,e) {
-  let t=0;
+// Recebimentos do fiado agrupados por dia (data local) dentro do período.
+// FIX: antes só olhava c.transactions (ciclo aberto) — pagamentos de ciclos
+// já arquivados sumiam dos relatórios. Agora usa fGetAllTransactions.
+function getFiadoPaymentsByDay(s,e) {
+  const map={};
   fClientes.forEach(c=>{
-    (c.transactions||[]).filter(x=>x.type==='credit').forEach(x=>{
-      const d=(x.date||'').substring(0,10);
-      if (d>=s&&d<=e) t+=Math.abs(x.total);
+    fGetAllTransactions(c).filter(x=>x.type==='credit').forEach(x=>{
+      const d=fDateLocal(x.date);
+      if (d>=s&&d<=e) map[d]=(map[d]||0)+Math.abs(x.total||0);
     });
   });
-  return t;
+  return map;
 }
-async function getRangeData(startISO,endISO) {
-  const cutoff = cutoffDateISO();
-  let sales = [...localSales], expenses = [...localExpenses];
-  if (startISO < cutoff) {
-    const mesesNecessarios = new Set();
-    let cur = new Date(startISO+'T00:00:00');
-    const fim = new Date((endISO<cutoff?endISO:cutoff)+'T00:00:00');
-    cur.setDate(1);
-    while (cur<=fim) { mesesNecessarios.add(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}`); cur.setMonth(cur.getMonth()+1); }
-    document.getElementById('loadingIndicator').classList.remove('hidden');
-    for (const mes of mesesNecessarios) {
-      const hist = await buscarHistoricoMes(mes);
-      const idsS = new Set(sales.map(s=>s.id)), idsE = new Set(expenses.map(e=>e.id));
-      hist.sales.forEach(s=>{ if(!idsS.has(s.id)) sales.push(s); });
-      hist.expenses.forEach(e=>{ if(!idsE.has(e.id)) expenses.push(e); });
-    }
-    document.getElementById('loadingIndicator').classList.add('hidden');
-  }
-  return {sales,expenses};
+function getFiadoPaymentsInRange(s,e) {
+  return Object.values(getFiadoPaymentsByDay(s,e)).reduce((a,b)=>a+b,0);
 }
-async function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
+// FIX: cálculo de lucro corrigido — agora considera a quantidade vendida
+// (antes subtraía o custo unitário como se fosse 1 unidade só) e, para
+// produtos que não estão cadastrados no Catálogo (sem custo), assume a
+// margem estimada configurada em Configurações (padrão 20%) em vez de
+// considerar 100% do valor como lucro.
+function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
   const incFiado=document.getElementById('incluirFiadoRelatorio')?.checked!==false;
   const inRange=(d,s,e)=>{ const dd=new Date(d+'T00:00:00'); return dd>=new Date(s+'T00:00:00')&&dd<=new Date(e+'T23:59:59'); };
-  const {sales:allSales, expenses:allExpenses} = await getRangeData(startISO,endISO);
-  let fs=allSales.filter(s=>inRange(s.date,startISO,endISO)&&(!catFilter||s.category===catFilter)&&(typeFilter==='all'||typeFilter==='sale'));
-  const fe=allExpenses.filter(e=>inRange(e.date,startISO,endISO)&&(!catFilter||e.category===catFilter)&&(typeFilter==='all'||typeFilter==='expense'));
+  let fsRaw=localSales.filter(s=>inRange(s.date,startISO,endISO)&&(typeFilter==='all'||typeFilter==='sale'));
+  let fsExpanded = fsRaw.flatMap(expandSale).filter(it=>!catFilter||it.category===catFilter);
+  const fe=localExpenses.filter(e=>inRange(e.date,startISO,endISO)&&(!catFilter||e.category===catFilter)&&(typeFilter==='all'||typeFilter==='expense'));
+  // Informativo: quanto foi lançado no fiado (já faz parte das vendas)
   let fiadoLancado=0;
-  if (incFiado&&(typeFilter==='all'||typeFilter==='sale')) {
-    fiadoLancado=allSales.filter(s=>inRange(s.date,startISO,endISO)&&s.payment==='Fiado/Prazo').reduce((s,x)=>s+x.value,0);
+  if (typeFilter==='all'||typeFilter==='sale') {
+    fiadoLancado=fsExpanded.filter(it=>it.payment==='Fiado/Prazo').reduce((s,it)=>s+(it.total||0),0);
   }
-  const tS=fs.reduce((s,x)=>s+x.value,0), tE=fe.reduce((s,x)=>s+x.value,0);
+  // Recebimentos do fiado (dinheiro que entrou) — o checkbox decide se somam nos totais.
+  // Não entram quando o filtro é só "Saídas" ou quando há filtro de categoria.
+  const fiadoApplies=(typeFilter==='all'||typeFilter==='sale')&&!catFilter;
+  const fiadoByDay=fiadoApplies?getFiadoPaymentsByDay(startISO,endISO):{};
+  const fiadoRec=Object.values(fiadoByDay).reduce((a,b)=>a+b,0);
+  const fiadoIncl=incFiado?fiadoRec:0;
+  const tS=fsExpanded.reduce((s,x)=>s+(x.total||0),0), tE=fe.reduce((s,x)=>s+x.value,0);
+  const estMargin=getEstimatedMargin()/100;
   let profit=0;
-  fs.forEach(sale=>{
-    const p=products.find(x=>x.name.toLowerCase()===String(sale.desc||'').toLowerCase());
-    const custo = (p&&p.cost>0) ? p.cost*(sale.qty||1) : sale.value*DEFAULT_COST_RATIO;
-    profit+=sale.value-custo;
+  fsExpanded.forEach(item=>{
+    const p=products.find(x=>x.name.toLowerCase()===(item.desc||'').toLowerCase());
+    const qty=item.qty||1;
+    const revenue=item.total||0;
+    if (p&&p.cost>0) { profit += revenue - (p.cost*qty); }
+    else             { profit += revenue*estMargin; }
   });
   profit-=tE;
-  const fiadoRec=getFiadoPaymentsInRange(startISO,endISO);
-  const nb=tS-tE;
+  profit+=fiadoIncl;
+  const nb=tS-tE+fiadoIncl;
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   s('customTotalSales',   window.formatMoney(tS));
   s('customTotalExpenses',window.formatMoney(tE));
   s('customProfit',       window.formatMoney(profit));
   s('customFiadoLancado', window.formatMoney(fiadoLancado));
   s('customFiadoRecebido',window.formatMoney(fiadoRec));
+  s('customFiadoRecebidoNote',fiadoRec>0?(incFiado?'✔ somado no Saldo e no Lucro':'não somado nos totais'):'');
   const nbEl=document.getElementById('customNetBalance');
   if(nbEl){nbEl.textContent=window.formatMoney(nb); nbEl.className=`text-xl font-bold ${nb>=0?'text-agro-green':'text-expense-red'}`;}
-  updateCashFlowChart(fs,fe,startISO,endISO);
-  updateCategoryChart(fs,fe);
+  updateCashFlowChart(fsExpanded,fe,startISO,endISO,incFiado?fiadoByDay:null);
+  updateCategoryChart(fsExpanded,fe);
   updateTopExpensesTable(fe);
-  await renderAnalytics(startISO,endISO,fs,fe);
 }
 
-async function renderAnalytics(startISO,endISO,fs,fe) {
-  const startDate = new Date(startISO+'T00:00:00'), endDate = new Date(endISO+'T00:00:00');
-  const diasPeriodo = Math.round((endDate-startDate)/86400000)+1;
-  const prevEnd = new Date(startDate); prevEnd.setDate(prevEnd.getDate()-1);
-  const prevStart = new Date(prevEnd); prevStart.setDate(prevStart.getDate()-diasPeriodo+1);
-  const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  const prevStartISO=toISO(prevStart), prevEndISO=toISO(prevEnd);
-  const {sales:prevRangeSales, expenses:prevRangeExpenses} = await getRangeData(prevStartISO,prevEndISO);
-  const inRangeP=(d,s,e)=>{ const dd=new Date(d+'T00:00:00'); return dd>=new Date(s+'T00:00:00')&&dd<=new Date(e+'T23:59:59'); };
-  const prevSalesTotal = prevRangeSales.filter(s=>inRangeP(s.date,prevStartISO,prevEndISO)).reduce((s,x)=>s+x.value,0);
-  const prevExpTotal   = prevRangeExpenses.filter(e=>inRangeP(e.date,prevStartISO,prevEndISO)).reduce((s,x)=>s+x.value,0);
-  const curSalesTotal = fs.reduce((s,x)=>s+x.value,0);
-  const curExpTotal   = fe.reduce((s,x)=>s+x.value,0);
-  const pct=(cur,prev)=> prev>0 ? ((cur-prev)/prev*100) : (cur>0?100:0);
-  const pctVendas = pct(curSalesTotal,prevSalesTotal), pctSaidas = pct(curExpTotal,prevExpTotal);
-  const elV=document.getElementById('analyticsCompVendas');
-  if (elV) { elV.textContent = `${pctVendas>=0?'▲':'▼'} ${Math.abs(pctVendas).toFixed(1)}%`; elV.className=`text-lg font-bold ${pctVendas>=0?'text-green-600':'text-red-600'}`; }
-  const elS=document.getElementById('analyticsCompSaidas');
-  if (elS) { elS.textContent = `${pctSaidas>=0?'▲':'▼'} ${Math.abs(pctSaidas).toFixed(1)}%`; elS.className=`text-lg font-bold ${pctSaidas<=0?'text-green-600':'text-red-600'}`; }
-  const periodoEl = document.getElementById('analyticsCompPeriodo');
-  if (periodoEl) periodoEl.textContent = `vs. ${prevStartISO.split('-').reverse().join('/')} – ${prevEndISO.split('-').reverse().join('/')} (${diasPeriodo} dia${diasPeriodo>1?'s':''})`;
-
-  const hojeISO = localDateISO(), mesAtual = hojeISO.substring(0,7);
-  const projEl = document.getElementById('analyticsProjecaoMes'), projDetEl = document.getElementById('analyticsProjecaoDetalhe');
-  if (startISO===mesAtual+'-01' && endISO===hojeISO) {
-    const diaAtual = new Date().getDate();
-    const diasNoMes = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
-    const mediaDiaria = diaAtual>0 ? curSalesTotal/diaAtual : 0;
-    const projecao = mediaDiaria*diasNoMes;
-    if (projEl) projEl.textContent = window.formatMoney(projecao);
-    if (projDetEl) projDetEl.textContent = `Ritmo atual: ${window.formatMoney(mediaDiaria)}/dia · dia ${diaAtual} de ${diasNoMes}`;
-  } else {
-    if (projEl) projEl.textContent = '—';
-    if (projDetEl) projDetEl.textContent = 'Selecione o período "do dia 1 até hoje" para ver a projeção do mês atual';
-  }
-
-  await renderTrendChart();
-  renderWeekdayChart(fs);
-}
-
-async function renderTrendChart() {
-  const hoje = new Date();
-  const meses = [];
-  for (let i=5;i>=0;i--) { const d=new Date(hoje.getFullYear(),hoje.getMonth()-i,1); meses.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`); }
-  const mesAtual = localDateISO().substring(0,7);
-  const totals = [];
-  for (const mes of meses) {
-    if (mes===mesAtual) totals.push(localSales.filter(s=>s.date.startsWith(mes)).reduce((s,x)=>s+x.value,0));
-    else { const hist = await buscarHistoricoMes(mes); totals.push(hist.sales.reduce((s,x)=>s+x.value,0)); }
-  }
-  const n=totals.length, xs=totals.map((_,i)=>i);
-  const sumX=xs.reduce((a,b)=>a+b,0), sumY=totals.reduce((a,b)=>a+b,0);
-  const sumXY=xs.reduce((a,x,i)=>a+x*totals[i],0), sumXX=xs.reduce((a,x)=>a+x*x,0);
-  const denom=(n*sumXX-sumX*sumX);
-  const slope = denom!==0 ? (n*sumXY-sumX*sumY)/denom : 0;
-  const intercept = (sumY-slope*sumX)/n;
-  const projecao = Math.max(0, slope*n+intercept);
-  const mesesLabels = meses.map(m=>{ const [y,mo]=m.split('-'); return `${mo}/${y.slice(2)}`; });
-  const proxData = new Date(hoje.getFullYear(),hoje.getMonth()+1,1);
-  const proxLabel = `${String(proxData.getMonth()+1).padStart(2,'0')}/${String(proxData.getFullYear()).slice(2)} (proj.)`;
-  const ctx=document.getElementById('trendChart')?.getContext('2d');
-  if (!ctx) return;
-  if (trendChart) trendChart.destroy();
-  trendChart = new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:[...mesesLabels, proxLabel],
-      datasets:[
-        {label:'Vendas reais', data:[...totals,null], borderColor:'rgb(0,144,54)', backgroundColor:'rgba(0,144,54,0.08)', borderWidth:2, tension:0.25, fill:true},
-        {label:'Tendência/Projeção', data:[...Array(n-1).fill(null), totals[n-1], projecao], borderColor:'rgb(59,130,246)', borderDash:[6,4], borderWidth:2}
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true}}}
-  });
-}
-
-function renderWeekdayChart(fs) {
-  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  const soma=[0,0,0,0,0,0,0], qtd=[0,0,0,0,0,0,0];
-  fs.forEach(s=>{ const d=new Date(s.date+'T12:00:00').getDay(); soma[d]+=s.value; qtd[d]+=1; });
-  const medias = soma.map((s,i)=>qtd[i]>0?s/qtd[i]:0);
-  const ctx=document.getElementById('weekdayChart')?.getContext('2d');
-  if (!ctx) return;
-  if (weekdayChart) weekdayChart.destroy();
-  const maxV=Math.max(...medias);
-  weekdayChart = new Chart(ctx,{
-    type:'bar',
-    data:{ labels:dias, datasets:[{label:'Média por dia', data:medias, backgroundColor:medias.map(v=>v===maxV&&v>0?'rgba(0,144,54,0.85)':'rgba(0,144,54,0.35)'), borderColor:'rgb(0,144,54)', borderWidth:1}] },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-  });
-}
-
-function updateCashFlowChart(sales,expenses,startDate,endDate) {
+// ─── FIX: Gráfico fluxo de caixa com data correta ────────────
+function updateCashFlowChart(salesItems,expenses,startDate,endDate,fiadoByDay=null) {
   const ctx=document.getElementById('cashFlowChart')?.getContext('2d');
   if (!ctx) return;
   const dates=[]; let cur=new Date(startDate+'T12:00:00'), end=new Date(endDate+'T12:00:00');
   while (cur<=end) {
+    // FIX: usa ano/mês/dia diretamente sem conversão de fuso
     const y=cur.getFullYear(), mo=String(cur.getMonth()+1).padStart(2,'0'), d=String(cur.getDate()).padStart(2,'0');
     dates.push(`${y}-${mo}-${d}`);
     cur.setDate(cur.getDate()+1);
   }
-  const sd={}, ed={};
-  dates.forEach(d=>{sd[d]=0;ed[d]=0;});
-  sales.forEach(s=>{ if(sd[s.date]!==undefined) sd[s.date]+=s.value; });
+  const sd={}, ed={}, fd={};
+  dates.forEach(d=>{sd[d]=0;ed[d]=0;fd[d]=(fiadoByDay&&fiadoByDay[d])||0;});
+  salesItems.forEach(it=>{ const v=it.total||it.value||0; if(sd[it.date]!==undefined) sd[it.date]+=v; });
   expenses.forEach(e=>{ if(ed[e.date]!==undefined) ed[e.date]+=e.value; });
   const labels=dates.map(d=>{ const [,mo,dd]=d.split('-'); return `${dd}/${mo}`; });
   if (cashFlowChart) cashFlowChart.destroy();
@@ -2046,16 +1769,17 @@ function updateCashFlowChart(sales,expenses,startDate,endDate) {
     data:{ labels, datasets:[
       {label:'Vendas',    data:dates.map(d=>sd[d]),backgroundColor:'rgba(34,197,94,0.55)',borderColor:'rgb(34,197,94)',borderWidth:1},
       {label:'Saídas',   data:dates.map(d=>ed[d]),backgroundColor:'rgba(239,68,68,0.55)',borderColor:'rgb(239,68,68)',borderWidth:1},
-      {label:'Saldo',    data:dates.map(d=>sd[d]-ed[d]),type:'line',borderColor:'rgb(59,130,246)',backgroundColor:'rgba(59,130,246,0.08)',borderWidth:2,tension:0.3,fill:true,pointRadius:2}
+      ...(fiadoByDay?[{label:'Receb. Fiado',data:dates.map(d=>fd[d]),backgroundColor:'rgba(245,158,11,0.55)',borderColor:'rgb(245,158,11)',borderWidth:1}]:[]),
+      {label:'Saldo',    data:dates.map(d=>sd[d]-ed[d]+fd[d]),type:'line',borderColor:'rgb(59,130,246)',backgroundColor:'rgba(59,130,246,0.08)',borderWidth:2,tension:0.3,fill:true,pointRadius:2}
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true}}}
   });
 }
-function updateCategoryChart(sales,expenses) {
+function updateCategoryChart(salesItems,expenses) {
   const ctx=document.getElementById('categoryChart')?.getContext('2d');
   if (!ctx) return;
   const catData={};
-  sales.forEach(s=>{ if(!catData[s.category])catData[s.category]={s:0,e:0}; catData[s.category].s+=s.value; });
+  salesItems.forEach(it=>{ const c=it.category||'-'; if(!catData[c])catData[c]={s:0,e:0}; catData[c].s+=(it.total||it.value||0); });
   expenses.forEach(e=>{ if(!catData[e.category])catData[e.category]={s:0,e:0}; catData[e.category].e+=e.value; });
   const cats=Object.keys(catData);
   if (categoryChart) categoryChart.destroy();
@@ -2077,12 +1801,12 @@ function updateTopExpensesTable(expenses) {
     return `<tr class="border-b expense-row hover:bg-red-50 text-sm"><td class="p-3 font-medium">${e.desc}</td><td class="p-3"><span class="bg-red-100 px-2 py-0.5 rounded text-red-600 text-xs">${e.category||'-'}</span></td><td class="p-3 text-center text-xs text-gray-500">${dateBR}</td><td class="p-3 text-right font-bold text-red-700">-${window.formatMoney(e.value)}</td><td class="p-3 text-center text-xs text-gray-500">${e.payment}</td></tr>`;
   }).join('');
 }
-window.applyCustomFilter = async () => {
+window.applyCustomFilter = () => {
   const s=document.getElementById('customFilterStart').value;
   const e=document.getElementById('customFilterEnd').value;
   if (!s||!e) { showNotification('Selecione as datas','error'); return; }
   if (new Date(s)>new Date(e)) { showNotification('Data inicial maior que final','error'); return; }
-  await updateReports(s,e,document.getElementById('customFilterType').value,document.getElementById('customFilterCategory').value);
+  updateReports(s,e,document.getElementById('customFilterType').value,document.getElementById('customFilterCategory').value);
 };
 
 // ─── LUCRO POR PRODUTO ────────────────────
@@ -2092,46 +1816,41 @@ function initProfitTab() {
   document.getElementById('profitFilterEnd').value=today;
   const s=document.getElementById('profitFilterCategory');
   if (s) s.innerHTML='<option value="">Todas</option>'+categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+  const lm=document.getElementById('profitNoCostMargin'); if(lm) lm.textContent=getEstimatedMargin();
   renderProfitReport();
 }
-window.renderProfitReport = async () => {
+window.renderProfitReport = () => {
   const start=document.getElementById('profitFilterStart').value;
   const end  =document.getElementById('profitFilterEnd').value;
   const cat  =document.getElementById('profitFilterCategory').value;
   const sort =document.getElementById('profitSort')?.value||'profit_desc';
   const incFiado=document.getElementById('incluirFiadoLucro')?.checked!==false;
   if (!start||!end) { showNotification('Selecione o período','error'); return; }
-  const {sales:baseSales} = await getRangeData(start,end);
-  let filtered=baseSales.filter(s=>{
-    const d=new Date(s.date+'T12:00:00');
-    return d>=new Date(start+'T00:00:00')&&d<=new Date(end+'T23:59:59')&&(!cat||s.category===cat);
-  });
-  if (incFiado) {
-    const mainFiadoKeys=new Set(filtered.filter(s=>s.payment==='Fiado/Prazo').map(s=>s.desc+'|'+s.date));
-    fClientes.forEach(c=>{
-      (c.transactions||[]).filter(t=>t.type==='debit').forEach(t=>{
-        const d=(t.date||'').substring(0,10);
-        if (d>=start&&d<=end&&!mainFiadoKeys.has(t.desc+'|'+d)) {
-          filtered.push({date:d,desc:t.desc,category:cat||(categories[0]||'Outros'),value:t.total,qty:t.qtd||1,payment:'Fiado/Prazo',type:'sale',_fromFiado:true});
-        }
-      });
-    });
-  }
+  const inRange = dstr => { const d=new Date(dstr+'T12:00:00'); return d>=new Date(start+'T00:00:00')&&d<=new Date(end+'T23:59:59'); };
+  let filtered = localSales.filter(s=>inRange(s.date)).flatMap(expandSale).filter(it=>!cat||it.category===cat);
   const map={};
-  filtered.forEach(sale=>{
-    const key=sale.desc.trim();
+  filtered.forEach(item=>{
+    const key=(item.desc||'').trim();
+    if (!key) return;
     if (!map[key]) {
       const p=products.find(x=>x.name.toLowerCase()===key.toLowerCase());
-      map[key]={name:key,category:sale.category||'-',qty:0,revenue:0,unitCost:p?.cost||0,hasCost:(p?.cost||0)>0,temFiado:false};
+      map[key]={name:key,category:item.category||'-',qty:0,revenue:0,unitCost:p?.cost||0,hasCost:(p?.cost||0)>0,temFiado:false};
     }
-    map[key].qty+=sale.qty||1;
-    map[key].revenue+=sale.value;
-    if (sale.payment==='Fiado/Prazo'||sale._fromFiado) map[key].temFiado=true;
+    const qty = item.qty||1;
+    const revenue = item.total!=null ? item.total : (item.value||0);
+    map[key].qty+=qty;
+    map[key].revenue+=revenue;
+    if (item.payment==='Fiado/Prazo'||item._fromFiado) map[key].temFiado=true;
   });
+  const estMargin=getEstimatedMargin()/100;
   let data=Object.values(map).map(item=>{
-    const tc = item.hasCost ? item.unitCost*item.qty : item.revenue*DEFAULT_COST_RATIO;
-    const profit=item.revenue-tc, margin=item.revenue>0?(profit/item.revenue)*100:0;
-    return {...item,totalCost:tc,profit,margin,estimado:!item.hasCost};
+    let tc,profit,margin;
+    if (item.hasCost) {
+      tc=item.unitCost*(item.qty); profit=item.revenue-tc; margin=item.revenue>0?(profit/item.revenue)*100:0;
+    } else {
+      profit=item.revenue*estMargin; tc=item.revenue-profit; margin=estMargin*100;
+    }
+    return {...item,totalCost:tc,profit,margin};
   });
   const [sf,so]=sort.split('_');
   data.sort((a,b)=>{
@@ -2140,17 +1859,26 @@ window.renderProfitReport = async () => {
     return so==='asc'?va-vb:vb-va;
   });
   lastProfitData=data;
-  const tR=data.reduce((s,x)=>s+x.revenue,0), tC=data.reduce((s,x)=>s+x.totalCost,0), tP=data.reduce((s,x)=>s+x.profit,0);
-  const avgM=tR>0?(tP/tR)*100:0;
+  // Recebimentos do fiado no período (o checkbox decide se somam em Receita e Lucro).
+  // Não se aplica quando há filtro de categoria (recebimento não tem categoria de produto).
+  const fiadoRecTotal=!cat?getFiadoPaymentsInRange(start,end):0;
+  const fiadoRec=incFiado?fiadoRecTotal:0;
+  window._lastProfitFiado=fiadoRec;
+  const prodR=data.reduce((s,x)=>s+x.revenue,0), prodP=data.reduce((s,x)=>s+x.profit,0);
+  const tR=prodR+fiadoRec, tC=data.reduce((s,x)=>s+x.totalCost,0), tP=prodP+fiadoRec;
+  const avgM=prodR>0?(prodP/prodR)*100:0; // margem calculada só sobre produtos
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   s('profitTotalRevenue',window.formatMoney(tR));
   s('profitTotalCost',   window.formatMoney(tC));
+  s('profitFiadoRec',    window.formatMoney(fiadoRecTotal));
+  s('profitFiadoRecNote',fiadoRecTotal>0?(incFiado?'✔ somado na Receita e no Lucro':'não somado nos totais'):'');
   const tpEl=document.getElementById('profitTotalProfit');
   if(tpEl){tpEl.textContent=window.formatMoney(tP);tpEl.className=`text-xl font-bold ${tP>=0?'text-blue-600':'text-expense-red'}`;}
   const amEl=document.getElementById('profitAvgMargin');
   if(amEl){amEl.textContent=`${avgM.toFixed(1)}%`;amEl.className=`text-xl font-bold ${avgM>=20?'text-purple-600':avgM>=10?'text-yellow-600':'text-expense-red'}`;}
   const noCost=data.filter(x=>!x.hasCost).length;
   const warn=document.getElementById('profitNoCostWarning');
+  const lm=document.getElementById('profitNoCostMargin'); if(lm) lm.textContent=getEstimatedMargin();
   if(noCost>0){warn.classList.remove('hidden');document.getElementById('profitNoCostCount').textContent=noCost;}else warn.classList.add('hidden');
   const maxR=Math.max(...data.map(x=>x.revenue),1);
   const tbody=document.getElementById('profitTableBody');
@@ -2160,11 +1888,11 @@ window.renderProfitReport = async () => {
       const pc=item.profit>=0?'text-green-700':'text-red-700';
       const bp=(item.revenue/maxR)*100, bc=item.profit>=0?'#10b981':'#ef4444';
       return `<tr class="border-b hover:bg-gray-50 text-sm ${item.temFiado?'bg-yellow-50':''}">
-        <td class="p-3 font-medium max-w-[160px] truncate">${item.name}${!item.hasCost?' <span class="text-yellow-500 text-xs">⚠️</span>':''}${item.temFiado?' <span class="text-xs text-yellow-600">🤝</span>':''}</td>
+        <td class="p-3 font-medium max-w-[160px] truncate">${item.name}${!item.hasCost?' <span class="text-yellow-500 text-xs" title="Sem custo cadastrado — lucro estimado">⚠️</span>':''}${item.temFiado?' <span class="text-xs text-yellow-600">🤝</span>':''}</td>
         <td class="p-3 text-center"><span class="bg-gray-100 px-2 py-0.5 rounded text-xs">${item.category}</span></td>
         <td class="p-3 text-center font-bold">${item.qty}</td>
         <td class="p-3 text-right font-bold text-agro-green">${window.formatMoney(item.revenue)}</td>
-        <td class="p-3 text-right text-gray-600">${item.hasCost?window.formatMoney(item.totalCost):'<span class="text-xs text-gray-400">—</span>'}</td>
+        <td class="p-3 text-right text-gray-600">${item.hasCost?window.formatMoney(item.totalCost):`<span class="text-xs text-gray-400" title="Estimado">~${window.formatMoney(item.totalCost)}</span>`}</td>
         <td class="p-3 text-right font-bold ${pc}">${window.formatMoney(item.profit)}</td>
         <td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-xs font-bold ${mc}">${item.margin.toFixed(1)}%</span></td>
         <td class="p-3 min-w-[70px]"><div class="profit-bar-bg"><div class="profit-bar-fill" style="width:${bp.toFixed(1)}%;background:${bc}"></div></div></td>
@@ -2200,7 +1928,7 @@ window.switchProfitTab = tab => {
 };
 window.exportProfitExcel = () => {
   if (!lastProfitData.length) { showNotification('Sem dados','warning'); return; }
-  const ws=XLSX.utils.json_to_sheet(lastProfitData.map(x=>({'Produto':x.name,'Categoria':x.category,'Qtd':x.qty,'Receita':x.revenue.toFixed(2),'Custo Total':x.totalCost.toFixed(2),'Lucro':x.profit.toFixed(2),'Margem%':x.margin.toFixed(1),'Tem Fiado':x.temFiado?'Sim':'Não'})));
+  const ws=XLSX.utils.json_to_sheet(lastProfitData.map(x=>({'Produto':x.name,'Categoria':x.category,'Qtd':x.qty,'Receita':x.revenue.toFixed(2),'Custo Total':x.totalCost.toFixed(2),'Lucro':x.profit.toFixed(2),'Margem%':x.margin.toFixed(1),'Custo Estimado':x.hasCost?'Não':'Sim','Tem Fiado':x.temFiado?'Sim':'Não'})).concat(window._lastProfitFiado>0?[{'Produto':'Recebimentos Fiado','Categoria':'-','Qtd':'','Receita':window._lastProfitFiado.toFixed(2),'Custo Total':'0.00','Lucro':window._lastProfitFiado.toFixed(2),'Margem%':'','Custo Estimado':'','Tem Fiado':'Sim'}]:[]));
   const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Lucro');
   XLSX.writeFile(wb,`lucro-${localDateISO()}.xlsx`); showNotification('Excel exportado!','success');
 };
@@ -2209,42 +1937,17 @@ window.exportProfitPDF = () => {
   const {jsPDF}=window.jspdf; const pd=new jsPDF();
   pd.setFontSize(16); pd.setTextColor(0,144,54); pd.text('Lucro por Produto — AgroVida+',105,14,null,null,'center');
   pd.setFontSize(10); pd.setTextColor(100,100,100); pd.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')}`,105,21,null,null,'center');
-  pd.autoTable({head:[['Produto','Cat.','Qtd','Receita','Custo','Lucro','Margem']],body:lastProfitData.map(x=>[x.name.substring(0,28),x.category,x.qty+(x.temFiado?' 🤝':''),'R$'+x.revenue.toFixed(2),x.hasCost?'R$'+x.totalCost.toFixed(2):'—','R$'+x.profit.toFixed(2),x.margin.toFixed(1)+'%']),startY:28,theme:'grid',headStyles:{fillColor:[0,144,54],textColor:[255,255,255]},bodyStyles:{fontSize:8},didParseCell:d=>{if(d.section==='body'&&d.column.index===5){const v=parseFloat(d.cell.raw.replace('R$',''));d.cell.styles.textColor=v>=0?[5,150,105]:[220,38,38];d.cell.styles.fontStyle='bold';}}});
+  pd.autoTable({head:[['Produto','Cat.','Qtd','Receita','Custo','Lucro','Margem']],body:lastProfitData.map(x=>[x.name.substring(0,28),x.category,x.qty+(x.temFiado?' 🤝':''),'R$'+x.revenue.toFixed(2),(x.hasCost?'':'~')+'R$'+x.totalCost.toFixed(2),'R$'+x.profit.toFixed(2),x.margin.toFixed(1)+'%']).concat(window._lastProfitFiado>0?[['Recebimentos Fiado','-','-','R$'+window._lastProfitFiado.toFixed(2),'R$0.00','R$'+window._lastProfitFiado.toFixed(2),'-']]:[]),startY:28,theme:'grid',headStyles:{fillColor:[0,144,54],textColor:[255,255,255]},bodyStyles:{fontSize:8},didParseCell:d=>{if(d.section==='body'&&d.column.index===5){const v=parseFloat(d.cell.raw.replace('R$',''));d.cell.styles.textColor=v>=0?[5,150,105]:[220,38,38];d.cell.styles.fontStyle='bold';}}});
   pd.save(`lucro-${localDateISO()}.pdf`); showNotification('PDF exportado!','success');
 };
 
 // ─── PRODUTOS ─────────────────────────────
-async function loadProducts(forceRefresh=false) {
-  const cached = readCache(CACHE_KEYS.products);
-  const cacheAge = cached ? Date.now()-cached.ts : Infinity;
-  const isFresh = cached && cacheAge < PRODUCTS_CACHE_TTL;
-
-  if (cached && !products.length) {
-    products = cached.data;
-    updateProductsDisplay();
-  }
-  updateProductsCacheInfo(cached?cacheAge:null);
-
-  if (!forceRefresh && isFresh) return;
-
+async function loadProducts() {
   try {
     const snap=await getDocs(query(productsCol,orderBy('createdAt','desc')));
-    trackReads(snap.size);
     products=snap.docs.map(d=>({id:d.id,...d.data(),price:parseFloat(d.data().price)||0,cost:parseFloat(d.data().cost)||0,discountPrice:parseFloat(d.data().discountPrice)||0,stock:parseInt(d.data().stock)||0}));
-    saveCache(CACHE_KEYS.products, products);
     sortProducts();
-    updateProductsCacheInfo(0);
-    if (forceRefresh) showNotification('Catálogo atualizado!','success');
-  } catch(e){ console.error('loadProducts:',e); if(!products.length) showNotification('Sem conexão — usando cache local','warning'); }
-}
-window.loadProducts = loadProducts;
-function updateProductsCacheInfo(ageMs) {
-  const el = document.getElementById('productsCacheInfo');
-  if (!el) return;
-  if (ageMs===null||ageMs===undefined) { el.textContent=''; return; }
-  const min = Math.floor(ageMs/60000);
-  el.textContent = min<1 ? 'atualizado agora' : `cache: ${min} min atrás`;
-  const st = document.getElementById('statCacheAge'); if (st) st.textContent = min<1?'agora':`${min} min`;
+  } catch(e){ console.error('loadProducts:',e); }
 }
 window.sortProducts = () => {
   const [f,o]=(document.getElementById('productSort')?.value||'name_asc').split('_');
@@ -2290,38 +1993,16 @@ window.saveProduct = async () => {
   document.getElementById('loadingIndicator').classList.remove('hidden');
   try {
     const pd={name,price,cost,discountPrice:document.getElementById('productDiscountPrice').value?parseFloat(document.getElementById('productDiscountPrice').value.replace(',','.'))||0:0,stock:parseInt(document.getElementById('productStock').value)||0,category:document.getElementById('productCategory').value,unit:document.getElementById('productUnit').value,sku:document.getElementById('productSKU').value.trim(),updatedAt:serverTimestamp()};
-    if (editingProductId){
-      await updateDoc(doc(productsCol,editingProductId),pd);
-      const idx=products.findIndex(p=>p.id===editingProductId);
-      if (idx>-1) products[idx]={...products[idx],...pd,updatedAt:new Date().toISOString()};
-      showNotification('Atualizado!','success');
-    } else {
-      pd.createdAt=serverTimestamp(); pd.salesCount=0;
-      const ref = await addDoc(productsCol,pd);
-      products.unshift({id:ref.id,...pd,createdAt:new Date().toISOString()});
-      showNotification('Cadastrado!','success');
-    }
-    saveCache(CACHE_KEYS.products, products);
-    sortProducts();
-    closeModal('productModal');
-  } catch(e) {
-    console.error('saveProduct:',e);
-    showNotification('Erro ao salvar','error');
-  }
+    if (editingProductId){ await updateDoc(doc(productsCol,editingProductId),pd); showNotification('Atualizado!','success'); }
+    else { pd.createdAt=serverTimestamp(); pd.salesCount=0; await addDoc(productsCol,pd); showNotification('Cadastrado!','success'); }
+    closeModal('productModal'); await loadProducts();
+  } catch { showNotification('Erro ao salvar','error'); }
   finally { document.getElementById('loadingIndicator').classList.add('hidden'); }
 };
 window.deleteProduct = async id => {
   if (!confirm('Excluir produto?')) return;
-  try {
-    await deleteDoc(doc(productsCol,id));
-    products = products.filter(p=>p.id!==id);
-    saveCache(CACHE_KEYS.products, products);
-    updateProductsDisplay();
-    showNotification('Excluído!','success');
-  } catch(e) {
-    console.error('deleteProduct:',e);
-    showNotification('Erro','error');
-  }
+  try { await deleteDoc(doc(productsCol,id)); showNotification('Excluído!','success'); await loadProducts(); }
+  catch { showNotification('Erro','error'); }
 };
 function updateProductsDisplay() {
   const grid=document.getElementById('productsGrid'); if(!grid) return;
@@ -2371,262 +2052,54 @@ window.handleXMLFile = file => {
   const r=new FileReader();
   r.onload=e=>{
     try { xmlImportData=parseNFeXML(e.target.result); displayXMLImportSummary(xmlImportData); document.getElementById('processXMLBtn').disabled=false; showNotification(`${xmlImportData.products.length} produtos encontrados`,'success'); }
-    catch(e) { console.error('handleXMLFile:',e); showNotification('Erro ao ler XML','error'); }
+    catch { showNotification('Erro ao ler XML','error'); }
   };
   r.readAsText(file);
 };
-
-// ════════════════════════════════════════════
-// CORREÇÃO: parseNFeXML com prevenção de duplicatas
-// ════════════════════════════════════════════
 function parseNFeXML(xml) {
-  const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  const prods = [];
-  const boletos = [];
-  const boletosSet = new Set(); // ← IMPEDE DUPLICATAS
-  
-  // --- Processar produtos ---
+  const doc=new DOMParser().parseFromString(xml,'text/xml'), prods=[];
   for (const det of doc.getElementsByTagName('det')) {
-    const p = det.getElementsByTagName('prod')[0];
-    if (!p) continue;
-    prods.push({
-      name: p.getElementsByTagName('xProd')[0]?.textContent || '',
-      sku: p.getElementsByTagName('cProd')[0]?.textContent || '',
-      cost: parseFloat((p.getElementsByTagName('vUnCom')[0]?.textContent || '0').replace(',', '.')) || 0,
-      quantity: parseFloat((p.getElementsByTagName('qCom')[0]?.textContent || '1').replace(',', '.')) || 1,
-      unit: p.getElementsByTagName('uCom')[0]?.textContent || 'Un',
-      category: 'Importado'
-    });
+    const p=det.getElementsByTagName('prod')[0]; if(!p) continue;
+    prods.push({name:p.getElementsByTagName('xProd')[0]?.textContent||'',sku:p.getElementsByTagName('cProd')[0]?.textContent||'',cost:parseFloat((p.getElementsByTagName('vUnCom')[0]?.textContent||'0').replace(',','.'))||0,quantity:parseFloat((p.getElementsByTagName('qCom')[0]?.textContent||'1').replace(',','.'))||1,unit:p.getElementsByTagName('uCom')[0]?.textContent||'Un',category:'Importado'});
   }
-
-  // --- Processar fornecedor e nota ---
-  const fornecedor = doc.getElementsByTagName('emit')[0]?.getElementsByTagName('xNome')[0]?.textContent || 'Fornecedor não identificado';
-  const nNF = doc.getElementsByTagName('ide')[0]?.getElementsByTagName('nNF')[0]?.textContent || '';
-
-  // --- Processar boletos APENAS UMA VEZ (com Set para evitar duplicatas) ---
-  const cobr = doc.getElementsByTagName('cobr')[0];
-  if (cobr) {
-    const dups = cobr.getElementsByTagName('dup');
-    
-    for (const dup of dups) {
-      const nDup = dup.getElementsByTagName('nDup')[0]?.textContent || '';
-      const dVenc = dup.getElementsByTagName('dVenc')[0]?.textContent || '';
-      const vDup = parseFloat((dup.getElementsByTagName('vDup')[0]?.textContent || '0').replace(',', '.')) || 0;
-      
-      // Chave única para evitar duplicatas
-      const key = `${nNF}-${nDup}-${dVenc}-${vDup}`;
-      
-      if (dVenc && vDup > 0 && !boletosSet.has(key)) {
-        boletosSet.add(key);
-        boletos.push({
-          desc: fornecedor,
-          valor: vDup,
-          vencimento: dVenc,
-          nota: nNF + (nDup ? `/${nDup}` : ''),
-          status: 'pendente',
-          origem: 'xml'
-        });
-      }
-    }
-  }
-
-  return { products: prods, boletos, fornecedor, nNF };
+  return {products:prods};
 }
-
 function displayXMLImportSummary(data) {
   const ex=products.map(p=>p.sku||p.name.toLowerCase());
   const up=data.products.filter(p=>ex.includes(p.sku)||ex.includes(p.name.toLowerCase()));
   const cr=data.products.filter(p=>!ex.includes(p.sku)&&!ex.includes(p.name.toLowerCase()));
-  const nB=(data.boletos||[]).length;
-  const totalB=(data.boletos||[]).reduce((s,b)=>s+b.valor,0);
-  document.getElementById('xmlImportSummary').innerHTML=`
-    <div class="bg-gray-50 border rounded-lg p-3 mt-2 grid grid-cols-2 gap-3 text-sm">
-      <div class="text-center bg-yellow-50 rounded p-2"><p class="font-bold text-yellow-800">📝 Atualizar</p><p>${up.length}</p></div>
-      <div class="text-center bg-blue-50 rounded p-2"><p class="font-bold text-blue-800">➕ Criar</p><p>${cr.length}</p></div>
-    </div>
-    ${nB>0?`<div class="mt-2 bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-      <i class="fas fa-file-invoice-dollar mr-1"></i><strong>${nB} boleto(s)</strong> encontrado(s) na nota · Total: <strong>${window.formatMoney(totalB)}</strong> · Fornecedor: ${data.fornecedor||'-'}<br>
-      <span class="text-xs">✅ Serão criados automaticamente em "Contas a Pagar" ao processar (sem duplicação).</span>
-    </div>`:`<div class="mt-2 text-xs text-gray-400">Nenhuma duplicata/boleto encontrado nesta nota (provavelmente pagamento à vista).</div>`}
-  `;
+  document.getElementById('xmlImportSummary').innerHTML=`<div class="bg-gray-50 border rounded-lg p-3 mt-2 grid grid-cols-2 gap-3 text-sm"><div class="text-center bg-yellow-50 rounded p-2"><p class="font-bold text-yellow-800">📝 Atualizar</p><p>${up.length}</p></div><div class="text-center bg-blue-50 rounded p-2"><p class="font-bold text-blue-800">➕ Criar</p><p>${cr.length}</p></div></div>`;
   document.getElementById('xmlImportSummary').classList.remove('hidden');
 }
-
-// ════════════════════════════════════════════
-// CORREÇÃO: processXMLImport com verificação de duplicatas
-// ════════════════════════════════════════════
 window.processXMLImport = async () => {
-  if (!xmlImportData?.products.length) {
-    showNotification('Nenhum produto', 'error');
-    return;
-  }
-
-  const margin = parseFloat(document.getElementById('xmlProfitMargin').value) || 30;
+  if (!xmlImportData?.products.length) { showNotification('Nenhum produto','error'); return; }
+  const margin=parseFloat(document.getElementById('xmlProfitMargin').value)||30;
   document.getElementById('loadingIndicator').classList.remove('hidden');
-  
-  let u = 0, c = 0, b = 0;
-
+  let u=0,c=0;
   try {
-    const batch = writeBatch(db);
-    const atualizacoesLocais = [];
-
-    // --- Processar produtos ---
     for (const xp of xmlImportData.products) {
-      const ex = products.find(p => p.sku === xp.sku || p.name.toLowerCase() === xp.name.toLowerCase());
-      const pd = {
-        name: xp.name,
-        sku: xp.sku,
-        cost: xp.cost,
-        price: xp.cost * (1 + margin / 100),
-        stock: (ex?.stock || 0) + xp.quantity,
-        unit: xp.unit,
-        category: xp.category,
-        updatedAt: new Date().toISOString()
-      };
-      
-      if (ex) {
-        batch.update(doc(productsCol, ex.id), pd);
-        atualizacoesLocais.push({ id: ex.id, ...pd });
-        u++;
-      } else {
-        const ref = doc(productsCol);
-        pd.createdAt = new Date().toISOString();
-        pd.salesCount = 0;
-        batch.set(ref, pd);
-        atualizacoesLocais.push({ id: ref.id, ...pd });
-        c++;
-      }
+      const ex=products.find(p=>p.sku===xp.sku||p.name.toLowerCase()===xp.name.toLowerCase());
+      const pd={name:xp.name,sku:xp.sku,cost:xp.cost,price:xp.cost*(1+margin/100),stock:(ex?.stock||0)+xp.quantity,unit:xp.unit,category:xp.category,updatedAt:serverTimestamp()};
+      if(ex){await updateDoc(doc(productsCol,ex.id),pd);u++;}
+      else{pd.createdAt=serverTimestamp();pd.salesCount=0;await addDoc(productsCol,pd);c++;}
     }
-
-    // --- Processar boletos COM VERIFICAÇÃO DE DUPLICATAS ---
-    const boletosDetectados = xmlImportData.boletos || [];
-    
-    for (const boleto of boletosDetectados) {
-      // Verificar se já existe no banco local
-      const existe = boletos.some(b => 
-        b.nota === boleto.nota && 
-        b.vencimento === boleto.vencimento && 
-        Math.abs(b.valor - boleto.valor) < 0.01 &&
-        b.desc === boleto.desc
-      );
-      
-      if (existe) {
-        console.log('🔄 Boleto já existe, pulando:', boleto.nota);
-        continue;
-      }
-      
-      const ref = doc(boletosCol);
-      const payload = {
-        ...boleto,
-        nfNumero: xmlImportData.nNF || '',
-        createdAt: new Date().toISOString()
-      };
-      batch.set(ref, payload);
-      b++;
-    }
-
-    // --- Executar tudo ---
-    await batch.commit();
-
-    // --- Atualizar cache local ---
-    atualizacoesLocais.forEach(item => {
-      const idx = products.findIndex(p => p.id === item.id);
-      if (idx > -1) products[idx] = { ...products[idx], ...item };
-      else products.unshift(item);
-    });
-    
-    saveCache(CACHE_KEYS.products, products);
-
-    // Adicionar apenas os novos boletos (que não existiam)
-    if (b > 0) {
-      const novosBoletos = boletosDetectados.filter(b => {
-        return !boletos.some(bb => 
-          bb.nota === b.nota && 
-          bb.vencimento === b.vencimento && 
-          Math.abs(bb.valor - b.valor) < 0.01
-        );
-      });
-      
-      if (novosBoletos.length > 0) {
-        const boletosParaAdicionar = novosBoletos.map((b, i) => ({ 
-          id: `temp_${Date.now()}_${i}`, 
-          ...b 
-        }));
-        boletos = [...boletos, ...boletosParaAdicionar];
-        saveCache(CACHE_KEYS.boletos, boletos);
-        updateBoletosBadge();
-      }
-    }
-
-    localStorage.setItem('defaultProfitMargin', margin);
-    showNotification(`${u} atualizados, ${c} criados, ${b} boleto(s) lançado(s)`, 'success');
-    closeModal('xmlImportModal');
-    sortProducts();
-
-  } catch (e) {
-    console.error('processXMLImport:', e);
-    showNotification('Erro na importação', 'error');
-  } finally {
-    document.getElementById('loadingIndicator').classList.add('hidden');
-    xmlImportData = null;
-  }
+    localStorage.setItem('defaultProfitMargin',margin);
+    showNotification(`${u} atualizados, ${c} criados`,'success');
+    closeModal('xmlImportModal'); await loadProducts();
+  } catch { showNotification('Erro na importação','error'); }
+  finally { document.getElementById('loadingIndicator').classList.add('hidden'); xmlImportData=null; }
 };
-
-// ════════════════════════════════════════════
-// FUNÇÃO PARA LIMPAR BOLETOS DUPLICADOS
-// ════════════════════════════════════════════
-window.limparBoletosDuplicados = async () => {
-  if (!confirm('⚠️ Isso vai REMOVER boletos duplicados. Continuar?')) return;
-  
-  const grupos = {};
-  let removidos = 0;
-  
-  // Agrupar por chave única (nota + vencimento + valor + desc)
-  boletos.forEach(b => {
-    const key = `${b.nota || ''}|${b.vencimento || ''}|${b.valor || 0}|${b.desc || ''}`;
-    if (!grupos[key]) grupos[key] = [];
-    grupos[key].push(b);
-  });
-  
-  for (const [key, items] of Object.entries(grupos)) {
-    if (items.length > 1) {
-      // Manter o primeiro, deletar os outros
-      const [manter, ...remover] = items;
-      for (const b of remover) {
-        if (b.id) {
-          try {
-            await deleteDoc(doc(boletosCol, b.id));
-            removidos++;
-          } catch (e) {
-            console.error('Erro ao deletar boleto:', e);
-          }
-        }
-      }
-    }
-  }
-  
-  if (removidos > 0) {
-    // Atualizar lista local
-    const novosBoletos = [];
-    for (const [key, items] of Object.entries(grupos)) {
-      if (items.length > 0) {
-        novosBoletos.push(items[0]);
-      }
-    }
-    boletos = novosBoletos;
-    saveCache(CACHE_KEYS.boletos, boletos);
-    renderBoletos();
-    showNotification(`${removidos} boleto(s) duplicado(s) removido(s)!`, 'success');
-  } else {
-    showNotification('Nenhum boleto duplicado encontrado!', 'info');
-  }
-};
+const dz=document.getElementById('xmlDropZone');
+if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files[0])handleXMLFile(e.dataTransfer.files[0]);});}
 
 // ─── EXPORTAÇÃO ───────────────────────────
 window.exportHistoryExcel = () => {
-  const all=[...localSales.map(s=>({...s,_tp:'Venda'})),...localExpenses.map(e=>({...e,_tp:'Saída'}))].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
-  const ws=XLSX.utils.json_to_sheet(all.map(t=>({'Tipo':t._tp,'Data':t.date.split('-').reverse().join('/'),'Hora':t.time||'','Descrição':t.desc||'','Categoria':t.category||'','Pagamento':t.payment||'','Valor':t._tp==='Saída'?-t.value:t.value})));
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Histórico');XLSX.writeFile(wb,`historico-${localDateISO()}.xlsx`);showNotification('Exportado! (apenas últimos 60 dias — use Relatórios para períodos antigos)','success');
+  const saleLines = localSales.flatMap(expandSale).map(it=>({'Tipo':'Venda','Data':it.date.split('-').reverse().join('/'),'Hora':it.time||'','Descrição':it.desc||'','Categoria':it.category||'','Pagamento':it.payment||'','Valor':it.total||0}));
+  const expLines  = localExpenses.map(e=>({'Tipo':'Saída','Data':e.date.split('-').reverse().join('/'),'Hora':e.time||'','Descrição':e.desc||'','Categoria':e.category||'','Pagamento':e.payment||'','Valor':-e.value}));
+  const fiadoLines= (document.getElementById('filterFiadoRec')?.value==='exclude'?[]:getFiadoPaymentEntries(null)).map(f=>({'Tipo':'Recebimento Fiado','Data':f.date.split('-').reverse().join('/'),'Hora':f.time||'','Descrição':f.desc,'Categoria':f.category,'Pagamento':f.payment,'Valor':f.value}));
+  const all=[...saleLines,...expLines,...fiadoLines];
+  const ws=XLSX.utils.json_to_sheet(all);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Histórico');XLSX.writeFile(wb,`historico-${localDateISO()}.xlsx`);showNotification('Exportado!','success');
 };
 window.exportExpensesExcel = () => {
   const ws=XLSX.utils.json_to_sheet(localExpenses.map(e=>({'Data':e.date.split('-').reverse().join('/'),'Descrição':e.desc||'','Categoria':e.category||'','Pagamento':e.payment||'','Valor':e.value||0})));
@@ -2645,10 +2118,11 @@ window.exportCatalogExcel = () => {
 };
 window.exportCurrentMonthExcel = () => {
   const m=localDateISO().slice(0,7);
-  const data=[...localSales.filter(s=>s.date.startsWith(m)).map(s=>({'Tipo':'Venda','Data':s.date.split('-').reverse().join('/'),'Descrição':s.desc||'','Valor':s.value||0})),...localExpenses.filter(e=>e.date.startsWith(m)).map(e=>({'Tipo':'Saída','Data':e.date.split('-').reverse().join('/'),'Descrição':e.desc||'','Valor':-e.value||0}))];
+  const data=[...localSales.filter(s=>s.date.startsWith(m)).flatMap(expandSale).map(it=>({'Tipo':'Venda','Data':it.date.split('-').reverse().join('/'),'Descrição':it.desc||'','Valor':it.total||0})),...localExpenses.filter(e=>e.date.startsWith(m)).map(e=>({'Tipo':'Saída','Data':e.date.split('-').reverse().join('/'),'Descrição':e.desc||'','Valor':-e.value||0}))];
   const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Mês');XLSX.writeFile(wb,`vendas-${m}.xlsx`);showNotification('Exportado!','success');
 };
 
+// ─── FIX: Backup funcionando corretamente ─
 window.createFullBackup = () => {
   try {
     const data = {
@@ -2657,7 +2131,7 @@ window.createFullBackup = () => {
       sales:    localSales,
       expenses: localExpenses,
       products: products,
-      settings: { metaMensal, categories, expenseCategories },
+      settings: { metaMensal, categories, expenseCategories, estimatedMargin:getEstimatedMargin() },
       fiado:    { totalClientes: fClientes.length, clientes: fClientes.map(c=>({id:c.id,nome:c.nome,saldo:fSaldo(c)})) }
     };
     const json    = JSON.stringify(data, null, 2);
@@ -2684,13 +2158,10 @@ function updateSettingsInfo() {
   s('totalExpensesCount',localExpenses.length);
   s('totalProductsCount',products.length);
   s('lastUpdate',        new Date().toLocaleDateString('pt-BR'));
-  s('statLiveDocs',       localSales.length+localExpenses.length);
-  s('statReadsToday',     _estimatedReadsToday);
   document.getElementById('defaultMonthlyGoal')?.setAttribute('value',parseFloat(localStorage.getItem('defaultMonthlyGoal'))||5000);
   document.getElementById('defaultProfitMargin')?.setAttribute('value',parseFloat(localStorage.getItem('defaultProfitMargin'))||30);
   document.getElementById('storeName')?.setAttribute('value',localStorage.getItem('storeName')||'AgroVida+');
-  const pc = readCache(CACHE_KEYS.products);
-  updateProductsCacheInfo(pc?Date.now()-pc.ts:null);
+  const em=document.getElementById('estimatedMargin'); if (em) em.value=getEstimatedMargin();
   updateDashboardFiadoKPIs();
 }
 window.changePassword = () => window.showModal('passwordModal');
@@ -2704,6 +2175,12 @@ window.confirmPasswordChange = () => {
 };
 document.getElementById('defaultMonthlyGoal')?.addEventListener('change',e=>{localStorage.setItem('defaultMonthlyGoal',e.target.value);showNotification('Meta padrão salva!','success');});
 document.getElementById('defaultProfitMargin')?.addEventListener('change',e=>{localStorage.setItem('defaultProfitMargin',e.target.value);showNotification('Margem salva!','success');});
+document.getElementById('estimatedMargin')?.addEventListener('change',e=>{
+  const v=parseFloat(e.target.value)||20;
+  localStorage.setItem('estimatedMarginNoCost',v);
+  showNotification('Margem estimada salva!','success');
+  if (!document.getElementById('tab-profit').classList.contains('hidden')) renderProfitReport();
+});
 document.getElementById('storeName')?.addEventListener('change',e=>{localStorage.setItem('storeName',e.target.value);showNotification('Nome salvo!','success');});
 window.clearAllData = () => {
   if (prompt('Digite CONFIRMAR para apagar tudo:') === 'CONFIRMAR') {
@@ -2765,9 +2242,9 @@ window.quickAdd = (name,cat,price) => {
   showTab('dashboard');
 };
 
-// ════════════════════════════════════════════
-// MÓDULO FIADO
-// ════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// MÓDULO FIADO — Firebase separado
+// ════════════════════════════════════════════════
 import { initializeApp as initApp2 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore as getFS2, collection as col2, addDoc as addDoc2, updateDoc as updateDoc2, deleteDoc as deleteDoc2, doc as doc2, onSnapshot as onSnap2, orderBy as orderBy2, query as query2, getDoc as getDoc2, setDoc as setDoc2 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -2793,19 +2270,63 @@ function fGetOverdue(c) {
 function fSaldo(c) { return (c.transactions||[]).reduce((s,t)=>s+t.total,0); }
 window.fSaldo=fSaldo;
 
-(function loadFiadoCache(){
-  const cached = readCache(CACHE_KEYS.fiado);
-  if (cached && cached.data && cached.data.length) {
-    fClientes = cached.data;
-    updateDashboardFiadoKPIs();
-  }
-})();
+// ─── Todas as transações de um cliente, incluindo ciclos já arquivados ───
+// fSaldo()/fGetOverdue() usam só "transactions" (ciclo aberto) de propósito,
+// pois é isso que define o saldo devedor atual. Mas para HISTÓRICO e
+// MOVIMENTAÇÃO (o que já entrou de dinheiro no caixa), também precisamos
+// dos pagamentos que quitaram notas e foram arquivadas — senão eles somem
+// assim que o ciclo é arquivado.
+// Converte o ISO (UTC) de uma transação para a data LOCAL (YYYY-MM-DD).
+// FIX: antes usava substring(0,10) do ISO em UTC; um pagamento feito após
+// 21h (Brasil) caía no dia seguinte e sumia do "Saldo do Dia"/relatórios.
+function fDateLocal(iso) {
+  if (!iso) return '';
+  const d=new Date(iso);
+  if (isNaN(d)) return String(iso).substring(0,10);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+window.fDateLocal = fDateLocal;
+function fGetAllTransactions(c) {
+  const archived = (c.history||[]).flatMap(h => h.itens || []);
+  return [...(c.transactions||[]), ...archived];
+}
+window.fGetAllTransactions = fGetAllTransactions;
+
+// ─── Recebimentos do fiado convertidos em "linhas" tipo venda ───
+// Usado para exibir os pagamentos recebidos no fiado dentro do
+// Histórico e da Movimentação do Dia, sem precisar gravar nada
+// de novo no Firestore principal (economiza gravações/leituras).
+function getFiadoPaymentEntries(dateFilterFn) {
+  const out=[];
+  fClientes.forEach(c=>{
+    fGetAllTransactions(c).filter(t=>t.type==='credit').forEach(t=>{
+      const d=fDateLocal(t.date);
+      if (!dateFilterFn || dateFilterFn(d)) {
+        out.push({
+          id:'fiadopay_'+c.id+'_'+t.id,
+          date:d,
+          time:new Date(t.date).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+          timestamp:t.date,
+          desc:`Recebimento Fiado — ${c.nome}`,
+          category:'Recebimento Fiado',
+          value:Math.abs(t.total),
+          payment:'Fiado (Recebido)',
+          type:'fiado_payment',
+          _fiadoClientId:c.id
+        });
+      }
+    });
+  });
+  return out;
+}
+window.getFiadoPaymentEntries = getFiadoPaymentEntries;
 
 onSnap2(query2(fColClients,orderBy2("createdAt","desc")),snap=>{
   fClientes=snap.docs.map(d=>({id:d.id,...d.data()}));
-  saveCache(CACHE_KEYS.fiado, fClientes);
   Fiado.refreshUI();
   updateDashboardFiadoKPIs();
+  if (!document.getElementById('tab-dashboard').classList.contains('hidden')) updateScreen();
+  if (!document.getElementById('tab-history').classList.contains('hidden'))   filterHistory();
 },e=>console.error("Fiado listener:",e));
 
 function setLoading(v){document.getElementById('loadingIndicator')?.classList.toggle('hidden',!v);}
@@ -2833,7 +2354,7 @@ window.Fiado={
     fClientes.forEach(c=>{
       const bal=fSaldo(c);
       if(bal>0.05){receber+=bal;if(fGetOverdue(c))atrasados++;}
-      pagosHoje+=(c.transactions||[]).filter(t=>t.type==='credit'&&(t.date||'').startsWith(hoje)).reduce((s,t)=>s+Math.abs(t.total),0);
+      pagosHoje+=fGetAllTransactions(c).filter(t=>t.type==='credit'&&fDateLocal(t.date)===hoje).reduce((s,t)=>s+Math.abs(t.total),0);
     });
     const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
     s('fKpiReceber',  window.formatMoney(receber));
@@ -2869,6 +2390,15 @@ window.Fiado={
       const badge=bal<=0.05?'<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Em dia</span>':od?`<span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">⚠️ ${od.days}d</span>`:'<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">Pendente</span>';
       return`<tr class="border-b hover:bg-gray-50 cursor-pointer text-sm" onclick="Fiado.abrirCliente('${c.id}')"><td class="p-3 font-bold text-gray-600">${nn}</td><td class="p-3"><p class="font-bold">${c.nome}</p>${c.apelido?`<p class="text-xs text-green-600">${c.apelido}</p>`:''}</td><td class="p-3 text-xs text-gray-500">${c.tel||'-'}</td><td class="p-3 text-right font-bold ${bal>0.05?'text-red-600':'text-green-600'}">${window.formatMoney(bal)}</td><td class="p-3 text-center">${badge}</td><td class="p-3 text-center"><button onclick="event.stopPropagation();Fiado.abrirCliente('${c.id}')" class="text-blue-500 hover:text-blue-700"><i class="fas fa-eye text-sm"></i></button></td></tr>`;
     }).join('');
+  },
+  // Vem de fora da aba Fiado (Histórico / Movimentação do Dia): abre a aba e
+  // vai direto para o extrato do cliente. A ordem importa: showTab('fiado')
+  // chama Fiado.init(), que volta para o Dashboard — por isso o cliente é
+  // aberto DEPOIS.
+  verExtrato(id){
+    if(!fClientes.find(c=>c.id===id)){showNotification('Cliente não encontrado (pode ter sido excluído)','error');return;}
+    window.showTab('fiado');
+    this.abrirCliente(id);
   },
   abrirCliente(id){
     fCurrentClient=fClientes.find(c=>c.id===id); if(!fCurrentClient) return;
@@ -2929,7 +2459,7 @@ window.Fiado={
   async deletarCliente(){
     if(!fCurrentClient||!confirm(`Excluir "${fCurrentClient.nome}"?`)) return;
     try{await deleteDoc2(doc2(fdb,'clients',fCurrentClient.id));showNotification('Excluído!');fCurrentClient=null;this.switchView('clientes');}
-    catch(e){console.error('deletarCliente:',e);showNotification('Erro','error');}
+    catch{showNotification('Erro','error');}
   },
   async addItem(){
     if(!fCurrentClient) return;
@@ -2946,7 +2476,7 @@ window.Fiado={
     if(nn!==fCurrentClient.activeNoteNumber) upd.activeNoteNumber=nn;
     setLoading(true);
     try{await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),upd);showNotification('Venda lançada!');['fAddDesc','fAddVal','fAddDesc2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});if(document.getElementById('fAddQtd'))document.getElementById('fAddQtd').value='1';setTimeout(()=>document.getElementById('fAddDesc')?.focus(),100);}
-    catch(e){console.error('addItem:',e);showNotification('Erro ao lançar','error');}finally{setLoading(false);}
+    catch{showNotification('Erro ao lançar','error');}finally{setLoading(false);}
   },
   async addPayment(){
     if(!fCurrentClient) return;
@@ -2956,13 +2486,17 @@ window.Fiado={
     const tr={id:Date.now(),date:new Date().toISOString(),desc:'PAGAMENTO RECEBIDO',qtd:1,unit:val,discount:0,total:-val,type:'credit'};
     const prr={id:Date.now()+1,date:new Date().toISOString(),desc:'PRORROGAÇÃO',qtd:1,unit:0,discount:0,total:0,type:'prorrogacao',dataProrrogacao:novaData.toISOString(),hidden:true};
     setLoading(true);
-    try{await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),{transactions:[...(fCurrentClient.transactions||[]),tr,prr]});showNotification(`Pagamento de ${window.formatMoney(val)} registrado!`);if(document.getElementById('fPayVal'))document.getElementById('fPayVal').value='';}
-    catch(e){console.error('addPayment:',e);showNotification('Erro','error');}finally{setLoading(false);}
+    try{
+      await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),{transactions:[...(fCurrentClient.transactions||[]),tr,prr]});
+      showNotification(`💰 Pagamento de ${window.formatMoney(val)} registrado! Já aparece no Histórico.`);
+      if(document.getElementById('fPayVal'))document.getElementById('fPayVal').value='';
+    }
+    catch{showNotification('Erro','error');}finally{setLoading(false);}
   },
   async deletarTransacao(id){
     if(!fCurrentClient||!confirm('Excluir transação?')) return;
     try{const newTr=(fCurrentClient.transactions||[]).filter(t=>t.id!==id);await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),{transactions:newTr});showNotification('Excluída!');}
-    catch(e){console.error('deletarTransacao:',e);showNotification('Erro','error');}
+    catch{showNotification('Erro','error');}
   },
   async arquivarCiclo(){
     if(!fCurrentClient) return;
@@ -2972,13 +2506,13 @@ window.Fiado={
     const ciclo={id:Date.now(),dataArquivamento:new Date().toISOString(),noteNumber:fCurrentClient.activeNoteNumber||'-',itens:[...(fCurrentClient.transactions||[])]};
     setLoading(true);
     try{await updateDoc2(doc2(fdb,'clients',fCurrentClient.id),{transactions:[],activeNoteNumber:null,history:[...(fCurrentClient.history||[]),ciclo]});showNotification('Ciclo arquivado!');}
-    catch(e){console.error('arquivarCiclo:',e);showNotification('Erro','error');}finally{setLoading(false);}
+    catch{showNotification('Erro','error');}finally{setLoading(false);}
   },
   filtrarPagamentos(){
     const data=document.getElementById('fPagamentoData')?.value||localDateISO();
     let pags=[],total=0;
     fClientes.forEach(c=>{
-      (c.transactions||[]).filter(t=>t.type==='credit'&&(t.date||'').startsWith(data)).forEach(t=>{pags.push({cid:c.id,nome:c.nome,nota:c.activeNoteNumber||'--',date:t.date,valor:Math.abs(t.total)});total+=Math.abs(t.total);});
+      fGetAllTransactions(c).filter(t=>t.type==='credit'&&fDateLocal(t.date)===data).forEach(t=>{pags.push({cid:c.id,nome:c.nome,nota:c.activeNoteNumber||'--',date:t.date,valor:Math.abs(t.total)});total+=Math.abs(t.total);});
     });
     pags.sort((a,b)=>new Date(b.date)-new Date(a.date));
     const tbody=document.getElementById('fPagamentosBody'); if(!tbody) return;
@@ -3000,7 +2534,7 @@ window.Fiado={
   },
   async _getNextNoteNumber(){
     try{const ref=doc2(fdb,'config','metadata');const snap=await getDoc2(ref);const next=snap.exists()?(snap.data().lastNoteNumber||0)+1:1;await setDoc2(ref,{lastNoteNumber:next},{merge:true});return next;}
-    catch(e){console.error('_getNextNoteNumber:',e);return Date.now().toString().slice(-6);}
+    catch{return Date.now().toString().slice(-6);}
   },
   async lancarVendaNoFiado(itens,clienteId){
     if(!itens||!itens.length) return;
@@ -3013,240 +2547,30 @@ window.Fiado={
     if(nn!==cliente.activeNoteNumber) upd.activeNoteNumber=nn;
     setLoading(true);
     try{await updateDoc2(doc2(fdb,'clients',cliente.id),upd);showNotification(`${itens.length} item(s) lançado(s) no fiado de ${cliente.nome}!`,'success');}
-    catch(e){console.error('lancarVendaNoFiado:',e);showNotification('Erro ao lançar no fiado','error');}
+    catch{showNotification('Erro ao lançar no fiado','error');}
     finally{setLoading(false);}
   },
   mascaraCPF(input){let v=input.value.replace(/\D/g,'').slice(0,11);v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');input.value=v;},
   mascaraTel(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length<=10)v=v.replace(/^(\d{2})(\d)/,'($1) $2').replace(/(\d{4})(\d)/,'$1-$2');else v=v.replace(/^(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2');input.value=v;},
 };
 
+// Fechar busca ao clicar fora
 document.addEventListener('click',e=>{
   const c=document.getElementById('fiadoSearch')?.closest('.card');
   if(c&&!c.contains(e.target)) document.getElementById('fiadoSearchResults')?.classList.add('hidden');
 });
 
-// ════════════════════════════════════════════
-// MÓDULO CONTAS A PAGAR (BOLETOS)
-// ════════════════════════════════════════════
-(function loadBoletosCache(){
-  const cached = readCache(CACHE_KEYS.boletos);
-  if (cached && cached.data && cached.data.length) { boletos = cached.data; }
-})();
-
-onSnapshot(query(boletosCol, orderBy('vencimento','asc')), snap=>{
-  trackReads(snap.size);
-  boletos = snap.docs.map(d=>({id:d.id,...d.data(),valor:parseFloat(d.data().valor)||0}));
-  saveCache(CACHE_KEYS.boletos, boletos);
-  updateBoletosBadge();
-  if (!document.getElementById('tab-boletos').classList.contains('hidden')) renderBoletos();
-},e=>console.error('Boletos listener:',e));
-
-function diasAte(dataISO) {
-  const hoje=new Date(localDateISO()+'T00:00:00');
-  const alvo=new Date(dataISO+'T00:00:00');
-  return Math.round((alvo-hoje)/86400000);
-}
-function statusBoleto(b) {
-  if (b.status==='pago') return 'pago';
-  const d = diasAte(b.vencimento);
-  if (d<0) return 'atrasado';
-  if (d===0) return 'hoje';
-  return 'pendente';
-}
-function updateBoletosBadge() {
-  const hoje = boletos.filter(b=>b.status!=='pago'&&statusBoleto(b)==='hoje').length;
-  const atrasados = boletos.filter(b=>b.status!=='pago'&&statusBoleto(b)==='atrasado').length;
-  const badge = document.getElementById('boletosBadge');
-  if (badge) badge.textContent = (hoje+atrasados)>0 ? `${hoje+atrasados} p/ hoje` : 'Contas a Pagar';
-}
-window.filtrarBoletosPreset = preset => {
-  document.getElementById('boletoFilterMonth').value='';
-  document.getElementById('boletoFilterFornecedor').value='';
-  document.getElementById('boletoFilterStatus').value = preset==='aberto'?'pendente':preset==='atrasado'?'pendente':'all';
-  renderBoletos(preset);
-};
-window.limparFiltrosBoletos = () => {
-  document.getElementById('boletoFilterStatus').value='pendente';
-  document.getElementById('boletoFilterMonth').value='';
-  document.getElementById('boletoFilterFornecedor').value='';
-  renderBoletos();
-};
-window.renderBoletos = (preset=null) => {
-  const statusF = document.getElementById('boletoFilterStatus')?.value||'pendente';
-  const mesF    = document.getElementById('boletoFilterMonth')?.value||'';
-  const fornF   = (document.getElementById('boletoFilterFornecedor')?.value||'').toLowerCase();
-  let list = [...boletos];
-  if (preset==='hoje')     list = list.filter(b=>b.status!=='pago'&&statusBoleto(b)==='hoje');
-  else if (preset==='semana') list = list.filter(b=>b.status!=='pago'&&diasAte(b.vencimento)>=0&&diasAte(b.vencimento)<=7);
-  else if (preset==='atrasado') list = list.filter(b=>b.status!=='pago'&&statusBoleto(b)==='atrasado');
-  else {
-    if (statusF==='pendente') list = list.filter(b=>b.status!=='pago');
-    else if (statusF==='pago') list = list.filter(b=>b.status==='pago');
-  }
-  if (mesF)  list = list.filter(b=>(b.vencimento||'').startsWith(mesF));
-  if (fornF) list = list.filter(b=>(b.desc||'').toLowerCase().includes(fornF));
-  list.sort((a,b)=>(a.vencimento||'').localeCompare(b.vencimento||''));
-
-  const tbody=document.getElementById('boletosTableBody');
-  if (tbody) {
-    tbody.innerHTML = list.length ? list.map(b=>{
-      const st = statusBoleto(b);
-      const vencBR = (b.vencimento||'').split('-').reverse().join('/');
-      const badge = st==='pago'?'<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Pago</span>'
-        : st==='atrasado'?'<span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">⚠️ Atrasado</span>'
-        : st==='hoje'?'<span class="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-bold">Vence hoje</span>'
-        : '<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">Pendente</span>';
-      return `<tr class="border-b hover:bg-gray-50 text-sm ${st==='atrasado'?'bg-red-50':''}">
-        <td class="p-3 text-xs font-medium">${vencBR}</td>
-        <td class="p-3 font-medium">${b.desc||'-'}${b.origem==='xml'?' <span class="text-xs text-purple-500"><i class="fas fa-file-import"></i></span>':''}</td>
-        <td class="p-3 text-xs text-gray-500">${b.nota||'-'}</td>
-        <td class="p-3 text-xs text-gray-500">${b.origem==='xml'?'XML':'Manual'}</td>
-        <td class="p-3 text-right font-bold text-expense-red">${window.formatMoney(b.valor)}</td>
-        <td class="p-3 text-center">${badge}</td>
-        <td class="p-3 text-center whitespace-nowrap">
-          ${b.status!=='pago'?`<button onclick="marcarBoletoPago('${b.id}')" class="text-green-500 hover:text-green-700 mr-2" title="Marcar como pago"><i class="fas fa-check-circle"></i></button>`:''}
-          <button onclick="editarBoleto('${b.id}')" class="text-blue-500 hover:text-blue-700 mr-2" title="Editar"><i class="fas fa-edit"></i></button>
-          <button onclick="deletarBoleto('${b.id}')" class="text-red-400 hover:text-red-600" title="Excluir"><i class="fas fa-trash"></i></button>
-        </td>
-      </tr>`;
-    }).join('') : '<tr><td colspan="7" class="p-8 text-center text-gray-400 text-sm">Nenhum boleto encontrado</td></tr>';
-  }
-  updateBoletosKPIs();
-};
-function updateBoletosKPIs() {
-  const abertos = boletos.filter(b=>b.status!=='pago');
-  const hoje     = abertos.filter(b=>statusBoleto(b)==='hoje').reduce((s,b)=>s+b.valor,0);
-  const semana   = abertos.filter(b=>{const d=diasAte(b.vencimento);return d>=0&&d<=7;}).reduce((s,b)=>s+b.valor,0);
-  const totalAberto = abertos.reduce((s,b)=>s+b.valor,0);
-  const atrasados   = abertos.filter(b=>statusBoleto(b)==='atrasado').length;
-  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  s('boletoKpiHoje',      window.formatMoney(hoje));
-  s('boletoKpiSemana',    window.formatMoney(semana));
-  s('boletoKpiAberto',    window.formatMoney(totalAberto));
-  s('boletoKpiAtrasados', atrasados);
-}
-window.showAddBoletoModal = () => {
-  document.getElementById('boletoModalTitle').textContent='Novo Boleto';
-  document.getElementById('boletoModal').dataset.editId='';
-  ['boletoDesc','boletoValor','boletoNota','boletoObs'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('boletoVencimento').value=localDateISO();
-  document.getElementById('boletoStatus').value='pendente';
-  window.showModal('boletoModal');
-};
-window.editarBoleto = id => {
-  const b = boletos.find(x=>x.id===id); if (!b) return;
-  document.getElementById('boletoModalTitle').textContent='Editar Boleto';
-  document.getElementById('boletoModal').dataset.editId=id;
-  document.getElementById('boletoDesc').value=b.desc||'';
-  document.getElementById('boletoValor').value=(b.valor||0).toFixed(2).replace('.',',');
-  document.getElementById('boletoVencimento').value=b.vencimento||'';
-  document.getElementById('boletoNota').value=b.nota||'';
-  document.getElementById('boletoStatus').value=b.status||'pendente';
-  document.getElementById('boletoObs').value=b.obs||'';
-  window.showModal('boletoModal');
-};
-window.saveBoleto = async () => {
-  const desc = document.getElementById('boletoDesc').value.trim();
-  const valor = parseFloat(document.getElementById('boletoValor').value.replace(',','.'));
-  const vencimento = document.getElementById('boletoVencimento').value;
-  if (!desc)              { showNotification('Informe o fornecedor/descrição','error'); return; }
-  if (!valor||valor<=0)   { showNotification('Valor inválido','error'); return; }
-  if (!vencimento)        { showNotification('Informe o vencimento','error'); return; }
-  const editId = document.getElementById('boletoModal').dataset.editId;
-  const payload = {
-    desc, valor, vencimento,
-    nota: document.getElementById('boletoNota').value.trim(),
-    status: document.getElementById('boletoStatus').value,
-    obs: document.getElementById('boletoObs').value.trim(),
-    origem: editId ? (boletos.find(b=>b.id===editId)?.origem||'manual') : 'manual',
-    updatedAt: new Date().toISOString()
-  };
-  document.getElementById('loadingIndicator').classList.remove('hidden');
-  try {
-    if (editId) {
-      await updateDoc(doc(boletosCol,editId), payload);
-      const idx=boletos.findIndex(b=>b.id===editId); if(idx>-1) boletos[idx]={...boletos[idx],...payload};
-    } else {
-      payload.createdAt = new Date().toISOString();
-      const ref = await addDoc(boletosCol, payload);
-      boletos.push({id:ref.id,...payload});
-    }
-    saveCache(CACHE_KEYS.boletos, boletos);
-    closeModal('boletoModal'); renderBoletos();
-    showNotification('Boleto salvo!','success');
-  } catch(e) { console.error(e); showNotification('Erro ao salvar boleto','error'); }
-  finally { document.getElementById('loadingIndicator').classList.add('hidden'); }
-};
-window.marcarBoletoPago = async id => {
-  try {
-    await updateDoc(doc(boletosCol,id), {status:'pago', pagoEm:new Date().toISOString()});
-    const idx=boletos.findIndex(b=>b.id===id); if(idx>-1) { boletos[idx].status='pago'; boletos[idx].pagoEm=new Date().toISOString(); }
-    saveCache(CACHE_KEYS.boletos, boletos);
-    renderBoletos();
-    showNotification('Marcado como pago!','success');
-  } catch(e) { console.error('marcarBoletoPago:',e); showNotification('Erro','error'); }
-};
-window.deletarBoleto = async id => {
-  if (!confirm('Excluir este boleto?')) return;
-  try {
-    await deleteDoc(doc(boletosCol,id));
-    boletos = boletos.filter(b=>b.id!==id);
-    saveCache(CACHE_KEYS.boletos, boletos);
-    renderBoletos();
-    showNotification('Excluído!','success');
-  } catch(e) { console.error('deletarBoleto:',e); showNotification('Erro ao excluir','error'); }
-};
-
-// ─── CACHE-FIRST ────────────────────────────
-(function loadSalesExpensesCache(){
-  const cs = readCache(CACHE_KEYS.sales);
-  const ce = readCache(CACHE_KEYS.expenses);
-  if (cs && cs.data && cs.data.length) localSales = cs.data;
-  if (ce && ce.data && ce.data.length) localExpenses = ce.data;
-  if ((cs&&cs.data.length)||(ce&&ce.data.length)) updateScreen();
-})();
-
 // ─── FIRESTORE LISTENERS ──────────────────
-onSnapshot(query(salesCol, where('date','>=',cutoffDateISO()), orderBy("date","desc")),snap=>{
-  trackReads(snap.size);
-  const newDocs = snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'}));
-  const existingIds = new Set(localSales.map(s => s.id));
-  let updated = [...localSales];
-  newDocs.forEach(doc => {
-    const idx = updated.findIndex(s => s.id === doc.id);
-    if (idx >= 0) {
-      updated[idx] = doc;
-    } else {
-      updated.unshift(doc);
-    }
-  });
-  const snapshotIds = new Set(newDocs.map(d => d.id));
-  updated = updated.filter(s => snapshotIds.has(s.id));
-  localSales = updated;
-  saveCache(CACHE_KEYS.sales, localSales);
+onSnapshot(query(salesCol,orderBy("timestamp","desc")),snap=>{
+  localSales=snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'sale'}));
   updateScreen();
   if(!document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
   if(!document.getElementById('tab-reports').classList.contains('hidden'))  applyCustomFilter();
   if(!document.getElementById('tab-profit').classList.contains('hidden'))   renderProfitReport();
 },e=>console.error("Vendas:",e));
 
-onSnapshot(query(expensesCol, where('date','>=',cutoffDateISO()), orderBy("date","desc")),snap=>{
-  trackReads(snap.size);
-  const newDocs = snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'expense'}));
-  const existingIds = new Set(localExpenses.map(e => e.id));
-  let updated = [...localExpenses];
-  newDocs.forEach(doc => {
-    const idx = updated.findIndex(e => e.id === doc.id);
-    if (idx >= 0) {
-      updated[idx] = doc;
-    } else {
-      updated.unshift(doc);
-    }
-  });
-  const snapshotIds = new Set(newDocs.map(d => d.id));
-  updated = updated.filter(e => snapshotIds.has(e.id));
-  localExpenses = updated;
-  saveCache(CACHE_KEYS.expenses, localExpenses);
+onSnapshot(query(expensesCol,orderBy("timestamp","desc")),snap=>{
+  localExpenses=snap.docs.map(d=>({id:d.id,...d.data(),value:parseFloat(d.data().value)||0,type:'expense'}));
   updateScreen();
   if(!document.getElementById('tab-settings').classList.contains('hidden')) updateSettingsInfo();
   if(!document.getElementById('tab-reports').classList.contains('hidden'))  applyCustomFilter();
@@ -3254,9 +2578,9 @@ onSnapshot(query(expensesCol, where('date','>=',cutoffDateISO()), orderBy("date"
 
 // ─── INICIALIZAÇÃO ────────────────────────
 window.addEventListener('load', async ()=>{
+  // Constrói sidebar e bottom nav com ordem personalizada
   buildSidebarNav();
   buildBottomNav();
-  updateBoletosBadge();
 
   await loadProducts();
   await loadMetaMensal();
@@ -3274,8 +2598,10 @@ window.addEventListener('load', async ()=>{
   document.getElementById('customFilterStart').value=month+'-01';
   document.getElementById('customFilterEnd').value=today;
 
+  // Fechar modal ao clicar fora
   document.addEventListener('click',e=>{ if(e.target.classList.contains('modal-overlay')) closeModal(e.target.id); });
 
+  // Atalhos teclado
   document.addEventListener('keydown',e=>{
     if(e.key==='Enter'&&document.activeElement===document.getElementById('desc')){ e.preventDefault(); document.getElementById('value').focus(); }
     else if(e.key==='Enter'&&document.activeElement===document.getElementById('value')){ e.preventDefault(); handleTransactionAction(); }
