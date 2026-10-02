@@ -240,7 +240,7 @@ body {
   </div>
   <!-- Nav dinâmica — ordem controlada pelo usuário -->
   <nav class="mt-3 flex-1 overflow-y-auto" id="sidebarNav"></nav>
-  <div class="p-3 text-center text-xs text-white/50">v6.3.0 ⚡ AgroVida+</div>
+  <div class="p-3 text-center text-xs text-white/50">v6.4.0 ⚡ AgroVida+</div>
 </aside>
 
 <!-- MAIN -->
@@ -278,6 +278,8 @@ body {
           <div id="cxPayBreak" class="flex flex-wrap gap-1.5 text-[11px] font-semibold mb-1"></div>
           <div style="height:105px"><canvas id="cashDashChart"></canvas></div>
           <p class="text-[10px] text-gray-400 mt-1" id="cxFiadoNote"></p>
+          <p class="text-[11px] text-gray-500 mt-1" id="cxParceiroNote"></p>
+          <label class="flex items-center gap-2 text-xs text-gray-600 mt-1"><input type="checkbox" class="chk-cacau w-4 h-4 accent-green-600" checked onchange="setContarCacau(this.checked)"> Contar compra de cacau nas saídas</label>
         </div>
       </div>
     </div>
@@ -443,6 +445,7 @@ body {
             <input type="checkbox" id="incluirFiadoRelatorio" checked class="w-4 h-4 accent-green-600" onchange="if(document.getElementById('customFilterStart').value&&document.getElementById('customFilterEnd').value)applyCustomFilter()">
             <label for="incluirFiadoRelatorio" class="text-sm font-medium text-gray-700"><i class="fas fa-handshake text-yellow-500 mr-1"></i> Incluir recebimentos do fiado nos totais</label>
           </div>
+          <label class="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-gray-700"><input type="checkbox" class="chk-cacau w-4 h-4 accent-green-600" checked onchange="setContarCacau(this.checked)"> Contar compra de cacau nas saídas</label>
           <button onclick="applyCustomFilter()" class="btn-primary w-full">Aplicar Filtros</button>
         </div>
       </div>
@@ -809,6 +812,7 @@ body {
           <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Telefone</label><input type="tel" id="fFormTel" class="input-field" placeholder="(00) 00000-0000" oninput="Fiado.mascaraTel(this)"></div>
           <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cidade</label><input type="text" id="fFormCidade" class="input-field"></div>
           <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Endereço</label><input type="text" id="fFormEnd" class="input-field"></div>
+          <div class="md:col-span-2 flex items-start gap-2 p-3 bg-purple-50 border border-purple-200 rounded-lg"><input type="checkbox" id="fFormParceiro" class="w-4 h-4 mt-1 accent-purple-600"><label for="fFormParceiro" class="text-sm text-gray-700"><b>🤝 Parceiro (repasse de cacau)</b><br><span class="text-xs text-gray-500">Os pagamentos dele não contam como receita, o cacau lançado na nota dele não conta como venda, e ele sai de "A Receber" e das cobranças de atraso.</span></label></div>
         </div>
         <div class="mt-5 flex gap-3 justify-end">
           <button onclick="Fiado.switchView(_fiadoPrevView||'clientes')" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
@@ -859,7 +863,7 @@ body {
       <div class="card p-5 md:col-span-2">
         <h3 class="font-bold text-lg text-gray-700 mb-4 flex items-center gap-2"><i class="fas fa-info-circle text-agro-green"></i> Informações do Sistema</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Versão</p><p class="font-bold text-sm">v6.3.0</p></div>
+          <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Versão</p><p class="font-bold text-sm">v6.4.0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Total Vendas</p><p class="font-bold text-agro-green" id="totalSalesCount">0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Total Saídas</p><p class="font-bold text-expense-red" id="totalExpensesCount">0</p></div>
           <div class="text-center bg-gray-50 rounded-lg p-3"><p class="text-xs text-gray-500">Produtos</p><p class="font-bold" id="totalProductsCount">0</p></div>
@@ -891,6 +895,7 @@ body {
         </select>
       </div>
     </div>
+    <label class="flex items-center gap-2 text-sm text-gray-600 mb-3"><input type="checkbox" class="chk-cacau w-4 h-4 accent-green-600" checked onchange="setContarCacau(this.checked)"> Contar compra de cacau nas saídas</label>
     <div id="mgAlerts" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"></div>
     <div id="mgTabs" class="flex gap-1 border-b border-gray-200 mb-4 overflow-x-auto"></div>
     <div id="mgBody"></div>
@@ -1081,6 +1086,17 @@ let products      = [];
 let metaMensal    = parseFloat(localStorage.getItem('metaAgro'))||5000;
 let categories    = JSON.parse(localStorage.getItem('agroCategories'))||['Ração','Medicamento','Ferramentas','Sementes','Acessórios','Serviço/Vet','Outros'];
 let expenseCategories = JSON.parse(localStorage.getItem('agroExpenseCategories'))||['Aluguel','Salários','Contas (Água/Luz)','Internet/Telefone','Manutenção','Transporte','Suprimentos','Marketing','Outros'];
+if(!expenseCategories.some(c=>/cacau/i.test(c))){ expenseCategories.push('Compra de Cacau'); localStorage.setItem('agroExpenseCategories',JSON.stringify(expenseCategories)); }
+let contarCacau = localStorage.getItem('agroContarCacau')!=='0';
+const isCacau = e => /cacau/i.test((e.category||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+const expCount = e => contarCacau || !isCacau(e);
+window.setContarCacau = v => {
+  contarCacau=!!v; localStorage.setItem('agroContarCacau',v?'1':'0');
+  document.querySelectorAll('.chk-cacau').forEach(c=>c.checked=contarCacau);
+  updateScreen();
+  if(!document.getElementById('tab-reports').classList.contains('hidden')) applyCustomFilter();
+  if(!document.getElementById('tab-management').classList.contains('hidden')) Mgmt.render();
+};
 let editingProductId  = null;
 let transactionType   = 'sale';
 let saleCart = [];
@@ -1547,7 +1563,7 @@ function updateScreen() {
     const todayFiadoPayments = getFiadoPaymentEntries(d=>d===today);
     const monthSales = localSales.filter(s=>s.date.startsWith(month));
     const sum = arr=>arr.reduce((a,c)=>a+(parseFloat(c.value)||0),0);
-    const tT=sum(todaySales), tE=sum(todayExp), tM=sum(monthSales);
+    const tT=sum(todaySales), tE=sum(todayExp.filter(expCount)), tM=sum(monthSales);
     const tFiadoPag = todayFiadoPayments.reduce((s,x)=>s+x.value,0);
     // Saldo do Dia (caixa) = vendas à vista - saídas + fiado recebido hoje.
     // A venda lançada no fiado só vira caixa quando o cliente paga (evita contar 2x).
@@ -1607,8 +1623,8 @@ function updateDashboardFiadoKPIs() {
   const hoje=localDateISO();
   fClientes.forEach(c=>{
     const bal=fSaldo(c);
-    if (bal>0.05){ receber+=bal; if(fGetOverdue(c)) atrasados++; }
-    pagosHoje+=fGetAllTransactions(c).filter(t=>t.type==='credit'&&fDateLocal(t.date)===hoje).reduce((s,t)=>s+Math.abs(t.total),0);
+    if (bal>0.05&&!c.parceiro){ receber+=bal; if(fGetOverdue(c)) atrasados++; }
+    if(!c.parceiro) pagosHoje+=fGetAllTransactions(c).filter(t=>t.type==='credit'&&fDateLocal(t.date)===hoje).reduce((s,t)=>s+Math.abs(t.total),0);
   });
   const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   s('dashFiadoReceber',   window.formatMoney(receber));
@@ -1624,14 +1640,17 @@ function updateDashboardFiadoKPIs() {
 let dashPeriod='day', cashDashChart=null;
 const isoOf=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 function calcCaixa(test){
-  const r={avista:0,fiadoLanc:0,fiadoRec:0,exp:0,pay:{}};
+  const r={avista:0,fiadoLanc:0,fiadoRec:0,exp:0,cacau:0,repasse:0,pay:{}};
   localSales.filter(x=>test(x.date)).flatMap(expandSale).forEach(it=>{
     const v=it.total||0;
     if(it.payment==='Fiado/Prazo') r.fiadoLanc+=v;
     else { r.avista+=v; r.pay[it.payment]=(r.pay[it.payment]||0)+v; }
   });
   r.fiadoRec=getFiadoPaymentEntries(test).reduce((a,x)=>a+x.value,0);
-  r.exp=localExpenses.filter(e=>test(e.date)).reduce((a,e)=>a+e.value,0);
+  r.repasse=getFiadoPaymentEntries(test,true).reduce((a,x)=>a+x.value,0);   // dinheiro do parceiro: NÃO é receita
+  const _ex=localExpenses.filter(e=>test(e.date));
+  r.cacau=_ex.filter(isCacau).reduce((a,e)=>a+e.value,0);
+  r.exp=_ex.filter(expCount).reduce((a,e)=>a+e.value,0);
   r.entrada=r.avista+r.fiadoRec; r.saldo=r.entrada-r.exp;
   return r;
 }
@@ -1650,6 +1669,8 @@ function updateCashDashboard(){
     const chips=keys.map(k=>`<span class="bg-green-50 text-green-800 border border-green-200 px-3 py-1 rounded-full">${k}: ${fm(r.pay[k])}</span>`);
     if(r.fiadoRec>0) chips.push(`<span class="bg-yellow-50 text-yellow-800 border border-yellow-200 px-3 py-1 rounded-full">🤝 Fiado recebido: ${fm(r.fiadoRec)}</span>`);
     document.getElementById('cxPayBreak').innerHTML = chips.join('') || '<span class="text-gray-400 font-normal">Sem entradas no período</span>';
+    const cxp=document.getElementById('cxParceiroNote');
+    if(cxp) cxp.innerHTML=(r.repasse>0?`🤝 Repasses do parceiro: <b>${fm(r.repasse)}</b> (dinheiro no caixa, fora da receita) · `:'')+(r.cacau>0?`Compra de cacau: <b>${fm(r.cacau)}</b> ${contarCacau?'(contada nas saídas)':'(fora das saídas)'} · `:'')+`Caixa real (tudo): <b>${fm(r.entrada+r.repasse-(r.exp+(contarCacau?0:r.cacau)))}</b>`;
     set('cxFiadoNote', r.fiadoLanc>0 ? `Fiado lançado no período: ${fm(r.fiadoLanc)} (a receber — ainda não entra no caixa)` : '');
     // gráfico: últimos 7 dias
     const days=[]; for(let i=6;i>=0;i--){const d=new Date(t+'T12:00:00'); d.setDate(d.getDate()-i); days.push(isoOf(d));}
@@ -1815,7 +1836,7 @@ function updateReports(startISO,endISO,typeFilter='all',catFilter='') {
   const inRange=(d,s,e)=>{ const dd=new Date(d+'T00:00:00'); return dd>=new Date(s+'T00:00:00')&&dd<=new Date(e+'T23:59:59'); };
   let fsRaw=localSales.filter(s=>inRange(s.date,startISO,endISO)&&(typeFilter==='all'||typeFilter==='sale'));
   let fsExpanded = fsRaw.flatMap(expandSale).filter(it=>!catFilter||it.category===catFilter);
-  const fe=localExpenses.filter(e=>inRange(e.date,startISO,endISO)&&(!catFilter||e.category===catFilter)&&(typeFilter==='all'||typeFilter==='expense'));
+  const fe=localExpenses.filter(e=>inRange(e.date,startISO,endISO)&&(!catFilter||e.category===catFilter)&&(typeFilter==='all'||typeFilter==='expense')&&expCount(e));
   // Informativo: quanto foi lançado no fiado (já faz parte das vendas)
   let fiadoLancado=0;
   if (typeFilter==='all'||typeFilter==='sale') {
@@ -2234,7 +2255,7 @@ window.createFullBackup = () => {
   try {
     const data = {
       timestamp: new Date().toISOString(),
-      version: '6.3.0',
+      version: '6.4.0',
       sales:    localSales,
       expenses: localExpenses,
       products: products,
@@ -2431,9 +2452,10 @@ window.fGetAllTransactions = fGetAllTransactions;
 // Usado para exibir os pagamentos recebidos no fiado dentro do
 // Histórico e da Movimentação do Dia, sem precisar gravar nada
 // de novo no Firestore principal (economiza gravações/leituras).
-function getFiadoPaymentEntries(dateFilterFn) {
+function getFiadoPaymentEntries(dateFilterFn, parceiro=false) {   // parceiro=true → só repasses do parceiro
   const out=[];
   fClientes.forEach(c=>{
+    if(!!c.parceiro!==parceiro) return;
     fGetAllTransactions(c).filter(t=>t.type==='credit').forEach(t=>{
       const d=fDateLocal(t.date);
       if (!dateFilterFn || dateFilterFn(d)) {
@@ -2490,8 +2512,8 @@ window.Fiado={
     const hoje=localDateISO();
     fClientes.forEach(c=>{
       const bal=fSaldo(c);
-      if(bal>0.05){receber+=bal;if(fGetOverdue(c))atrasados++;}
-      pagosHoje+=fGetAllTransactions(c).filter(t=>t.type==='credit'&&fDateLocal(t.date)===hoje).reduce((s,t)=>s+Math.abs(t.total),0);
+      if(bal>0.05&&!c.parceiro){receber+=bal;if(fGetOverdue(c))atrasados++;}
+      if(!c.parceiro) pagosHoje+=fGetAllTransactions(c).filter(t=>t.type==='credit'&&fDateLocal(t.date)===hoje).reduce((s,t)=>s+Math.abs(t.total),0);
     });
     const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
     s('fKpiReceber',  window.formatMoney(receber));
@@ -2525,7 +2547,7 @@ window.Fiado={
     tbody.innerHTML=list.map(c=>{
       const bal=fSaldo(c),nn=c.activeNoteNumber?`#${c.activeNoteNumber}`:'-',od=fGetOverdue(c);
       const badge=bal<=0.05?'<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Em dia</span>':od?`<span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">⚠️ ${od.days}d</span>`:'<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">Pendente</span>';
-      return`<tr class="border-b hover:bg-gray-50 cursor-pointer text-sm" onclick="Fiado.abrirCliente('${c.id}')"><td class="p-3 font-bold text-gray-600">${nn}</td><td class="p-3"><p class="font-bold">${c.nome}</p>${c.apelido?`<p class="text-xs text-green-600">${c.apelido}</p>`:''}</td><td class="p-3 text-xs text-gray-500">${c.tel||'-'}</td><td class="p-3 text-right font-bold ${bal>0.05?'text-red-600':'text-green-600'}">${window.formatMoney(bal)}</td><td class="p-3 text-center">${badge}</td><td class="p-3 text-center"><button onclick="event.stopPropagation();Fiado.abrirCliente('${c.id}')" class="text-blue-500 hover:text-blue-700"><i class="fas fa-eye text-sm"></i></button></td></tr>`;
+      return`<tr class="border-b hover:bg-gray-50 cursor-pointer text-sm" onclick="Fiado.abrirCliente('${c.id}')"><td class="p-3 font-bold text-gray-600">${nn}</td><td class="p-3"><p class="font-bold">${c.nome}${c.parceiro?' <span class="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">Parceiro</span>':''}</p>${c.apelido?`<p class="text-xs text-green-600">${c.apelido}</p>`:''}</td><td class="p-3 text-xs text-gray-500">${c.tel||'-'}</td><td class="p-3 text-right font-bold ${bal>0.05?'text-red-600':'text-green-600'}">${window.formatMoney(bal)}</td><td class="p-3 text-center">${badge}</td><td class="p-3 text-center"><button onclick="event.stopPropagation();Fiado.abrirCliente('${c.id}')" class="text-blue-500 hover:text-blue-700"><i class="fas fa-eye text-sm"></i></button></td></tr>`;
     }).join('');
   },
   // Vem de fora da aba Fiado (Histórico / Movimentação do Dia): abre a aba e
@@ -2566,6 +2588,7 @@ window.Fiado={
     document.getElementById('fFormTitle').textContent='Novo Cliente';
     document.getElementById('fFormId').value='';
     ['fFormNome','fFormApelido','fFormCPF','fFormTel','fFormCidade','fFormEnd'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('fFormParceiro').checked=false;
     this.switchView('form');
   },
   editarCliente(){
@@ -2580,12 +2603,13 @@ window.Fiado={
     document.getElementById('fFormTel').value=c.tel||'';
     document.getElementById('fFormCidade').value=c.cidade||'';
     document.getElementById('fFormEnd').value=c.endereco||'';
+    document.getElementById('fFormParceiro').checked=!!c.parceiro;
     this.switchView('form');
   },
   async salvarCliente(){
     const nome=document.getElementById('fFormNome').value.trim();
     if(!nome){showNotification('Nome obrigatório','error');return;}
-    const data={nome,apelido:document.getElementById('fFormApelido').value.trim(),cpf:document.getElementById('fFormCPF').value.trim(),tel:document.getElementById('fFormTel').value.trim(),cidade:document.getElementById('fFormCidade').value.trim(),endereco:document.getElementById('fFormEnd').value.trim(),updatedAt:new Date().toISOString()};
+    const data={nome,apelido:document.getElementById('fFormApelido').value.trim(),cpf:document.getElementById('fFormCPF').value.trim(),tel:document.getElementById('fFormTel').value.trim(),cidade:document.getElementById('fFormCidade').value.trim(),endereco:document.getElementById('fFormEnd').value.trim(),parceiro:document.getElementById('fFormParceiro').checked,updatedAt:new Date().toISOString()};
     setLoading(true);
     try{
       const id=document.getElementById('fFormId').value;
@@ -2659,7 +2683,7 @@ window.Fiado={
   resetPagamentosHoje(){const el=document.getElementById('fPagamentoData');if(el)el.value=localDateISO();this.filtrarPagamentos();},
   renderNotificacoes(){
     const list=document.getElementById('fNotifList'); if(!list) return;
-    const at=fClientes.filter(c=>fGetOverdue(c));
+    const at=fClientes.filter(c=>fGetOverdue(c)&&!c.parceiro);
     if(!at.length){list.innerHTML=`<div class="card p-8 text-center text-gray-400"><i class="fas fa-check-circle text-4xl text-green-400 mb-3 block"></i><p class="font-medium text-sm">Todos os clientes em dia!</p></div>`;return;}
     list.innerHTML=at.map(c=>{
       const od=fGetOverdue(c);
@@ -2744,7 +2768,7 @@ function mgCompute(){
   const pe=new Date(s+'T12:00:00'); pe.setDate(pe.getDate()-1);
   const ps=new Date(pe); ps.setDate(ps.getDate()-days+1);
   const sel=(arr,a,b)=>arr.filter(x=>x.date>=a&&x.date<=b), tot=a=>a.reduce((n,i)=>n+(i.total||0),0);
-  const items=sel(localSales,s,e).flatMap(expandSale), exps=sel(localExpenses,s,e);
+  const items=sel(localSales,s,e).flatMap(expandSale), exps=sel(localExpenses,s,e).filter(expCount);
   const catalog=new Set(products.map(p=>mgNorm(p.name)));
   const g={}, byDate={}; let semCad=0;
   items.forEach(it=>{
@@ -2761,8 +2785,9 @@ function mgCompute(){
   const ec={}, ed={};
   exps.forEach(x=>{ const c=x.category||'Outros'; (ec[c]=ec[c]||{name:c,v:0}).v+=x.value; const k=mgNorm(x.desc)||c; (ed[k]=ed[k]||{name:x.desc||c,v:0}).v+=x.value; });
   let receber=0, atras=0;
-  fClientes.forEach(c=>{ const b=fSaldo(c); if(b>0.05){ receber+=b; if(fGetOverdue(c)) atras++; } });
-  return {rev:tot(items), exp:exps.reduce((n,x)=>n+x.value,0), prevRev:tot(sel(localSales,isoOf(ps),isoOf(pe)).flatMap(expandSale)),
+  fClientes.forEach(c=>{ const b=fSaldo(c); if(b>0.05&&!c.parceiro){ receber+=b; if(fGetOverdue(c)) atras++; } });
+  const repasse=getFiadoPaymentEntries(x=>x>=s&&x<=e,true).reduce((n,x)=>n+x.value,0), cacau=sel(localExpenses,s,e).filter(isCacau).reduce((n,x)=>n+x.value,0);
+  return {repasse, cacau, rev:tot(items), exp:exps.reduce((n,x)=>n+x.value,0), prevRev:tot(sel(localSales,isoOf(ps),isoOf(pe)).flatMap(expandSale)),
           rank:mgRank(g), eCat:mgRank(ec), eDesc:mgRank(ed), semCad, receber, atras, dowAvg};
 }
 function mgAlerts(D){
@@ -2773,6 +2798,7 @@ function mgAlerts(D){
     if(v<=-10) a.push({t:'warn',txt:`Receita ${pc(-v)} menor que o período anterior (${f(D.rev)} contra ${f(D.prevRev)}).`,ish:['Mercado/Clientes','Queda nas vendas em relação ao período anterior'],sw:['T','Queda recente nas vendas']});
     else if(v>=10) a.push({t:'ok',txt:`Receita ${pc(v)} maior que o período anterior (${f(D.rev)} contra ${f(D.prevRev)}).`,sw:['F','Vendas em crescimento']});
   }
+  if(D.repasse>0||D.cacau>0) a.push({t:'info',txt:`${D.repasse>0?`Repasses do parceiro: ${f(D.repasse)} (não entram como receita). `:''}${D.cacau>0?`Compra de cacau no período: ${f(D.cacau)} ${contarCacau?'(incluída nas saídas)':'(fora das saídas)'}.`:''}`});
   const r=D.exp/D.rev*100;
   if(r>=70) a.push({t:'warn',txt:`As saídas consomem ${pc(r)} da receita do período.`,ish:['Financeiro','Despesas altas em relação às vendas'],sw:['W','Despesas altas em relação às vendas']});
   const te=D.eCat[0];
@@ -2893,6 +2919,7 @@ window.addEventListener('load', async ()=>{
     if(e.key==='Escape') document.querySelectorAll('.modal-overlay.active').forEach(m=>closeModal(m.id));
   });
 
+  document.querySelectorAll('.chk-cacau').forEach(c=>c.checked=contarCacau);
   updateScreen();
   showTab('dashboard');
 });
