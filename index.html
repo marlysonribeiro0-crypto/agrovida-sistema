@@ -2288,7 +2288,7 @@ window.syncSaleChips=()=>{
  const key=categories.join('|')+'#'+sel.value;if(chips.dataset.k===key)return;chips.dataset.k=key;
  const pending=!sel.value||sel.value==='Outros';chips.classList.toggle('pending',pending);
  document.getElementById('saleCatHint').textContent=pending?'· confira antes de adicionar':'';
- chips.innerHTML=categories.map(c=>`<button type="button" class="cat-chip ${c===sel.value?'on-g':''}" data-c="${escAttr(c)}">${escAttr(c)}</button>`).join('');
+ chips.innerHTML=categories.map(c=>`<button type="button" class="cat-chip ${c===sel.value?'on-g':''}" data-c="${escAttr(c)}">${catIcon(c)} ${escAttr(c)}</button>`).join('');
 };
 {const chips=document.getElementById('saleCatChips');
  if(chips)chips.addEventListener('click',e=>{const b=e.target.closest('.cat-chip');if(!b)return;const sel=document.getElementById('category');sel.value=b.dataset.c;window._catAsked=false;sel.dispatchEvent(new Event('change'));syncSaleChips();try{if(uxReady)rememberEntry();}catch{}});
@@ -2780,10 +2780,12 @@ function displayXMLImportSummary(data){
  document.getElementById('xmlImportSummary').innerHTML=`<p class="text-sm my-3">Confira a categoria de cada produto. Os que o sistema não identificou aparecem em destaque.</p><div class="xml-list">${data.products.map((xp,i)=>xmlRowHTML(xp,i)).join('')}</div>`;
  document.getElementById('xmlImportSummary').classList.remove('hidden');
 }
-function catChips(sel,fn,i){return categories.map(c=>`<button type="button" class="cat-chip ${c===sel?'on-g':''}" data-c="${escAttr(c)}" onclick="${fn}(${i},this.dataset.c)">${escAttr(c)}</button>`).join('');}
+const CAT_ICONS=[[/ra[cç][aã]o|farelo|milho|sorgo|silagem|feno|suplement/i,'🌾'],[/mineral|\bsal\b/i,'🧂'],[/medic|vacina|vermif|antibi|vitamina|carrapat/i,'💉'],[/servi[cç]o|\bvet/i,'🐄'],[/ferrament|enxada|foice|machado|fac[aã]o/i,'🪓'],[/semente|muda|plant|hortali|capim|pasto/i,'🌱'],[/adubo|fertiliz|calc[aá]rio|corretivo/i,'🧪'],[/defensiv|herbicida|inseticida|veneno|fungicida/i,'🧴'],[/acess|arreio|sela|cela|la[cç]o|r[eé]dea|montaria/i,'🐴'],[/cerca|arame|palanque|mour[aã]o|estaca/i,'🚧'],[/irriga|mangueira|bomba/i,'💧'],[/galinh|frango|pint|poedeir|\bave/i,'🐔'],[/c[aã]o|gato|\bpet|cachorro/i,'🐕'],[/limpeza|higiene|desinfet/i,'🧼'],[/outro/i,'•']];
+window.catIcon=c=>{for(const [r,i] of CAT_ICONS)if(r.test(c||''))return i;return '🌿';};
+function catChips(sel,fn,i){return categories.map(c=>`<button type="button" class="cat-chip ${c===sel?'on-g':''}" data-c="${escAttr(c)}" onclick="${fn}(${i},this.dataset.c)">${catIcon(c)} ${escAttr(c)}</button>`).join('');}
 function xmlRowHTML(xp,i){const ex=findXMLProduct(xp);return `<div class="xml-row ${xp.category?'':'pending'}" id="xmlRow${i}"><div class="xml-top"><b>${escAttr(xp.name)}</b><span class="pro-tag">${ex?'Atualizar':'Novo'}</span></div><small>${xp.barcode?'Código de barras '+escAttr(xp.barcode):'Sem código de barras na nota'}${xp.sku?' · Cód. '+escAttr(xp.sku):''}</small>${xp.category?'':'<p class="xml-warn">Categoria não identificada. Toque em uma:</p>'}<div class="cat-chips">${catChips(xp.category,'setXMLCategory',i)}</div></div>`;}
 window.setXMLCategory=(i,value)=>{if(xmlImportData?.products[i]){xmlImportData.products[i].category=value;const r=document.getElementById('xmlRow'+i);if(r)r.outerHTML=xmlRowHTML(xmlImportData.products[i],i);}};
-window.renderProductCatChips=()=>{const s=document.getElementById('productCategory'),b=document.getElementById('productCatChips');if(!s||!b)return;const v=s.value;b.className='cat-chips'+(v?'':' pending');b.innerHTML=categories.map(c=>`<button type="button" class="cat-chip ${c===v?'on-g':''}" data-c="${escAttr(c)}" onclick="pickProductCat(this.dataset.c)">${escAttr(c)}</button>`).join('');};
+window.renderProductCatChips=()=>{const s=document.getElementById('productCategory'),b=document.getElementById('productCatChips');if(!s||!b)return;const v=s.value;b.className='cat-chips'+(v?'':' pending');b.innerHTML=categories.map(c=>`<button type="button" class="cat-chip ${c===v?'on-g':''}" data-c="${escAttr(c)}" onclick="pickProductCat(this.dataset.c)">${catIcon(c)} ${escAttr(c)}</button>`).join('');};
 window.pickProductCat=c=>{document.getElementById('productCategory').value=c;renderProductCatChips();};
 window.processXMLImport = async () => {
   if (!xmlImportData?.products.length) { showNotification('Nenhum produto','error'); return; }
@@ -3297,6 +3299,9 @@ window.Fiado={
     if(!fCurrentClient||this.paymentBusy)return;
     const val=Number(document.getElementById('fPayVal').value), payment=document.getElementById('fPayMethod').value;
     if(!Number.isFinite(val)||val<=0||!payment){showNotification('Informe o valor e como recebeu.','warning');return;}
+    const saldoAtual=fSaldo(fCurrentClient);
+    if(saldoAtual<=0.05){showNotification('Este cliente não tem saldo a receber.','warning');return;}
+    if(val>saldoAtual+0.05){showNotification('O valor é maior que o saldo ('+window.formatMoney(saldoAtual)+'). Informe no máximo o saldo.','warning');return;}
     const clientId=fCurrentClient.id, now=new Date(), id=String(Date.now())+'_'+Math.random().toString(36).slice(2);
     const novaData=new Date();novaData.setDate(novaData.getDate()+30);
     const tr={id,date:now.toISOString(),desc:'PAGAMENTO RECEBIDO',qtd:1,unit:val,discount:0,total:-roundMoney(val),type:'credit',payment};
@@ -3324,7 +3329,7 @@ window.Fiado={
       const ref=doc2(fdb,'clients',cid),snap=await tx.get(ref);if(!snap.exists())throw Error('Cliente não encontrado.');
       const rows=snap.data().transactions||[],matches=rows.filter(t=>String(t.id)===String(id));
       if(!matches.length)return;const same=(a,b)=>['date','desc','total','type'].every(k=>JSON.stringify(a[k]??null)===JSON.stringify(b[k]??null));if(matches.some(m=>!same(m,original)))throw Error('O lançamento mudou. Atualize o extrato.');
-      tx.update(ref,{transactions:rows.filter(t=>String(t.id)!==String(id))});
+      const drop=new Set([String(id)]);if(original.type==='credit')drop.add(String(id)+'_p');tx.update(ref,{transactions:rows.filter(t=>!drop.has(String(t.id)))});
     });showNotification('Transação excluída.');}
     catch(e){showNotification(e.message||'Não foi possível excluir.','error');}
     finally{this.mutationBusy=false;setLoading(false);}
