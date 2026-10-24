@@ -3031,7 +3031,7 @@ function fGetOverdue(c) {
 }
 function fIsDebit(t){return t.type==='debit'||(!t.type&&Number(t.total)>0);}
 function fSaldo(c) { return roundMoney((c.transactions||[]).reduce((s,t)=>s+Number(t.total||0),0)); }
-function fTransactionSignature(rows){return JSON.stringify(rows||[]);}
+function fTransactionSignature(rows){return JSON.stringify((rows||[]).map(t=>[t.id??null,t.date??null,t.type??null,t.desc??null,Number(t.total)||0,Number(t.qtd)||0,Number(t.unit)||0,Number(t.discount)||0,t.saleId??null]));}
 
 window.fSaldo=fSaldo;
 
