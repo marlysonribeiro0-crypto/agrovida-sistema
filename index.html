@@ -455,6 +455,83 @@ table tbody tr:hover{background:#f7faf8}
 .ux-action-dock{border-radius:18px;box-shadow:0 12px 40px #143d3022}
 @media(max-width:640px){#saleCatBox{padding:12px}#saleEntryCard>.p-4{padding:14px}}
 </style>
+<style id="v31">
+html{scroll-behavior:smooth}
+button,.type-filter-btn,.cat-chip,.btn-primary,.btn-secondary{transition:transform .12s ease,box-shadow .2s ease,background-color .2s ease,border-color .2s ease,color .2s ease}
+button:active,.cat-chip:active{transform:scale(.97)}
+.fiado-view{animation:avFade .22s ease both}
+@keyframes avFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.modal-content{animation:avPop .2s ease both}
+@keyframes avPop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.ex-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:40;min-width:190px;background:#fff;border:1px solid #e6ebe8;border-radius:14px;box-shadow:0 14px 40px #143d3026;padding:6px;animation:avPop .15s ease both}
+.ex-menu button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:600;color:#1f2d27;background:none;border:0;cursor:pointer}
+.ex-menu button:hover{background:#eef5f1}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+<style id="v32">
+.rc-ov{position:fixed;inset:0;z-index:9999;background:#0b1a14cc;display:flex;align-items:center;justify-content:center;padding:16px;animation:avFade .2s ease both}
+.rc-box{background:#fff;border-radius:20px;max-width:520px;width:100%;max-height:92vh;display:flex;flex-direction:column;padding:18px;box-shadow:0 30px 80px #0006}
+.rc-box h3{font-weight:700;font-size:17px;color:#1f2d27;margin-bottom:12px}
+.rc-img{overflow:auto;border:1px solid #e6ebe8;border-radius:12px;flex:1;min-height:0}
+.rc-img img{width:100%;display:block}
+.rc-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.rc-actions button{flex:1;min-height:48px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;border:1px solid #dbe4de;background:#fff;color:#1f2d27}
+.rc-actions .rc-b1{background:#147d58;border-color:#147d58;color:#fff}
+.rc-actions .rc-b2{background:#eef5f1}
+</style>
+<style id="v33">
+.av-rpb{overflow:hidden}
+.av-rp{position:absolute;border-radius:50%;background:currentColor;opacity:.18;transform:scale(0);animation:avRp .55s ease-out forwards;pointer-events:none}
+@keyframes avRp{to{transform:scale(1);opacity:0}}
+.av-flash{animation:avFlash .6s ease}
+@keyframes avFlash{0%{opacity:.25;filter:blur(1.5px)}100%{opacity:1;filter:none}}
+.notification{position:fixed;overflow:hidden;animation:avToast .35s cubic-bezier(.2,.9,.3,1.15) both}
+@keyframes avToast{from{opacity:0;transform:translateY(-14px) scale(.96)}to{opacity:1;transform:none}}
+.notification::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;background:#ffffff66;transform-origin:left;animation:avBar 3.5s linear forwards}
+@keyframes avBar{to{transform:scaleX(0)}}
+:focus-visible{outline:3px solid #147d5855;outline-offset:2px}
+.sidebar nav button{transition:background-color .2s,transform .15s}
+.sidebar nav button:hover{transform:translateX(3px)}
+.card{transition:box-shadow .2s,border-color .2s}
+.card:hover{border-color:#cfe0d6}
+.product-card{content-visibility:auto;contain-intrinsic-size:auto 140px}
+*:has(>.modal-content){backdrop-filter:blur(4px)}
+#loadingIndicator{animation:avFade .2s ease both}
+</style>
+<style id="v34">
+.pulse{display:flex;align-items:center;gap:14px;padding:14px 16px 18px;margin-bottom:12px;border-radius:18px;background:#fff;border:1px solid #e6ebe8;border-left:5px solid #147d58;position:relative;overflow:hidden;box-shadow:0 6px 22px #143d3010}
+.pulse[data-k=ok]{background:linear-gradient(90deg,#f3fbf7,#fff 45%)}
+.pulse[data-k=bad]{border-left-color:#dc2626;background:linear-gradient(90deg,#fff5f5,#fff 45%)}
+.pulse[data-k=warn]{border-left-color:#d97706;background:linear-gradient(90deg,#fffaf0,#fff 45%)}
+.pulse[data-k=info]{border-left-color:#2563eb;background:linear-gradient(90deg,#f5f8ff,#fff 45%)}
+.pulse-ico{font-size:28px;width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:#f2f6f4;flex:none}
+.pulse-body{flex:1;min-width:0}
+.pulse-title{font-weight:800;font-size:16px;color:#1f2d27;line-height:1.25}
+.pulse-text{font-size:13px;color:#55675d;margin-top:2px}
+.pulse-cta{flex:none;padding:10px 18px;border-radius:12px;background:#147d58;color:#fff;font-weight:700;font-size:14px;border:0;cursor:pointer}
+.pulse[data-k=bad] .pulse-cta{background:#dc2626}
+.pulse-dots{position:absolute;right:16px;bottom:7px;display:flex;gap:5px}
+.pulse-dots button{width:7px;height:7px;border-radius:99px;background:#cfd9d3;border:0;padding:0;cursor:pointer;transition:width .25s,background .25s}
+.pulse-dots button.on{width:20px;background:#147d58}
+.pulse-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#147d5840;transform-origin:left;animation:pulseBar 7s linear infinite}
+.pulse:hover .pulse-bar{animation-play-state:paused}
+@keyframes pulseBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.pulse.in .pulse-ico,.pulse.in .pulse-body{animation:avRise .38s ease both}
+@keyframes avRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:640px){.pulse{flex-wrap:wrap}.pulse-cta{width:100%}.pulse-body{flex-basis:calc(100% - 70px)}}
+</style>
+<style id="v35">
+.pro-bar .pulse{flex:1 1 auto;min-width:0;margin:0 14px;padding:8px 12px 13px;border-radius:14px;gap:10px;box-shadow:none;align-self:center;flex-wrap:nowrap}
+.pro-bar .pulse-ico{width:38px;height:38px;font-size:20px;border-radius:12px}
+.pro-bar .pulse-title{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pro-bar .pulse-text{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.pro-bar .pulse-cta{width:auto;padding:7px 12px;font-size:13px;border-radius:10px;white-space:nowrap}
+.pro-bar .pulse-dots{bottom:4px;right:12px}
+.pro-bar .pulse-dots button{width:5px;height:5px}
+.pro-bar .pulse-dots button.on{width:14px}
+@media(max-width:1180px){.pro-bar .pulse-text{display:none}}
+@media(max-width:900px){.pro-bar{flex-wrap:wrap}.pro-bar .pulse{order:3;flex:1 1 100%;margin:8px 0 0}}
+</style>
 </head>
 <body class="flex flex-col md:flex-row">
 
@@ -488,7 +565,7 @@ table tbody tr:hover{background:#f7faf8}
     <div class="loading-spinner"></div><span class="text-sm font-medium">Processando…</span>
   </div>
 
-<header class="pro-bar"><div><div class="pro-eyebrow">AGROVIDA+ / GESTÃO</div><h1 id="proTitle">Seu balcão, organizado.</h1><p id="proDate"></p></div><div class="pro-tools"><button class="pro-button" onclick="Pro.openSearch()" title="Buscar produtos e atalhos (Ctrl+K)">⌕ <span class="pro-label">Buscar · Ctrl K</span></button><button class="pro-button" onclick="Pro.openCalculator()" title="Calculadora de preço">% <span class="pro-label">Precificar</span></button><button class="pro-button" onclick="document.getElementById('proHelp').showModal()" title="Guia do sistema">? <span class="pro-label">Guia</span></button></div></header>
+<header class="pro-bar"><div><div class="pro-eyebrow">AGROVIDA+ / GESTÃO</div><h1 id="proTitle">Seu balcão, organizado.</h1><p id="proDate"></p></div><div id="pulseWidget" class="pulse hidden" data-k="info" aria-live="polite"><div class="pulse-ico" id="pulseIco">✨</div><div class="pulse-body"><div class="pulse-title" id="pulseTitle"></div><div class="pulse-text" id="pulseText"></div></div><button type="button" class="pulse-cta" id="pulseCta"></button><div class="pulse-dots" id="pulseDots"></div><div class="pulse-bar" id="pulseBar"></div></div><div class="pro-tools"><button class="pro-button" onclick="Pro.openSearch()" title="Buscar produtos e atalhos (Ctrl+K)">⌕ <span class="pro-label">Buscar · Ctrl K</span></button><button class="pro-button" onclick="Pro.openCalculator()" title="Calculadora de preço">% <span class="pro-label">Precificar</span></button><button class="pro-button" onclick="document.getElementById('proHelp').showModal()" title="Guia do sistema">? <span class="pro-label">Guia</span></button></div></header>
 <section id="tab-insights" class="hidden fade-in">
 <div class="pro-panel"><div class="pro-eyebrow">INTELIGÊNCIA DE GESTÃO</div><h2 style="font-size:25px;font-weight:700;margin:8px 0">Visão do negócio</h2><p class="pro-sub">Vendas, oportunidades e qualidade dos dados em um só lugar.</p><div class="pro-filters" style="margin-top:20px"><label>De<input id="proStart" type="date" class="input-field" onchange="Pro.invalidate()"></label><label>Até<input id="proEnd" type="date" class="input-field" onchange="Pro.invalidate()"></label><label>Empresa dos itens<select id="proCompany" class="input-field" onchange="Pro.invalidate()"><option value="">Todas as empresas</option><option value="agrovida">Agrovida</option><option value="agrovida-plus">Agrovida +</option><option value="unassigned">Sem identificação</option></select></label><button class="pro-button primary" onclick="Pro.loadInsights(true)">Analisar período</button><button class="pro-button" onclick="Pro.thisMonth()">Este mês</button><button id="proExport" class="pro-button" onclick="Pro.exportCSV()" disabled>Exportar CSV</button></div><div id="proNotice" role="status" aria-live="polite">Selecione o período.</div></div>
 <div id="proContent"><div class="pro-empty">Os indicadores aparecem após a consulta.</div></div>
@@ -912,7 +989,7 @@ table tbody tr:hover{background:#f7faf8}
       <div class="card p-4 mb-4 relative">
         <div class="flex items-center gap-3">
           <i class="fas fa-search text-gray-400 text-lg"></i>
-          <input type="text" id="fiadoSearch" class="flex-1 border-none outline-none text-base bg-transparent" placeholder="Buscar cliente por nome, apelido ou nº da nota…" oninput="Fiado.search()" autocomplete="off">
+          <input type="text" id="fiadoSearch" class="flex-1 border-none outline-none text-base bg-transparent" placeholder="Buscar cliente por nome, apelido ou nº da nota…" oninput="debFiadoSearch()" autocomplete="off">
         </div>
         <div id="fiadoSearchResults" class="search-suggestions hidden" style="position:absolute;left:0;right:0;top:100%;z-index:50"></div>
       </div>
@@ -927,7 +1004,7 @@ table tbody tr:hover{background:#f7faf8}
       <div class="card p-4 mb-4">
         <div class="flex items-center gap-2 mb-3">
           <i class="fas fa-search text-gray-400"></i>
-          <input type="text" id="fClienteSearch" class="flex-1 border-none outline-none text-base bg-transparent" placeholder="Nome, apelido ou telefone…" oninput="Fiado.renderClientes()" autocomplete="off">
+          <input type="text" id="fClienteSearch" class="flex-1 border-none outline-none text-base bg-transparent" placeholder="Nome, apelido ou telefone…" oninput="debFiadoClientes()" autocomplete="off">
           <select id="fClienteSearchType" class="input-field" style="width:auto;min-height:34px;padding:6px 10px;font-size:12px" onchange="Fiado.renderClientes()">
             <option value="all">Tudo</option><option value="name">Nome</option><option value="note">Nota</option><option value="tel">Tel.</option>
           </select>
@@ -982,7 +1059,7 @@ table tbody tr:hover{background:#f7faf8}
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="md:col-span-2 card p-4">
-          <div class="flex justify-between gap-2 items-center mb-3"><h4 class="font-bold text-gray-700">Extrato atual</h4><button onclick="showClientHistory()" class="type-filter-btn">Histórico do cliente</button></div>
+          <div class="flex justify-between gap-2 items-center mb-3"><h4 class="font-bold text-gray-700">Extrato atual</h4><div class="flex gap-2 items-center"><div class="relative"><button type="button" onclick="toggleExtratoMenu(event)" class="type-filter-btn"><i class="fas fa-file-export mr-1"></i> Exportar</button><div id="extratoMenu" class="ex-menu hidden"><button type="button" onclick="extratoExport('pdf')">📄 PDF (A4)</button><button type="button" onclick="extratoExport('jpg')">🖼️ Imagem JPG</button><button type="button" onclick="extratoExport('80')">🧾 Bobina 80 mm</button><button type="button" onclick="extratoExport('58')">🧾 Bobina 58 mm</button></div></div><button onclick="showClientHistory()" class="type-filter-btn">Histórico do cliente</button></div></div>
           <div class="table-responsive" style="max-height:360px;overflow-y:auto">
             <table class="w-full text-sm">
               <thead class="bg-gray-100 text-gray-500 uppercase text-xs font-bold sticky top-0">
@@ -2292,7 +2369,7 @@ window.syncSaleChips=()=>{
 };
 {const chips=document.getElementById('saleCatChips');
  if(chips)chips.addEventListener('click',e=>{const b=e.target.closest('.cat-chip');if(!b)return;const sel=document.getElementById('category');sel.value=b.dataset.c;window._catAsked=false;sel.dispatchEvent(new Event('change'));syncSaleChips();try{if(uxReady)rememberEntry();}catch{}});
- setInterval(()=>{try{syncSaleChips();}catch{}},250);
+ document.addEventListener('input',()=>requestAnimationFrame(()=>{try{syncSaleChips();}catch{}}),true);document.addEventListener('click',()=>setTimeout(()=>{try{syncSaleChips();}catch{}},60),true);setInterval(()=>{try{syncSaleChips();}catch{}},1500);
  const _hta=window.handleTransactionAction;
  if(typeof _hta==='function')window.handleTransactionAction=function(...a){
   const sel=document.getElementById('category'),d=(document.getElementById('desc')?.value||'').trim();
@@ -3113,6 +3190,141 @@ onSnap2(fColClients,{includeMetadataChanges:true},snap=>{
 function setLoading(v){document.getElementById('loadingIndicator')?.classList.toggle('hidden',!v);}
 
 
+function exCanvasRecibo(d,quando){
+  const W=800,pad=36,rowH=40,top=262,tot=d.rows.filter(r=>!r.cr).reduce((s,r)=>s+r.n,0),pago=d.rows.filter(r=>r.cr).reduce((s,r)=>s+r.n,0);
+  const H=top+Math.max(1,d.rows.length)*rowH+300,k=2,cv=document.createElement('canvas');cv.width=W*k;cv.height=H*k;
+  const x=cv.getContext('2d');x.scale(k,k);x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#133d30';x.fillRect(0,0,W,110);
+  x.fillStyle='#fff';x.font='700 30px Arial';x.fillText('AgroVida+',pad,50);x.font='15px Arial';x.fillText('RECIBO DE QUITAÇÃO  ·  Nota #'+d.nota,pad,82);
+  x.fillStyle='#74827a';x.font='14px Arial';x.fillText('Recebemos de',pad,152);
+  x.fillStyle='#1f2d27';x.font='700 26px Arial';x.fillText(d.nome,pad,186);
+  const ds=d.rows.map(r=>new Date(r.iso)).filter(t=>!isNaN(t)),f=t=>t.toLocaleDateString('pt-BR');
+  x.fillStyle='#74827a';x.font='14px Arial';x.fillText('Período: '+(ds.length?f(new Date(Math.min(...ds)))+' a '+f(new Date(Math.max(...ds))):'--')+'   ·   Quitada em '+quando.toLocaleString('pt-BR'),pad,214);
+  const fit=(s,w)=>{while(x.measureText(s).width>w&&s.length>1)s=s.slice(0,-2)+'…';return s;};
+  let y=top;d.rows.forEach(r=>{x.strokeStyle='#e6ebe8';x.beginPath();x.moveTo(pad,y);x.lineTo(W-pad,y);x.stroke();
+    x.fillStyle='#74827a';x.font='14px Arial';x.textAlign='left';x.fillText(r.data,pad,y+25);
+    x.fillStyle='#1f2d27';x.font='600 15px Arial';x.fillText(fit(r.desc,440),130,y+25);
+    x.fillStyle=r.cr?'#15803d':'#b91c1c';x.font='700 15px Arial';x.textAlign='right';x.fillText(r.valor,W-pad,y+25);x.textAlign='left';y+=rowH;});
+  x.strokeStyle='#e6ebe8';x.beginPath();x.moveTo(pad,y);x.lineTo(W-pad,y);x.stroke();
+  x.fillStyle='#1f2d27';x.font='600 16px Arial';x.fillText('Total da nota',pad,y+36);x.fillText('Total recebido',pad,y+66);
+  x.textAlign='right';x.font='700 16px Arial';x.fillText(d.fm(tot),W-pad,y+36);x.fillText(d.fm(pago),W-pad,y+66);x.textAlign='left';
+  x.fillStyle='#ecfdf5';x.fillRect(pad,y+88,W-pad*2,70);x.fillStyle='#15803d';x.font='700 24px Arial';x.fillText('NOTA QUITADA',pad+18,y+132);
+  x.textAlign='right';x.font='600 16px Arial';x.fillText('Saldo '+d.fm(0),W-pad-18,y+130);x.textAlign='left';
+  x.strokeStyle='#1f2d27';x.beginPath();x.moveTo(pad,y+222);x.lineTo(pad+300,y+222);x.stroke();
+  x.fillStyle='#74827a';x.font='13px Arial';x.fillText('AgroVida+ · Produtos e Serviços Agropecuários',pad,y+244);
+  x.textAlign='center';x.fillStyle='#133d30';x.font='700 15px Arial';x.fillText('Obrigado pela preferência!',W/2,y+284);
+  return cv;}
+window.mostrarRecibo=(d,quando)=>{
+  exCanvasRecibo(d,quando).toBlob(b=>{
+    if(!b)return;const url=URL.createObjectURL(b);
+    const slug=d.nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase()||'cliente',nome='recibo-'+slug+'-nota-'+d.nota+'.jpg';
+    const file=new File([b],nome,{type:'image/jpeg'}),canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+    const ov=document.createElement('div');ov.className='rc-ov';
+    ov.innerHTML=`<div class="rc-box"><h3>Recibo da nota #${escAttr(String(d.nota))} pronto</h3><div class="rc-img"><img src="${url}" alt="Recibo"></div><div class="rc-actions"><button type="button" class="rc-b1" id="rcDl">Baixar JPG</button>${canShare?'<button type="button" class="rc-b2" id="rcSh">Compartilhar</button>':''}<button type="button" class="rc-b3" id="rcX">Fechar</button></div></div>`;
+    document.body.appendChild(ov);
+    const fechar=()=>{ov.remove();URL.revokeObjectURL(url);};
+    ov.querySelector('#rcDl').onclick=()=>exDownload(b,nome);
+    ov.querySelector('#rcSh')?.addEventListener('click',()=>navigator.share({files:[file],title:'Recibo AgroVida+'}).catch(()=>{}));
+    ov.querySelector('#rcX').onclick=fechar;ov.addEventListener('click',e=>{if(e.target===ov)fechar();});
+  },'image/jpeg',0.92);
+};
+(()=>{
+  const SEL='.btn-primary,.btn-secondary,.type-filter-btn,.cat-chip,.rc-actions button,.ex-menu button,.btn-xml,.btn-profit,.btn-expense';
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('pointerdown',e=>{
+    const b=e.target.closest?.(SEL);if(!b||b.disabled)return;
+    if(!reduce){const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2,rp=document.createElement('span');rp.className='av-rp';
+      rp.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;
+      if(getComputedStyle(b).position==='static')b.style.position='relative';b.classList.add('av-rpb');b.appendChild(rp);setTimeout(()=>rp.remove(),600);}
+    if(b.matches('.btn-primary,.rc-b1'))navigator.vibrate?.(8);
+  },{passive:true});
+  const flash=el=>{el.classList.remove('av-flash');void el.offsetWidth;el.classList.add('av-flash');};
+  ['cxEntrada','cxSaldo','fDetalheSaldo'].forEach(id=>{const el=document.getElementById(id);if(!el)return;let last=el.textContent;
+    new MutationObserver(()=>{if(el.textContent!==last){last=el.textContent;flash(el);}}).observe(el,{childList:true,characterData:true,subtree:true});});
+  new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.classList?.contains('notification'))navigator.vibrate?.(n.classList.contains('success')?12:n.classList.contains('error')?[30,40,30]:15);}))).observe(document.body,{childList:true});
+})();
+(()=>{
+  const fm=v=>window.formatMoney(v);
+  const goSale=()=>{showTab('dashboard');setTransactionType('sale');focusSoon('desc');};
+  const goFiado=()=>{showTab('fiado');Fiado.switchView('clientes');};
+  function slides(){
+    const hoje=localDateISO(),h=new Date().getHours(),out=[];
+    const itens=productSales().filter(x=>x.date===hoje).flatMap(expandSale),r=calcCaixa(d=>d===hoje);
+    if(!itens.length)out.push({w:1,k:'warn',ico:'🛒',t:h<10?'Bom dia! Vamos abrir o caixa?':'Nenhuma venda lançada hoje',x:'Lance cada venda na hora para o caixa fechar certo no fim do dia.',cta:'Lançar venda',fn:goSale});
+    else out.push({w:5,k:'ok',ico:'📈',t:itens.length+(itens.length>1?' itens vendidos hoje':' item vendido hoje'),x:'Entrada de '+fm(r.entrada)+' no caixa. Continue lançando para manter tudo em dia.',cta:'Ver caixa',fn:()=>document.getElementById('cxEntrada')?.scrollIntoView({behavior:'smooth',block:'center'})});
+    let atr=0,vAtr=0,rec=0,nrec=0;
+    fClientes.forEach(c=>{if(c.parceiro)return;const b=fSaldo(c);if(b>0.05){rec+=b;nrec++;if(fGetOverdue(c)){atr++;vAtr+=b;}}});
+    if(atr)out.push({w:0,k:'bad',ico:'⏰',t:atr+(atr>1?' clientes com fiado atrasado':' cliente com fiado atrasado'),x:fm(vAtr)+' parados. Um contato hoje já ajuda a receber.',cta:'Ver clientes',fn:goFiado});
+    else if(nrec)out.push({w:4,k:'ok',ico:'🤝',t:fm(rec)+' a receber no fiado',x:nrec+(nrec>1?' clientes com saldo':' cliente com saldo')+', nenhum atrasado. Registre cada pagamento assim que receber.',cta:'Abrir fiado',fn:goFiado});
+    if(r.exp===0&&h>=11)out.push({w:2,k:'info',ico:'🧾',t:'Nenhuma saída lançada hoje',x:'Teve frete, combustível, compra ou outra despesa? Registre para o lucro não parecer maior do que é.',cta:'Lançar saída',fn:()=>{showTab('dashboard');setTransactionType('expense');focusSoon('desc');}});
+    const ps=products||[],semBc=ps.filter(p=>!p.barcode).length,outros=ps.filter(p=>!p.category||p.category==='Outros').length;
+    if(ps.length&&semBc/ps.length>0.2)out.push({w:3,k:'info',ico:'🏷️',t:semBc+' de '+ps.length+' produtos sem código de barras',x:'Cadastre o código para achar o produto na hora, só passando o leitor.',cta:'Abrir catálogo',fn:()=>showTab('products')});
+    if(outros>0)out.push({w:3,k:'info',ico:'🗂️',t:outros+(outros>1?' produtos em "Outros" ou sem categoria':' produto em "Outros" ou sem categoria'),x:'Categoria certa deixa Relatórios e Lucro mais confiáveis.',cta:'Organizar',fn:()=>showTab('products')});
+    const dias=new Set(productSales().map(x=>x.date));let s=0;const d=new Date(hoje+'T12:00:00');if(!dias.has(hoje))d.setDate(d.getDate()-1);
+    while(dias.has(isoOf(d))&&s<400){s++;d.setDate(d.getDate()-1);}
+    if(s>=2)out.push({w:6,k:'ok',ico:'🔥',t:s+' dias seguidos lançando vendas',x:'Constância deixa os relatórios confiáveis. Não quebre a sequência!',cta:'Lançar venda',fn:goSale});
+    if(h>=17)out.push({w:2,k:'info',ico:'🧮',t:'Hora de fechar o dia',x:'Confira o dinheiro da gaveta com o que o sistema calculou.',cta:'Conferir caixa',fn:()=>showTab('cashreview')});
+    return out.sort((a,b)=>a.w-b.w);
+  }
+  let list=[],i=0;
+  const el=id=>document.getElementById(id);
+  function paint(){
+    const w=el('pulseWidget');if(!w)return;
+    if(!list.length){w.classList.add('hidden');return;}
+    w.classList.remove('hidden');const s=list[i%list.length];w.dataset.k=s.k||'info';
+    el('pulseIco').textContent=s.ico;el('pulseTitle').textContent=s.t;el('pulseText').textContent=s.x;
+    const b=el('pulseCta');b.textContent=s.cta;b.onclick=()=>{try{s.fn();}catch(e){console.warn(e);}};
+    el('pulseDots').innerHTML=list.map((_,k)=>`<button type="button" aria-label="Aviso ${k+1}" class="${k===i%list.length?'on':''}" data-i="${k}"></button>`).join('');
+    w.classList.remove('in');void w.offsetWidth;w.classList.add('in');
+    const bar=el('pulseBar');bar.style.animation='none';void bar.offsetWidth;bar.style.animation='';
+  }
+  function refresh(){try{const cur=list[i%(list.length||1)]?.t;list=slides();const k=list.findIndex(x=>x.t===cur);i=k>=0?k:0;paint();}catch(e){}}
+  function next(){if(document.hidden||list.length<2||el('pulseWidget')?.matches(':hover'))return;i=(i+1)%list.length;paint();}
+  document.addEventListener('click',e=>{const d=e.target.closest?.('#pulseDots button');if(d){i=+d.dataset.i;paint();}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
+  setTimeout(()=>{refresh();setInterval(refresh,45000);setInterval(next,7000);},2500);
+})();
+window.toggleExtratoMenu=e=>{e?.stopPropagation();document.getElementById('extratoMenu')?.classList.toggle('hidden');};
+document.addEventListener('click',()=>document.getElementById('extratoMenu')?.classList.add('hidden'));
+function extratoData(){const c=fCurrentClient;if(!c)return null;const fm=window.formatMoney;
+  const rows=[...(c.transactions||[])].filter(t=>t.type!=='prorrogacao').sort((a,b)=>new Date(a.date)-new Date(b.date)).map(t=>{const cr=t.type==='credit',tot=Math.abs(Number(t.total)||0);return{cr,data:new Date(t.date).toLocaleDateString('pt-BR'),desc:String(t.desc||''),det:(Number(t.qtd)||1)+'x '+fm(Number(t.unit)||tot),valor:(cr?'- ':'')+fm(tot),n:tot,iso:t.date};});
+  return{nome:c.nome||'Cliente',nota:c.activeNoteNumber||'--',saldo:fSaldo(c),fm,rows,agora:new Date().toLocaleString('pt-BR')};}
+function exDownload(blob,nome){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);}
+window.extratoExport=kind=>{
+  document.getElementById('extratoMenu')?.classList.add('hidden');
+  const d=extratoData();if(!d){showNotification('Abra um cliente primeiro.','warning');return;}
+  const slug=d.nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase()||'cliente';
+  const nome='extrato-'+slug+'-nota-'+d.nota;
+  if(kind==='pdf'){
+    if(!window.jspdf){showNotification('Biblioteca de PDF ainda carregando. Tente de novo.','warning');return;}
+    const pd=new window.jspdf.jsPDF();pd.setFillColor(19,61,48);pd.rect(0,0,210,28,'F');pd.setTextColor(255);pd.setFontSize(18);pd.text('AgroVida+',14,13);pd.setFontSize(10);pd.text('Extrato de fiado  |  Nota #'+d.nota,14,21);
+    pd.setTextColor(31,45,39);pd.setFontSize(14);pd.text(d.nome,14,40);pd.setFontSize(9);pd.setTextColor(116,130,122);pd.text('Emitido em '+d.agora,14,46);
+    pd.autoTable({startY:52,head:[['Data','Descrição','Valor']],body:d.rows.map(r=>[r.data,r.desc+(r.cr?'':'  ('+r.det+')'),r.valor]),headStyles:{fillColor:[19,61,48]},styles:{fontSize:9},columnStyles:{2:{halign:'right'}},didParseCell:h=>{if(h.section==='body'&&h.column.index===2)h.cell.styles.textColor=d.rows[h.row.index].cr?[21,128,61]:[185,28,28];}});
+    const y=pd.lastAutoTable.finalY+12;pd.setFontSize(13);pd.setTextColor(31,45,39);pd.text((d.saldo>0.05?'Saldo a pagar: ':'Saldo: ')+d.fm(d.saldo),196,y,{align:'right'});
+    pd.save(nome+'.pdf');return;
+  }
+  if(kind==='jpg'){
+    const W=800,pad=36,rowH=40,top=190,H=top+Math.max(1,d.rows.length)*rowH+130,k=2,cv=document.createElement('canvas');cv.width=W*k;cv.height=H*k;
+    const x=cv.getContext('2d');x.scale(k,k);x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#133d30';x.fillRect(0,0,W,100);
+    x.fillStyle='#fff';x.font='700 28px Arial';x.fillText('AgroVida+',pad,46);x.font='15px Arial';x.fillText('Extrato de fiado  ·  Nota #'+d.nota,pad,76);
+    x.fillStyle='#1f2d27';x.font='700 24px Arial';x.fillText(d.nome,pad,144);x.fillStyle='#74827a';x.font='14px Arial';x.fillText('Emitido em '+d.agora,pad,168);
+    const fit=(s,w)=>{while(x.measureText(s).width>w&&s.length>1)s=s.slice(0,-2)+'…';return s;};
+    let y=top;d.rows.forEach(r=>{x.strokeStyle='#e6ebe8';x.beginPath();x.moveTo(pad,y);x.lineTo(W-pad,y);x.stroke();
+      x.fillStyle='#74827a';x.font='14px Arial';x.textAlign='left';x.fillText(r.data,pad,y+25);
+      x.fillStyle='#1f2d27';x.font='600 15px Arial';x.fillText(fit(r.desc,440),130,y+25);
+      x.fillStyle=r.cr?'#15803d':'#b91c1c';x.font='700 15px Arial';x.textAlign='right';x.fillText(r.valor,W-pad,y+25);x.textAlign='left';y+=rowH;});
+    x.strokeStyle='#e6ebe8';x.beginPath();x.moveTo(pad,y);x.lineTo(W-pad,y);x.stroke();
+    x.fillStyle=d.saldo>0.05?'#fef2f2':'#ecfdf5';x.fillRect(pad,y+22,W-pad*2,64);
+    x.fillStyle='#1f2d27';x.font='600 16px Arial';x.fillText(d.saldo>0.05?'Saldo a pagar':'Quitado',pad+18,y+61);
+    x.textAlign='right';x.fillStyle=d.saldo>0.05?'#b91c1c':'#15803d';x.font='700 24px Arial';x.fillText(d.fm(d.saldo),W-pad-18,y+63);
+    cv.toBlob(b=>exDownload(b,nome+'.jpg'),'image/jpeg',0.92);return;
+  }
+  const w=window.open('','_blank','width=380,height=640');if(!w){showNotification('Libere os pop-ups do navegador para imprimir.','warning');return;}
+  const mm=kind==='58'?48:72,pg=kind==='58'?58:80;
+  const lin=d.rows.map(r=>`<div>${r.data} ${escAttr(r.desc)}</div><div class="r"><span>${r.cr?'':escAttr(r.det)}</span><span class="b">${r.valor}</span></div>`).join('<hr class="t">');
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>${escAttr(nome)}</title><style>@page{size:${pg}mm auto;margin:0}body{width:${mm}mm;margin:0 auto;padding:3mm 0;font:12px/1.35 'Courier New',monospace;color:#000}h1{font-size:17px;text-align:center;margin:0}.c{text-align:center}.r{display:flex;justify-content:space-between;gap:6px}hr{border:0;border-top:1px dashed #000;margin:6px 0}hr.t{border-top:1px dotted #777;margin:3px 0}.b{font-weight:700}</style><h1>AgroVida+</h1><div class="c">Extrato de fiado</div><hr><div class="b">${escAttr(d.nome)}</div><div>Nota #${d.nota}</div><div>${d.agora}</div><hr>${lin||'<div class="c">Sem lançamentos</div>'}<hr><div class="r b" style="font-size:14px"><span>${d.saldo>0.05?'SALDO':'QUITADO'}</span><span>${d.fm(d.saldo)}</span></div><hr><div class="c">Obrigado pela preferência!</div><br>`);
+  w.document.close();w.focus();setTimeout(()=>w.print(),350);
+};
+window.debFiadoSearch=(()=>{let t;return()=>{clearTimeout(t);t=setTimeout(()=>Fiado.search(),120);};})();window.debFiadoClientes=(()=>{let t;return()=>{clearTimeout(t);t=setTimeout(()=>Fiado.renderClientes(),120);};})();
 window.focusSoon=id=>{const go=()=>{const i=document.getElementById(id);if(!i||i.offsetParent===null)return;i.focus({preventScroll:true});i.select?.();};go();requestAnimationFrame(go);setTimeout(go,80);setTimeout(go,220);};
 window.openFiadoSearch=()=>{
   showTab('fiado');Fiado.switchView('clientes');
@@ -3341,6 +3553,7 @@ window.Fiado={
     if(!confirm('Arquivar a nota quitada? Os pagamentos continuarão nos totais das datas em que foram recebidos.'))return;
     const cid=fCurrentClient.id,signature=fTransactionSignature(fCurrentClient.transactions),note=fCurrentClient.activeNoteNumber??null;
     const cycleId=crypto.randomUUID?crypto.randomUUID():String(Date.now())+'_'+Math.random().toString(36).slice(2),at=new Date().toISOString();
+    const recibo=extratoData();
     this.mutationBusy=true;setLoading(true);
     try{await runTransaction(fdb,async tx=>{
       const ref=doc2(fdb,'clients',cid),snap=await tx.get(ref);if(!snap.exists())throw Error('Cliente não encontrado.');
@@ -3350,7 +3563,7 @@ window.Fiado={
       if(Math.abs(fSaldo(current))>0.05)throw Error('A nota possui saldo pendente.');
       const cycle={id:cycleId,dataArquivamento:at,noteNumber:current.activeNoteNumber||'-',itens:current.transactions};
       tx.update(ref,{transactions:[],activeNoteNumber:null,history:[...(current.history||[]),cycle]});
-    });showNotification('Nota arquivada; recebimentos preservados nos relatórios.');}
+    });showNotification('Nota arquivada; recebimentos preservados nos relatórios.');try{if(recibo)window.mostrarRecibo(recibo,new Date(at));}catch(e){console.warn('Recibo',e);}}
     catch(e){showNotification(e.message||'Não foi possível arquivar.','error');}
     finally{this.mutationBusy=false;setLoading(false);}
   },
